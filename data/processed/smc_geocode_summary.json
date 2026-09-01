@@ -1,0 +1,33 @@
+{
+  "generated": "2026-09-01 19:38 IST",
+  "n_sites_input": 131,
+  "n_sepa": 97,
+  "n_closures": 18,
+  "coverage": {
+    "n_panel_sins": 131,
+    "n_coord_rows": 131,
+    "n_coords_with_latlon": 131,
+    "n_panel_sins_with_coords": 131,
+    "pct_panel_sins_with_coords": 100.0,
+    "n_panel_rows": 21417,
+    "n_panel_rows_with_coords": 21417,
+    "pct_panel_rows_with_coords": 100.0,
+    "coords_by_source": {
+      "nominatim": 39,
+      "osgb_closure": 14,
+      "sepa_swpa": 78
+    },
+    "coords_by_confidence": {
+      "high": 48,
+      "low": 35,
+      "medium": 48
+    },
+    "n_panel_sins_missing_coords": 0,
+    "fss_wfs_note": "Marine Scotland GeoServer layer nmp:fss_shellfish_classified_areas is OGL-licensed but HTTP 401 without login \u2014 not used."
+  },
+  "coords_path": "data/processed/smc_site_coords.csv",
+  "notes": {
+    "high_confidence_pct_of_sins": 36.64,
+    "sepa_lon_fix": "Recomputed from OSGB easting/northing where SEPA lat==lon or lon>0.5"
+  }
+}

@@ -24,7 +24,7 @@
 
 **Labels / thresholds:** Dinophysis ≥100, Pseudo-nitzschia ≥50,000, Alexandrium ≥40 cells L⁻¹; DSP ≥160 µg OA eq/kg, ASP ≥20 mg/kg, PSP ≥800 µg STX eq/kg.
 
-**Coordinates:** the HAB export has **no lat/lon**. Panels leave `latitude`/`longitude` null and set `has_coords=False`. **Geocode Sin → WGS84 before any OISST/OSTIA join.** Area lookup is joined on `Sin` only (`in_smc_areas` flag).
+**Coordinates:** see **Site coordinates** below. Panels are updated in-place with `latitude`/`longitude`/`has_coords` when geocode is run.
 
 Rebuild: `python scripts/ingest_smc_hab.py`.
 
@@ -35,4 +35,25 @@ Rebuild: `python scripts/ingest_smc_hab.py`.
 **Processed:** `data/processed/smc_closures.csv` + `smc_closures_note.md`. Linked to `smc_areas` on AreaName; Pod retained; Sin preferred from Reason when present in areas.
 
 Rebuild: `python scripts/ingest_smc_closures.py`.
+
+## Site coordinates (2026-09-01 geocode)
+
+**Processed:** `data/processed/smc_site_coords.csv` — one row per phyto-panel Sin
+(`Sin, AreaName, SiteName, latitude, longitude, source, confidence[, detail]`).
+
+**SEPA centroids:** `data/processed/sepa_swpa_centroids.csv` (from public SEPA REST;
+easting/northing used when published lon is corrupt).
+
+**Sources (priority):**
+1. OSGB grid refs in `smc_closures.csv` Description → WGS84 mean (`osgb_closure`, high)
+2. SEPA Shellfish Water Protected Areas name match (`sepa_swpa`, high/medium)
+3. Nominatim `{AreaName}, Scotland, UK` with LA/region fallbacks (`nominatim`, often low)
+
+**FSS classified-areas WFS** (`nmp:fss_shellfish_classified_areas` on Marine Scotland
+GeoServer) is OGL-licensed but returns **HTTP 401 without login** — not used.
+
+**Coverage (phyto panel):** 131/131 SINs (100% rows) have coords; confidence mix is
+roughly high ~37%, medium ~37%, low ~27%. Many loch/voe Nominatim hits are ambiguous.
+
+Rebuild: `python scripts/geocode_smc_sites.py`
 

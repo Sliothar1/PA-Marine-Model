@@ -38,3 +38,7 @@ data/models/
 !data/processed/ibi_light_mhw_report.md
 !data/processed/metrics_dino_ibi.json
 !data/processed/ibi_ablation_metrics.json
+!data/processed/smc_site_coords.csv
+!data/processed/sepa_swpa_centroids.csv
+!data/processed/smc_geocode_summary.json
+!data/processed/smc_geocode_report.md

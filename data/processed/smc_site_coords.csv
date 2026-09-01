@@ -1,0 +1,132 @@
+Sin,AreaName,SiteName,latitude,longitude,source,confidence,detail
+SI-326-733-08,Aith Voe Sletta,Slyde,60.2843334,-1.3762487,nominatim,low,"q=Aith, Shetland;Aith, Shetland Islands, Alba / Scotland, ZE2 9NW, United Kingdom"
+OI-453-857-08,Bay of Backaskaill,Backaskaill Razors,59.2383571,-2.6115972,nominatim,low,"q=Backaskaill Bay, Orkney;Orkney walks - Backaskaill Bay, B9070, Sanday, Kettletoft, Orkney Islands, Alba / Scotland, KW17 2BN, United Kingdom"
+OI-453-857-16,Bay of Backaskaill,Backaskaill Razors,59.2383571,-2.6115972,nominatim,low,"q=Backaskaill Bay, Orkney;Orkney walks - Backaskaill Bay, B9070, Sanday, Kettletoft, Orkney Islands, Alba / Scotland, KW17 2BN, United Kingdom"
+SI-327-410-08,Busta Voe Lee North,Busta Voe Lee,60.3792066,-1.3630777,nominatim,low,"q=Busta Voe, Shetland;Busta Voe, Brae, Shetland Islands, Alba / Scotland, ZE2 9QG, United Kingdom"
+AB-029-008-04,Campbeltown Loch,Kildalloig Bay,55.4245252,-5.5922098,nominatim,low,"q=Campbeltown Loch;Campbeltown Loch, Campbeltown, Argyll and Bute, Alba / Scotland, PA28 6EF, United Kingdom"
+SI-050-420-08,Dales Voe: Scarvar Ayre,Scarvar Ayre,60.1901412,-1.187916,nominatim,low,"q=Dales Voe, Shetland;Dales Voe, Lerwick, Shetland Islands, Alba / Scotland, United Kingdom"
+FF-060-191-08,Elie,Elie Ness,56.1904515,-2.8202468,nominatim,low,"q=Elie;Elie, Elie and Earlsferry, Fife, Alba / Scotland, KY9 1DB, United Kingdom"
+OI-455-859-16,Fersness Bay,Fersness Razors,59.1889472,-2.800403,nominatim,low,"q=Fersness Bay;Fersness Bay, Orkney Islands, Alba / Scotland, United Kingdom"
+FF-068-184-19,Firth of Forth: North,Anstruther,56.2227638,-2.7005643,nominatim,medium,"q=Anstruther, Fife, Scotland;Anstruther, Fife, Alba / Scotland, KY10 3EA, United Kingdom"
+FF-072-188-16,Forth Estuary: Largo Bay,Largo Bay,56.2126296,-2.9359312,nominatim,low,"q=Largo Bay, Fife, Scotland;Largo Bay Sailing Club, Main Street, Temple, Lower Largo, Fife, Alba / Scotland, KY8 6BP, United Kingdom"
+AB-699-1519-13,Gallochoille Old Pier,Gallochoille Old Pier,55.6675293,-5.7307686,nominatim,low,"q=Gallochoille, Argyll, Scotland;Gallochoille Cottage, dun site, Gigha Ferry Slip, Dùnan Buidhe, Ardminish, Argyll and Bute, Alba / Scotland, PA41 7AA, United Kingdom"
+AB-697-1512-04,Ganavan Cockles,Ganavan,56.4352948,-5.4707724,nominatim,medium,"q=Ganavan, Oban, Scotland;Ganavan, Oban, Argyll and Bute, Alba / Scotland, PA34 5TB, United Kingdom"
+HL-075-205-08,Glenuig Bay,Glenuig Bay,56.832617,-5.8171857,nominatim,low,"q=Glenuig Bay;Glenuig Bay, Glenuig, Alba / Scotland, PH38 4NG, United Kingdom"
+SI-076-1338-08,Gon Firth,Cole Deep,60.346807,-1.346189,nominatim,low,"q=Gon Firth;Gon Firth, Shetland Islands, Alba / Scotland, United Kingdom"
+SI-348-736-08,Hamnavoe,Copister,58.9614356,-3.2993767,nominatim,low,"q=Hamnavoe;Stromness, Orkney Islands, Alba / Scotland, KW16 3BU, United Kingdom"
+DG-809-2132-16,Kirkcudbright Bay Razors,Kirkcudbright Bay Razors,54.7758681,-4.0734424,nominatim,low,"q=Kirkcudbright Bay, Scotland;Kirkcudbright Bay, Alba / Scotland, United Kingdom"
+DG-809-2375-16,Kirkcudbright Bay Razors,Brighouse Bay,54.7758681,-4.0734424,nominatim,low,"q=Kirkcudbright Bay, Scotland;Kirkcudbright Bay, Alba / Scotland, United Kingdom"
+SI-107-429-08,Lang Sound,Lang Sound,60.0889202,-1.3212485,nominatim,low,"q=Lang Sound;Lang Sound, Burra and Trondra, Bridge End, Shetland Islands, Alba / Scotland, United Kingdom"
+AB-286-082-13,Loch Na Keal West,Eilean Casach,56.473986,-6.0627443,nominatim,medium,"q=Loch na Keal;Loch na Keal, Argyll and Bute, Alba / Scotland, United Kingdom"
+AB-656-1409-04,Loch Riddon Cockles,Loch Riddon Cockles,55.959915,-5.1918369,nominatim,low,"q=Loch Riddon, Argyll, Scotland;Loch Riddon, Argyll and Bute, Alba / Scotland, United Kingdom"
+AB-617-1204-04,Loch na Cille,Loch na Cille Cockles,57.5988801,-7.4972187,nominatim,low,"q=Loch na Cille;Loch na Cille, Baile Raghnaill, Na h-Eileanan Siar, Alba / Scotland, United Kingdom"
+AB-617-1204-08,Loch na Cille,Loch na Cille Cockles,57.5988801,-7.4972187,nominatim,low,"q=Loch na Cille;Loch na Cille, Baile Raghnaill, Na h-Eileanan Siar, Alba / Scotland, United Kingdom"
+DG-499-865-16,Luce Bay Razors,Luce Sands Razors,54.7534315,-4.754222,nominatim,low,"q=Luce Bay, Dumfries, Scotland;Luce Bay, Dumfries and Galloway, Alba / Scotland, United Kingdom"
+OI-888-888-08,Mainland: Tingwall Pier,Mainland: Tingwall Pier,59.0883412,-3.0456924,nominatim,low,"q=Tingwall, Orkney;Tingwall, Orkney Islands, Alba / Scotland, KW17 2HB, United Kingdom"
+SA-337-719-16,North Bay,Barassie,58.7951394,-3.2332191,nominatim,low,"q=North Bay;North Bay, Longhope, Orkney Islands, Alba / Scotland, United Kingdom"
+OI-865-2349-13,North Bay Oysters - Hoy,North Bay Oysters - Hoy,58.8520573,-3.2869398,nominatim,low,"q=Hoy, Orkney;Hoy, Lyness, Orkney Islands, Alba / Scotland, United Kingdom"
+AB-308-701-13,Oitir Mhor Bay,Oitir Mhor,57.5026971,-7.3246344,nominatim,low,"q=Oitir Mhor;Oitir Mhòr, Càirinis, Na h-Eileanan Siar, Alba / Scotland, United Kingdom"
+SI-232-438-08,Olna Firth Inner,Parkgate,60.3598105,-1.3206999,nominatim,low,"q=Olna Firth, Shetland;Olna Firth, Voe, Shetland Islands, Alba / Scotland, United Kingdom"
+SI-896-434-08,Olna Firth Outer,Foula Wick,60.3598105,-1.3206999,nominatim,low,"q=Olna Firth, Shetland;Olna Firth, Voe, Shetland Islands, Alba / Scotland, United Kingdom"
+OI-244-365-08,Scapa Bay,Scapa Bay,58.9517743,-2.9843494,nominatim,low,"q=Scapa Bay;Scapa Bay, Kirkwall, Orkney Islands, Alba / Scotland, United Kingdom"
+LH-249-129-04,Seilebost,Seilebost Indicator,57.8654356,-6.9494431,nominatim,low,"q=Seilebost;Seilebost, Na h-Eileanan Siar, Alba / Scotland, HS3 3HP, United Kingdom"
+LH-249-129-08,Seilebost,Seilebost Indicator,57.8654356,-6.9494431,nominatim,low,"q=Seilebost;Seilebost, Na h-Eileanan Siar, Alba / Scotland, HS3 3HP, United Kingdom"
+AB-515-935-08,Sound of Gigha,Sound of Gigha Indicator,55.6810203,-5.6988254,nominatim,low,"q=Sound of Gigha;Sound of Gigha, Ardminish, Alba / Scotland, United Kingdom"
+SI-421-825-08,South Voe Mussels,South Voe Mussels,60.0736009,-1.33012,nominatim,low,"q=South Voe, Shetland;South Voe, Burra and Trondra, Bridge End, Shetland Islands, Alba / Scotland, United Kingdom"
+SI-261-444-08,South of Houss Holm,South of Houss Holm,60.0643258,-1.3249676,nominatim,low,"q=Houss, Burra, Shetland;Houss, Burra and Trondra, Shetland Islands, Alba / Scotland, United Kingdom"
+SI-373-1096-08,Stream Sound: Ux Ness,Easterdale,60.1424634,-1.185683,nominatim,low,"q=Stream Sound, Shetland;Burn of Sound, Sound, Lerwick, Shetland Islands, Alba / Scotland, ZE1 0SR, United Kingdom"
+UB-282-165-04,Traigh Mhor,Traigh Mhor,57.0227321,-7.4362198,nominatim,low,"q=Traigh Mhor;Traigh Mhòr, Àird Mhòr, Na h-Eileanan Siar, Alba / Scotland, United Kingdom"
+SI-321-462-08,Vementry South,Seggi Bight,60.3261462,-1.4570347,nominatim,medium,"q=Vementry, Shetland;Vementry, Shetland Islands, Alba / Scotland, United Kingdom"
+DG-305-1880-16,Wigtown Bay: Islands of Fleet,Fleet Bay Razors,54.8188593,-4.2244872,nominatim,low,"q=Islands of Fleet, Scotland;Islands of Fleet, Carrick, Dumfries and Galloway, Alba / Scotland, United Kingdom"
+AB-695-1507-04,Kilfinichen Bay,Kilfinichen Bay,56.37735472441474,-6.069997154258818,osgb_closure,high,n_osgb=2
+AB-695-1507-08,Kilfinichen Bay,Kilfinichen Bay,56.37735472441474,-6.069997154258818,osgb_closure,high,n_osgb=2
+HL-892-937-08,Loch Ailort,Eilean Dubh,56.86402296087173,-5.70190919422882,osgb_closure,high,n_osgb=4
+HL-118-215-08,Loch Beag,Ardnambuth,56.88621160999825,-5.742501539015901,osgb_closure,high,n_osgb=2
+AB-147-035-08,Loch Fyne: Ardkinglas Oysters,The Point,56.248549497518546,-4.963263380247957,osgb_closure,high,n_osgb=4
+AB-147-036-13,Loch Fyne: Ardkinglas Oysters,The Shore,56.248549497518546,-4.963263380247957,osgb_closure,high,n_osgb=4
+HS-157-310-08,Loch Glencoul,Kylesku,58.257190456164714,-5.001121543558185,osgb_closure,high,n_osgb=4
+HS-162-1000-08,Loch Inchard,Loch Inchard mussels,58.44438255536738,-5.016525244795647,osgb_closure,high,n_osgb=8
+HS-162-311-08,Loch Inchard,Loch Inchard - Site 1 - D. Ross,58.44438255536738,-5.016525244795647,osgb_closure,high,n_osgb=8
+HS-167-320-08,Loch Laxford,Weavers Bay,58.39988028293616,-5.081131291068741,osgb_closure,high,n_osgb=10
+HL-170-222-08,Loch Leven: Lower,Lower,56.68269519397861,-5.153759013543177,osgb_closure,high,n_osgb=4
+LH-338-720-08,Loch Roag: Eilean Teinish,Eilean Teinish,58.20652763845824,-6.901902209483776,osgb_closure,high,n_osgb=4
+LH-188-123-08,Loch Roag: Miavaig,Miavaig,58.19796694109734,-6.938376768213349,osgb_closure,high,n_osgb=4
+HL-206-1237-08,Loch Sunart,Liddesdale,56.681278823183014,-5.623934574235028,osgb_closure,high,n_osgb=5
+HL-004-202-13,Arisaig,Sgeirean Buidhe,56.90689185,-5.88027109,sepa_swpa,high,match=area_exact;sepa=Arisaig
+HL-005-204-16,Arisaig: Morar Sands,Morar Sands,56.90689185,-5.88027109,sepa_swpa,medium,match=fuzzy_unique;sepa=Arisaig
+NA-007-329-08,Arran: Lamlash Bay,Lamlash Bay,55.52265999,-5.11152871,sepa_swpa,medium,match=fuzzy_unique;sepa=Lamlash
+SI-010-2417-08,Baltasound Mussels,Baltasound Mussels South,60.75626829,-0.83343517,sepa_swpa,medium,match=fuzzy_unique;sepa=Baltasound Voe
+SI-010-395-08,Baltasound Mussels,Baltasound Harbour,60.75626829,-0.83343517,sepa_swpa,medium,match=fuzzy_unique;sepa=Baltasound Voe
+SI-324-399-08,Basta Voe Cove,Inner - Site 1 - Thomason,60.63501494,-1.0250729,sepa_swpa,high,"match=alias;sepa=Basta Voe, Yell"
+SI-324-400-08,Basta Voe Cove,Inner - Site 2 - Nisbet,60.63501494,-1.0250729,sepa_swpa,high,"match=alias;sepa=Basta Voe, Yell"
+SI-323-403-08,Basta Voe Outer,Outer,60.63501494,-1.0250729,sepa_swpa,high,"match=alias;sepa=Basta Voe, Yell"
+OI-871-2380-13,Bay of Skaill: Westray,Bay of Skaill: Westray,59.342201796907005,-2.9579412721076013,sepa_swpa,medium,match=fuzzy_unique;sepa=Bay of Skaill
+SI-633-1270-08,Clift Sound Houss,Clift Sound Houss,60.05670678,-1.31148264,sepa_swpa,medium,match=fuzzy_unique;sepa=Clift Sound
+SI-036-413-08,Clift Sound: Booth,Booth,60.05670678,-1.31148264,sepa_swpa,medium,match=fuzzy_unique;sepa=Clift Sound
+SI-035-415-08,Clift Sound: Stream Sound,Stream Sound,60.05670678,-1.31148264,sepa_swpa,medium,match=fuzzy_unique;sepa=Clift Sound
+AB-041-009-13,Colonsay,The Strand West,56.03324864,-6.257114,sepa_swpa,high,match=area_exact;sepa=Colonsay
+AB-041-1199-13,Colonsay,The Strand East,56.03324864,-6.257114,sepa_swpa,high,match=area_exact;sepa=Colonsay
+RC-884-2413-08,Cromarty Firth Mussels,Cromarty Firth Mussels,57.66815183,-4.12184297,sepa_swpa,high,match=alias;sepa=Cromarty Bay
+HS-054-239-08,Dornoch Firth,Dornoch Firth,57.86666013,-4.21857307,sepa_swpa,high,match=area_exact;sepa=Dornoch Firth
+HS-466-876-08,Dornoch Firth 2,Meikle Ferry,57.86666013,-4.21857307,sepa_swpa,medium,match=fuzzy_unique;sepa=Dornoch Firth
+LH-057-106-08,East Loch Tarbert,Sound of Scalpay,57.87693012,-6.70840025,sepa_swpa,high,match=area_exact;sepa=East Loch Tarbert
+NA-065-332-13,Fairlie,Southannan Sands,55.75100587,-4.86487956,sepa_swpa,high,match=area_exact;sepa=Fairlie
+SI-080-424-08,Gruting Voe: Braewick Voe,Braewick Voe,60.21140083,-1.5317449,sepa_swpa,medium,match=fuzzy_unique;sepa=Gruting Voe
+SI-081-425-08,Gruting Voe: Browland Voe,Browland Voe,60.21140083,-1.5317449,sepa_swpa,medium,match=fuzzy_unique;sepa=Gruting Voe
+RC-090-1616-08,Inner Loch Torridon,Dubh Aird,57.54417649,-5.58950486,sepa_swpa,high,match=alias;sepa=Upper Loch Torridon
+RC-090-245-08,Inner Loch Torridon,Ob Gorm Mor,57.54417649,-5.58950486,sepa_swpa,high,match=alias;sepa=Upper Loch Torridon
+AB-094-011-13,Islay,Loch Gruinart Craigens,55.85140734,-6.32791809,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Gruinart
+HS-103-303-13,Kyle of Tongue,Kyle of Tongue,58.51008926,-4.41079709,sepa_swpa,high,match=area_exact;sepa=Kyle of Tongue
+RC-805-2122-13,Little Loch Broom Pacific Oysters,Little Loch Broom Pacific Oysters,57.90105052,-5.37058419,sepa_swpa,high,match=area_exact;sepa=Little Loch Broom
+AB-313-709-08,Loch Creran Upper Mussels,Inner Creran,56.51962238,-5.36170091,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Creran
+AB-130-022-13,Loch Creran: Rubha Mor,Rubha Mor,56.51962238,-5.36170091,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Creran
+HL-136-219-08,Loch Eil: Fassfern,Fassfern,56.8484917,-5.25238597,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Eil
+SL-137-281-08,Loch Eishort,Drumfearn,57.1744921,-5.87106699,sepa_swpa,high,match=area_exact;sepa=Loch Eishort
+LH-357-747-08,Loch Erisort: Garbh Eilean,Garbh Eilean,58.0981104,-6.48151769,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Erisort
+LH-891-711-08,Loch Erisort: Gob Glas,Gob Glas,58.0981104,-6.48151769,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Erisort
+AB-316-030-08,Loch Etive West,Loch Etive - Spiers,56.49673406,-5.13463934,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Etive
+RC-142-250-07,Loch Ewe & Loch Thurnaig,Loch Ewe,57.80246551,-5.63347929,sepa_swpa,high,match=site_exact;sepa=Loch Ewe
+RC-142-250-08,Loch Ewe & Loch Thurnaig,Loch Ewe,57.80246551,-5.63347929,sepa_swpa,high,match=site_exact;sepa=Loch Ewe
+AB-151-039-13,Loch Fyne: Otter Ferry,Balliemore,55.81583285,-5.29856786,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Fyne
+AB-154-043-15,Loch Fyne: Stonefield,North Bay,55.81583285,-5.29856786,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Fyne
+SL-159-286-13,Loch Harport: Inner,Carbost,57.32345301,-6.37166313,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Harport
+RC-625-1233-13,Loch Kanaird,Ardmair,57.94324780663281,-5.182962719450031,sepa_swpa,high,match=area_exact;sepa=Loch Kanaird
+LH-168-113-08,Loch Leurbost,Creag an Rainich,58.13253939,-6.45730506,sepa_swpa,high,match=area_exact;sepa=Loch Leurbost
+LH-168-114-08,Loch Leurbost,Loch Leurbost,58.13253939,-6.45730506,sepa_swpa,high,match=area_exact;sepa=Loch Leurbost
+LH-168-732-08,Loch Leurbost,Eilean Mhiabhaig,58.13253939,-6.45730506,sepa_swpa,high,match=area_exact;sepa=Loch Leurbost
+LH-339-795-13,Loch Leurbost: Crosbost,Site 1 Crosbost,58.13253939,-6.45730506,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Leurbost
+AB-178-051-08,Loch Melfort,Loch Melfort,56.25320274,-5.5359046,sepa_swpa,high,match=area_exact;sepa=Loch Melfort
+LH-185-120-08,Loch Roag: Barraglom,Loch Barraglom,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-381-772-08,Loch Roag: Ceabhagh,Keava,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-186-121-08,Loch Roag: Drovinish,Loch Drovinish,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-344-697-08,Loch Roag: Eilean Chearstaigh,Eilean Scarastaigh,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-344-791-08,Loch Roag: Eilean Chearstaigh,Buckle Point,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-187-122-08,Loch Roag: Linngeam,Linngeam,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-187-698-08,Loch Roag: Linngeam,Hacklete,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-187-699-08,Loch Roag: Linngeam,Cliatasay,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+LH-189-124-08,Loch Roag: Torranish,Loch Torranish,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+DG-191-175-12,Loch Ryan,Loch Ryan,54.95844993,-5.04221698,sepa_swpa,high,match=area_exact;sepa=Loch Ryan
+AB-314-054-08,Loch Scridain East,Aird Fada,56.35512646,-6.10992511,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Scridain
+LH-193-126-08,Loch Seaforth,Loch Seaforth,57.97027505,-6.71647042,sepa_swpa,high,match=area_exact;sepa=Loch Seaforth
+SL-195-291-07,Loch Sligachan,Loch Sligachan,57.31552764,-6.12072426,sepa_swpa,high,match=area_exact;sepa=Loch Sligachan
+SL-195-291-08,Loch Sligachan,Loch Sligachan,57.31552764,-6.12072426,sepa_swpa,high,match=area_exact;sepa=Loch Sligachan
+AB-200-057-08,Loch Spelve: North,Site 1,56.38617242,-5.7382708,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Spelve
+AB-200-059-08,Loch Spelve: North,Rhuba na Faing,56.38617242,-5.7382708,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Spelve
+AB-200-1915-08,Loch Spelve: North,Ardura,56.38617242,-5.7382708,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Spelve
+AB-202-059-08,Loch Spelve: Rhuba na Faing,Rhuba na Faing,56.38617242,-5.7382708,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Spelve
+LH-203-127-08,Loch Stockinish,Loch Stockinish,57.81242422,-6.83600416,sepa_swpa,high,match=area_exact;sepa=Loch Stockinish
+AB-205-062-08,Loch Striven,Fearna,55.92854052,-5.06907217,sepa_swpa,high,match=area_exact;sepa=Loch Striven
+AB-205-063-08,Loch Striven,Troustan,55.92854052,-5.06907217,sepa_swpa,high,match=area_exact;sepa=Loch Striven
+SI-216-430-08,Mid Yell Voe,Camb,60.602829229497054,-1.053795451272822,sepa_swpa,high,match=area_exact;sepa=Mid Yell Voe
+SI-797-2083-08,Mid Yell Voe East,Bunya Sand,60.602829229497054,-1.053795451272822,sepa_swpa,medium,match=fuzzy_unique;sepa=Mid Yell Voe
+SI-230-453-08,North Uyea,North,57.62194297,-7.12856305,sepa_swpa,medium,match=fuzzy_unique;sepa=North Uist
+SI-232-435-08,Olna Firth Inner,Inner,56.76993282780515,-5.190451421711468,sepa_swpa,medium,match=fuzzy_unique;sepa=Inner Loch Linnhe
+SI-523-919-08,Ronas Voe East,Clifts,60.52564473,-1.47921547,sepa_swpa,high,match=alias;sepa=Ronas Voe Area
+SI-242-443-08,Sandsound Voe,Sandsound Voe,60.23241081,-1.37087683,sepa_swpa,high,match=area_exact;sepa=Sandsound Voe
+UB-537-966-08,South Uist 1,Loch Skipport East,57.33306677,-7.23089131,sepa_swpa,medium,match=fuzzy_unique;sepa=South Uist
+SI-273-467-08,Stromness Voe,Burra Holm,60.19037583,-1.30891805,sepa_swpa,high,match=area_exact;sepa=Stromness Voe
+SI-288-455-08,Vaila Sound: East of Linga and Galtaskerry,East of Linga,60.21495422,-1.58160196,sepa_swpa,medium,match=fuzzy_unique;sepa=Vaila Sound
+SI-289-458-08,Vaila Sound: Riskaness,Riskaness,60.21495422,-1.58160196,sepa_swpa,medium,match=fuzzy_unique;sepa=Vaila Sound
+SI-297-469-08,Weisdale Voe,North Flotta,60.21225999,-1.31766399,sepa_swpa,high,match=area_exact;sepa=Weisdale Voe
+LH-829-2215-08,West Loch Roag - Gob Sgrithir,Gob Sgrithir,58.19503091,-6.90804094,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Roag
+AB-299-084-13,West Loch Tarbert: Loup Bay,Loup Bay,55.80300154,-5.50498033,sepa_swpa,medium,match=fuzzy_unique;sepa=Loch Tarbert
