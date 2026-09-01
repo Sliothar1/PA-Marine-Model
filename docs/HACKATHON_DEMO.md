@@ -162,23 +162,24 @@ Other caveats: irregular HAB sampling (missing week ≠ true negative); OISST 0.
 | 0–2 h | Clone, `pip install -e ".[dev]"`, fixture + `demo_snapshot.py`, skim this doc + `june2023_case_study.md` |
 | 2–6 h | Deck: problem → Ireland/Scotland metrics → June 2023 figures → honest limits |
 | 6–12 h | Live demo path: snapshot → open three PNGs → optional `evaluate.py --feature-mode strong` if parquet present |
-| Next (if time) | Freshwater discharge join (below); toxin/`habs_status` story; England/Wales transfer (`evaluate_uk_dino.py`) |
+| Next (if time) | Ablate river Q features (see §7); toxin/`habs_status` story; England/Wales transfer (`evaluate_uk_dino.py`) |
 
 ---
 
-## 7. Next — EPA / OPW Corrib discharge (not ingested yet)
+## 7. Freshwater — OPW Corrib / Galway Bay discharge (**ingested 2026-09-01**)
 
-No reliable **bulk open CSV** was available for a quick automated pull in this pass (portals are interactive HTML / IP-gated archives). Documented entry points for a follow-on ingest:
+EPA HydroNet remains interactive-only (data.gov.ie → SPA). **OPW Hydro-Data JSON archives worked** without a browser:
 
-| Source | URL | Notes |
-| --- | --- | --- |
-| EPA HydroNet (WISKI) | https://epawebapp.epa.ie/hydronet/ | Local-authority level/flow; map → station → CSV download. Overview: https://www.epa.ie/our-services/monitoring--assessment/freshwater--marine/rivers/water-level-and-flow-data/ |
-| data.gov.ie — Water Levels and Flow | https://data.gov.ie/dataset/water-levels-and-flow | Points at HydroNet; CC-BY 4.0 |
-| OPW Hydro-Data (processed discharge archive) | https://waterlevel.ie/hydro-data/ | Full period-of-record discharge estimates; real-time site is only ~5-week window |
-| data.gov.ie — Hydrodata discharge (high-res) | https://data.gov.ie/dataset/hydrodata-discharge-complete-high-res-data | Landing → Hydro-Data; contact `waterlevel@opw.ie` for automated access / IP registration |
-| Realtime levels (not full archive) | https://waterlevel.ie/ | OPW network; FAQ https://waterlevel.ie/faq/ |
+`https://waterlevel.ie/hydro-data/data/internet/stations/0/{station}/{Q|S}/year.json` (`WEB.Day.Mean`).
 
-**Hackathon next step:** pick Corrib / Galway Bay outflow stations on HydroNet + Hydro-Data, export daily mean discharge for 2015–2024, join ISO-week means to Connemara HAB stations, ablate vs strong OISST (expect freshwater pulse / salinity proxy story — validate before claiming skill).
+| Artifact | Path |
+| --- | --- |
+| Report | `data/processed/rivers_report.md` |
+| HAB join note | `data/processed/rivers_hab_join_note.md` |
+| Primary ISO-week Q (30061, 31075, 30031) | `data/processed/rivers_week_primary_Q.csv` |
+| Raw archives + per-station daily | `data/raw/rivers/` (gitignored) |
+
+**Primary proxies for Connemara HAB:** Owenboliskey **31075** (local coastal) + Corrib outflow **30061** Wolfe Tone (bay-scale). Join on `iso_year`+`iso_week` as regional columns — see join note. Next: ablate vs strong OISST (validate before claiming skill).
 
 ---
 

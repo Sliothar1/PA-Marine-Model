@@ -63,3 +63,8 @@ data/models/
 !data/processed/june2023_case_study_hab_weekly.csv
 !data/processed/figures/
 !data/processed/figures/*.png
+!data/processed/rivers_report.md
+!data/processed/rivers_hab_join_note.md
+!data/processed/rivers_hab_station_map.csv
+!data/processed/rivers_stations_selected.csv
+!data/processed/rivers_week_primary_Q.csv
