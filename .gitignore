@@ -57,3 +57,9 @@ data/models/
 !data/processed/era5_wind_dino_report.md
 !data/processed/metrics_dino_era5_wind.json
 !data/processed/metrics_dino_era5_strong.json
+!data/processed/june2023_case_study.md
+!data/processed/june2023_case_study_summary.csv
+!data/processed/june2023_case_study_daily.csv
+!data/processed/june2023_case_study_hab_weekly.csv
+!data/processed/figures/
+!data/processed/figures/*.png

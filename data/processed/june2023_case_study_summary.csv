@@ -1,0 +1,19 @@
+metric,value,unit,note
+crw_june_mean_frac_mhw,0.9644,fraction,Irish bbox ocean pixels CRW cat>=1
+crw_june_peak_frac_mhw,1.0,fraction,peak date 2023-06-19
+crw_june_peak_mean_cat,2.765,category,peak mean_cat date 2023-06-20; 0=none … 5=beyond extreme
+crw_june_max_cat_any_day,5.0,category,Hobday CRW category
+mace_june_mean_temp_c,15.976,°C,compass_mace_head SBE
+mace_june_mean_salinity,34.417,PSU,
+mace_june_mean_do_mg_l,8.049,mg/L,
+spiddal_june_mean_temp_c,12.856,°C,spiddal_obs_ctd ~20 m; n_days=30
+spiddal_june_max_temp_c,17.652,°C,
+met_june_mean_wdsp_kt,11.093,knots,Met Éireann dly275 Mace Head
+met_june_mean_glorad,2106.9,J/cm²,global radiation
+dino_rosmuc_max_count,320.0,cells/L,May–Aug 2023 station-weeks
+dino_mannin_max_count,120.0,cells/L,
+dino_gubbaros_max_count,80.0,cells/L,
+dino_cliffden_max_count,80.0,cells/L,
+dino_exceedance_weeks_connemara,2.0,weeks,threshold >=100 cells/L
+lehanagh_coverage_starts,2024.0,year,no 2023 overlap — gap
+imi_conn_roms_june2023,0.0,available,archive not on public rolling ERDDAP/THREDDS
