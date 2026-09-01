@@ -192,8 +192,17 @@ python scripts/ingest_smc_hab.py
 Builds SIN × ISO-week panels (`smc_station_week_panel.parquet`,
 `smc_toxin_station_week_panel.parquet`) with Dinophysis ≥100 / Pseudo-nitzschia ≥50k /
 Alexandrium ≥40 exceedance (and DSP/ASP/PSP toxin flags). Joins `smc_areas` on `Sin`.
-**No lat/lon in the export** — geocode Sin→coords before SST join. See
-`data/processed/smc_hab_report.md` and `smc_note.md`.
+
+Geocode SINs (SEPA SWPA / OSGB closures / Nominatim) then train a Dinophysis nowcast on
+**high+medium** confidence sites only with nearest-ocean NOAA OISST + Hobday MHW + Irish
+**strong** feature set (no ERA5 required):
+
+```bash
+python scripts/geocode_smc_sites.py
+python scripts/train_scotland_dino.py
+```
+
+See `data/processed/smc_hab_report.md`, `smc_geocode_report.md`, `scotland_dino_report.md`.
 
 ## England & Wales labels (parallel panel)
 

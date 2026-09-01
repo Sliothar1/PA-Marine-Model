@@ -42,3 +42,5 @@ data/models/
 !data/processed/sepa_swpa_centroids.csv
 !data/processed/smc_geocode_summary.json
 !data/processed/smc_geocode_report.md
+!data/processed/scotland_dino_metrics.json
+!data/processed/scotland_dino_report.md

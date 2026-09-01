@@ -51,14 +51,27 @@ def download_oisst_point(
     return df[["date", "sst", "anom", "request_lat", "request_lon", "grid_lat", "grid_lon"]]
 
 
-def download_oisst_irish_bbox_years(
+def download_oisst_bbox_years(
     cfg: dict[str, Any],
     t0: str,
     t1: str,
+    *,
+    lat_min: float,
+    lat_max: float,
+    lon360_min: float,
+    lon360_max: float,
+    label: str = "bbox",
 ) -> pd.DataFrame:
-    """Tight Irish OISST cube: 51–56N, 349–355E (lon 0–360), year chunks."""
+    """OISST cube over a lat × lon360 window, year chunks (ERDDAP griddap)."""
     sst = cfg["sst"]
     z = sst.get("zlev", 0.0)
+    # snap bounds onto the 0.25° OISST grid
+    la0, la1 = snap_oisst(lat_min), snap_oisst(lat_max)
+    lo0, lo1 = snap_oisst(lon360_min), snap_oisst(lon360_max)
+    if la0 > la1:
+        la0, la1 = la1, la0
+    if lo0 > lo1:
+        lo0, lo1 = lo1, lo0
     y0 = pd.Timestamp(t0).year
     y1 = pd.Timestamp(t1).year
     frames = []
@@ -67,11 +80,11 @@ def download_oisst_irish_bbox_years(
         b = min(pd.Timestamp(t1), pd.Timestamp(f"{y}-12-31")).strftime("%Y-%m-%d")
         q = (
             f"{sst['variable']}[({a}):1:({b})][({z}):1:({z})]"
-            f"[(51.125):1:(55.875)][(349.125):1:(354.875)]"
+            f"[({la0}):1:({la1})][({lo0}):1:({lo1})]"
             f",{sst['anomaly_variable']}[({a}):1:({b})][({z}):1:({z})]"
-            f"[(51.125):1:(55.875)][(349.125):1:(354.875)]"
+            f"[({la0}):1:({la1})][({lo0}):1:({lo1})]"
         )
-        print(f"OISST bbox year {y} {a}..{b}")
+        print(f"OISST {label} year {y} {a}..{b} lat[{la0},{la1}] lon360[{lo0},{lo1}]")
         last_err: Exception | None = None
         df = None
         for attempt in range(5):
@@ -100,6 +113,153 @@ def download_oisst_irish_bbox_years(
         }
     )
     return cube[["date", "sst", "anom", "grid_lat", "grid_lon"]]
+
+
+def download_oisst_irish_bbox_years(
+    cfg: dict[str, Any],
+    t0: str,
+    t1: str,
+) -> pd.DataFrame:
+    """Tight Irish OISST cube: 51–56N, 349–355E (lon 0–360), year chunks."""
+    return download_oisst_bbox_years(
+        cfg,
+        t0,
+        t1,
+        lat_min=51.125,
+        lat_max=55.875,
+        lon360_min=349.125,
+        lon360_max=354.875,
+        label="irish",
+    )
+
+
+def map_stations_to_nearest_oisst_ocean(
+    stations: pd.DataFrame,
+    cube: pd.DataFrame,
+    *,
+    max_dist_deg: float = 1.0,
+) -> pd.DataFrame:
+    """Map each location_id to the nearest OISST ocean pixel present in `cube`.
+
+    Coastal snaps often land on land (NaN SST); use any finite-SST pixel in the cube
+    as the ocean mask (typically one day is enough once the cube is loaded).
+    """
+    import numpy as np
+
+    uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]].copy()
+    # ocean = pixels with at least one finite SST in the cube
+    pix = (
+        cube.loc[np.isfinite(cube["sst"].to_numpy(dtype=float)), ["grid_lat", "grid_lon"]]
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
+    if pix.empty:
+        return pd.DataFrame(
+            columns=[
+                "location_id",
+                "latitude",
+                "longitude",
+                "grid_lat",
+                "grid_lon",
+                "dist_deg",
+            ]
+        )
+    lat_g = pix["grid_lat"].to_numpy(dtype=float)
+    lon_g = pix["grid_lon"].to_numpy(dtype=float)
+    rows = []
+    for row in uniq.itertuples(index=False):
+        lon360 = lon_to_oisst_360(float(row.longitude))
+        dist2 = (lat_g - float(row.latitude)) ** 2 + (lon_g - lon360) ** 2
+        j = int(np.argmin(dist2))
+        dist = float(np.sqrt(dist2[j]))
+        if dist > max_dist_deg:
+            print(
+                f"OISST skip {row.location_id}: nearest ocean pixel {dist:.3f}° "
+                f"> max_dist_deg={max_dist_deg}"
+            )
+            continue
+        rows.append(
+            {
+                "location_id": row.location_id,
+                "latitude": float(row.latitude),
+                "longitude": float(row.longitude),
+                "grid_lat": float(lat_g[j]),
+                "grid_lon": float(lon_g[j]),
+                "dist_deg": dist,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def download_oisst_for_stations_nearest_ocean(
+    stations: pd.DataFrame,
+    cfg: dict[str, Any],
+    t0: str,
+    t1: str,
+    *,
+    pad_deg: float = 0.5,
+    max_dist_deg: float = 1.0,
+    label: str = "stations",
+) -> pd.DataFrame:
+    """Download an OISST bbox covering stations, then extract nearest-ocean pixels.
+
+    Preferred for Scotland / coastal sites where naive 0.25° snaps often hit land.
+    """
+    uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]]
+    if uniq.empty:
+        return pd.DataFrame()
+    lat_min = float(uniq["latitude"].min()) - pad_deg
+    lat_max = float(uniq["latitude"].max()) + pad_deg
+    lon360 = uniq["longitude"].map(lambda x: lon_to_oisst_360(float(x)))
+    lon360_min = float(lon360.min()) - pad_deg
+    lon360_max = float(lon360.max()) + pad_deg
+    cube = download_oisst_bbox_years(
+        cfg,
+        t0,
+        t1,
+        lat_min=lat_min,
+        lat_max=lat_max,
+        lon360_min=lon360_min,
+        lon360_max=lon360_max,
+        label=label,
+    )
+    if cube.empty:
+        return pd.DataFrame()
+    # Ocean mask = pixels with finite SST on the best-covered day in the cube
+    import numpy as np
+
+    tmp = cube.assign(_ok=np.isfinite(cube["sst"].to_numpy(dtype=float)))
+    cov = tmp.groupby("date")["_ok"].mean()
+    if cov.empty or float(cov.max()) <= 0:
+        return pd.DataFrame()
+    best_day = cov.idxmax()
+    day = cube.loc[cube["date"] == best_day]
+    pixel_map = map_stations_to_nearest_oisst_ocean(uniq, day, max_dist_deg=max_dist_deg)
+    if pixel_map.empty:
+        return pd.DataFrame()
+    print(
+        f"OISST {label}: {len(pixel_map)} stations → "
+        f"{pixel_map.groupby(['grid_lat','grid_lon']).ngroups} ocean pixels "
+        f"(median dist {pixel_map['dist_deg'].median():.3f}°)"
+    )
+    out = cube.merge(
+        pixel_map[["location_id", "latitude", "longitude", "grid_lat", "grid_lon", "dist_deg"]],
+        on=["grid_lat", "grid_lon"],
+        how="inner",
+    )
+    out = out.rename(columns={"latitude": "request_lat", "longitude": "request_lon"})
+    return out[
+        [
+            "date",
+            "sst",
+            "anom",
+            "grid_lat",
+            "grid_lon",
+            "location_id",
+            "request_lat",
+            "request_lon",
+        ]
+    ]
 
 
 def _download_oisst_for_stations(
