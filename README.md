@@ -241,3 +241,15 @@ Station-pixel Copernicus IBI extracts (`mlotst`, `rsntds`, surface `kd`/`zeu`; o
 
 See `data/processed/ibi_light_mhw_report.md` for calibrated test PR-AUC ablations vs strong OISST.
 
+## Scout P0 ingest (2026-09-01)
+
+New local datasets (do not re-pull OISST/OSTIA/IBI/`habs_phyto`):
+
+| Source | Script / artifacts |
+| --- | --- |
+| NOAA CRW 5km MHW Watch (STAR NC; PacIOOS `mhw_5km` unavailable) | `scripts/ingest_scout_p0.py` → `data/processed/crw_mhw_ireland_daily*.parquet/csv` |
+| SmartBay CTD (`smartbay_obs_ctd_sbe16`, `spiddal_obs_ctd`) | daily T/S/DO parquets under `data/processed/` |
+| Met Éireann Mace Head wind + `glorad` | `clidata.met.ie` CSVs → `mace_head_met_daily.*` |
+| MI Connemara ROMS `IMI_CONN_3D` | recent ERDDAP surface subset; June 2023 archive **not** on public rolling THREDDS |
+
+See `data/processed/scout_ingest_report.md` for sizes, gaps, and June 2023 MHW snapshot notes.

@@ -1,0 +1,170 @@
+{
+  "started_utc": "2026-09-01T19:58:09.688694+00:00",
+  "crw_mhw": {
+    "requested_days": 1096,
+    "ok_days": 1096,
+    "fail_days": 0,
+    "start": "2022-01-01",
+    "end": "2024-12-31",
+    "ireland_parquet": "/workspace/pa-marine-model/data/processed/crw_mhw_ireland_daily.parquet",
+    "bytes_ireland_parquet": 2612316,
+    "june_2023_ok_days": 30,
+    "product_doc": "/workspace/pa-marine-model/data/raw/crw_mhw/product.json",
+    "repair_2024h2": {
+      "requested_days": 184,
+      "ok_days": 184,
+      "fail_days": 0,
+      "start": "2024-07-01",
+      "end": "2024-12-31",
+      "ireland_parquet": "/workspace/pa-marine-model/data/processed/crw_mhw_ireland_daily.parquet",
+      "bytes_ireland_parquet": 383390,
+      "june_2023_ok_days": 0,
+      "product_doc": "/workspace/pa-marine-model/data/raw/crw_mhw/product.json",
+      "failures_sample": [],
+      "daily_summary_rows": 184
+    },
+    "daily_summary_rows": 1096,
+    "failures_sample": []
+  },
+  "smartbay": {
+    "datasets": {
+      "smartbay_obs_ctd_sbe16": {
+        "status": "ok",
+        "rows_raw": 118975,
+        "days": 146,
+        "time_min": "2021-10-06T06:20:00Z",
+        "time_max": "2023-05-08T13:20:54Z",
+        "raw_csv_bytes": 9641875,
+        "daily_parquet_bytes": 9503,
+        "note": "Processed CTD+O2; coverage ends 2023-05-08 (no June 2023)."
+      },
+      "spiddal_obs_ctd": {
+        "status": "ok",
+        "rows_raw": 5820818,
+        "days": 787,
+        "time_min": "2022-04-22T14:49:11Z",
+        "time_max": "2026-09-01T19:54:16Z",
+        "raw_csv_bytes": 368787638,
+        "daily_parquet_bytes": 29438,
+        "june_2023_days": 30,
+        "june_2023_temp_mean": 12.85585878313736,
+        "note": "NRT/raw SmartBay Observatory CTD; includes June 2023."
+      }
+    }
+  },
+  "met_eireann": {
+    "downloads": {
+      "daily": {
+        "status": "cached",
+        "bytes": 743442,
+        "path": "/workspace/pa-marine-model/data/raw/met_eireann/mace_head_daily_dly275.csv"
+      },
+      "hourly": {
+        "status": "cached",
+        "bytes": 13356211,
+        "path": "/workspace/pa-marine-model/data/raw/met_eireann/mace_head_hourly_hly275.csv"
+      },
+      "monthly": {
+        "status": "cached",
+        "bytes": 13920,
+        "path": "/workspace/pa-marine-model/data/raw/met_eireann/mace_head_monthly_mly275.csv"
+      },
+      "key_daily": {
+        "status": "cached",
+        "bytes": 3088,
+        "path": "/workspace/pa-marine-model/data/raw/met_eireann/KeyDaily.txt"
+      },
+      "key_monthly": {
+        "status": "ok",
+        "bytes": 505,
+        "path": "/workspace/pa-marine-model/data/raw/met_eireann/KeyMonthly.txt",
+        "url": "https://www.met.ie/cms/assets/uploads/2018/05/KeyMonthly.txt"
+      }
+    },
+    "daily_parsed": {
+      "status": "ok",
+      "rows": 8336,
+      "date_min": "2003-08-14",
+      "date_max": "2026-07-31",
+      "parquet_bytes": 162038,
+      "june_2023_days": 30,
+      "june_2023_wdsp_mean_kt": 11.093333333333335,
+      "june_2023_glorad_mean": 2106.9
+    },
+    "hourly_daily_parsed": {
+      "status": "ok",
+      "hourly_rows": 201336,
+      "daily_rows": 8390,
+      "time_min": "2003-08-13 01:00:00",
+      "time_max": "2026-08-01 00:00:00",
+      "parquet_bytes": 117103
+    },
+    "meta": {
+      "station": "Mace Head",
+      "station_no": 275,
+      "lat": 53.326,
+      "lon": -9.901,
+      "height_m": 21,
+      "opendata2_met_ie": "https://opendata2.met.ie/ (landing page only; historical CSVs via clidata.met.ie)",
+      "data_gov_ie": {
+        "mace-head-daily-data": "https://data.gov.ie/dataset/mace-head-daily-data",
+        "mace-head-hourly-data": "https://data.gov.ie/dataset/mace-head-hourly-data",
+        "mace-head-monthly-data": "https://data.gov.ie/dataset/mace-head-monthly-data"
+      },
+      "urls": {
+        "daily": "https://clidata.met.ie/cli/climate_data/webdata/dly275.csv",
+        "hourly": "https://clidata.met.ie/cli/climate_data/webdata/hly275.csv",
+        "monthly": "https://clidata.met.ie/cli/climate_data/webdata/mly275.csv",
+        "key_daily": "https://www.met.ie/cms/assets/uploads/2018/05/KeyDaily.txt",
+        "key_monthly": "https://www.met.ie/cms/assets/uploads/2018/05/KeyMonthly.txt"
+      },
+      "wind_fields_daily": [
+        "wdsp",
+        "hm",
+        "ddhm",
+        "hg"
+      ],
+      "radiation_fields_daily": [
+        "glorad"
+      ],
+      "wind_fields_hourly": [
+        "wdsp",
+        "wddir",
+        "wwdsp",
+        "wdur"
+      ]
+    }
+  },
+  "imi_conn": {
+    "info": {
+      "erddap_dataset": "IMI_CONN_3D",
+      "erddap_info": "https://erddap.marine.ie/erddap/info/IMI_CONN_3D/index.html",
+      "erddap_sourceUrl": "http://milas.marine.ie/thredds/dodsC/IMI-CONN_AGG",
+      "thredds_paths": {
+        "IMI-CONN_AGG": "http://milas.marine.ie/thredds/dodsC/IMI-CONN_AGG",
+        "COMBINED_AGGREGATION": "http://milas.marine.ie/thredds/dodsC/IMI_ROMS_HYDRO/CONNEMARA_250M_20L_1H/COMBINED_AGGREGATION",
+        "ANALYSIS_catalog": "http://milas.marine.ie/thredds/catalog/IMI_ROMS_HYDRO/CONNEMARA_NATIVE_250M_20L_1H/ANALYSIS/catalog.xml",
+        "ANALYSIS_fileServer_pattern": "http://milas.marine.ie/thredds/fileServer/IMI_ROMS_HYDRO/CONNEMARA_NATIVE_250M_20L_1H/ANALYSIS/CONN_YYYYMMDDHH_AN.nc",
+        "native_aggregate": "http://milas.marine.ie/thredds/dodsC/connemara_native/connemara_native_aggregate.nc"
+      },
+      "june_2023_status": "Not present in public rolling aggregates (IMI-CONN_AGG / COMBINED ~Aug\u2013Sep 2026 only; ANALYSIS catalog scan currently lists ~2026-08 files ~49 MB/hour). Full June 2023 archive deferred \u2014 use THREDDS paths above when MI extends retention."
+    },
+    "recent": {
+      "status": "ok",
+      "time_coverage_start": "2026-08-27T00:00:00Z",
+      "time_coverage_end": "2026-09-04T00:00:00Z",
+      "rows": 25344,
+      "days": 9,
+      "raw_csv_bytes": 2200410,
+      "parquet_bytes": 213698
+    },
+    "analysis_catalog": {
+      "status": "ok",
+      "n_files": 504,
+      "first": "IMI_ROMS_HYDRO/CONNEMARA_NATIVE_250M_20L_1H/ANALYSIS/CONN_2026080501_AN.nc",
+      "last": "IMI_ROMS_HYDRO/CONNEMARA_NATIVE_250M_20L_1H/ANALYSIS/CONN_2026082600_AN.nc",
+      "bytes": 169471
+    }
+  },
+  "finished_utc": "2026-09-01T19:58:09.688804+00:00"
+}
