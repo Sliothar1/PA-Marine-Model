@@ -213,3 +213,15 @@ python scripts/evaluate_uk_dino.py
 
 See `data/processed/uk_dino_report.md` and `uk_dino_metrics.json`.
 
+## IBI physics / light + richer MHW (Dinophysis)
+
+Station-pixel Copernicus IBI extracts (`mlotst`, `rsntds`, surface `kd`/`zeu`; optional SSS/currents) plus continuous Hobday intensity features.
+
+```bash
+.venv/bin/python scripts/download_ibi.py --groups mlotst,rsntds,optics
+.venv/bin/python scripts/enrich_mhw_ibi.py --ibi-in data/raw/ibi_daily_mld_light.parquet
+.venv/bin/python scripts/dino_ibi_light_mhw.py
+```
+
+See `data/processed/ibi_light_mhw_report.md` for calibrated test PR-AUC ablations vs strong OISST.
+

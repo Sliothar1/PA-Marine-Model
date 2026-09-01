@@ -35,3 +35,6 @@ data/models/
 !data/processed/smc_hab_report.md
 !data/processed/smc_closures.csv
 !data/processed/smc_closures_note.md
+!data/processed/ibi_light_mhw_report.md
+!data/processed/metrics_dino_ibi.json
+!data/processed/ibi_ablation_metrics.json

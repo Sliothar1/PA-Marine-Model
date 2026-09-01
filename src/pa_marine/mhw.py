@@ -8,6 +8,14 @@ Definition used here:
 - Intensity on a day is SST minus the seasonal *mean* climatology (Hobday 2016).
 - Duration = event length in days; cumulative intensity = sum of daily intensities
   while in an event (0 if not in MHW).
+
+Richer continuous intensity (added for Dinophysis ablations):
+- mhw_intensity: daily intensity while in event (else 0)
+- mhw_max_intensity: running max intensity within the current event
+- mhw_i_ratio: (SST - clim) / (thresh - clim); Hobday category scale
+- mhw_category: 0 outside event; I–IV while in event (Hobday 2018)
+- days_since_mhw: 0 in event; days since last MHW day otherwise
+- ssta_pctile: empirical percentile of today's SST among DOY-window climatology samples
 """
 from __future__ import annotations
 
@@ -33,6 +41,27 @@ def _doy_climatology(sst: np.ndarray, doy: np.ndarray, window: int, q: float | N
     return out
 
 
+def _doy_sst_percentile(sst: np.ndarray, doy: np.ndarray, window: int) -> np.ndarray:
+    """Empirical percentile (0–100) of each day's SST vs DOY-window climatology pool."""
+    n = len(sst)
+    out = np.full(n, np.nan)
+    half = window // 2
+    pools: dict[int, np.ndarray] = {}
+    for d in range(1, 367):
+        days = np.arange(d - half, d + half + 1)
+        days = ((days - 1) % 366) + 1
+        mask = np.isin(doy, days) & np.isfinite(sst)
+        pools[d] = sst[mask] if np.any(mask) else np.array([], dtype=float)
+    for i in range(n):
+        if not np.isfinite(sst[i]):
+            continue
+        pool = pools[int(doy[i])]
+        if pool.size == 0:
+            continue
+        out[i] = 100.0 * float(np.mean(pool <= sst[i]))
+    return out
+
+
 def detect_mhw(
     dates: pd.Series,
     sst: pd.Series,
@@ -41,10 +70,10 @@ def detect_mhw(
     percentile: float = 90.0,
     doy_window: int = 11,
 ) -> pd.DataFrame:
-    """Return daily frame with sst, clim, thresh, ssta, in_mhw, duration, cum_intensity."""
+    """Return daily frame with sst, clim, thresh, ssta, in_mhw, duration, cum_intensity + rich intensity."""
     d = pd.to_datetime(pd.Series(list(dates)), utc=True)
-    d = d.dt.tz_convert('UTC').dt.tz_localize(None).dt.normalize()
-    df = pd.DataFrame({'date': d, 'sst': pd.to_numeric(pd.Series(list(sst)), errors='coerce')})
+    d = d.dt.tz_convert("UTC").dt.tz_localize(None).dt.normalize()
+    df = pd.DataFrame({"date": d, "sst": pd.to_numeric(pd.Series(list(sst)), errors="coerce")})
     df = df.sort_values("date").drop_duplicates("date")
     full = pd.DataFrame({"date": pd.date_range(df["date"].min(), df["date"].max(), freq="D")})
     df = full.merge(df, on="date", how="left")
@@ -80,6 +109,9 @@ def detect_mhw(
     duration = np.zeros(n, dtype=float)
     cum_int = np.zeros(n, dtype=float)
     in_mhw = np.zeros(n, dtype=int)
+    intensity = np.zeros(n, dtype=float)
+    max_int = np.zeros(n, dtype=float)
+    category = np.zeros(n, dtype=float)
     i = 0
     while i < n:
         if not in_event[i]:
@@ -90,13 +122,48 @@ def detect_mhw(
             j += 1
         length = j - i
         if length >= min_duration:
-            intens = np.nansum(ssta[i:j])
+            intens_slice = np.where(np.isfinite(ssta[i:j]), ssta[i:j], 0.0)
             in_mhw[i:j] = 1
             duration[i:j] = np.arange(1, length + 1)
-            # running cumulative intensity within event
-            running = np.nancumsum(np.where(np.isfinite(ssta[i:j]), ssta[i:j], 0.0))
+            running = np.nancumsum(intens_slice)
             cum_int[i:j] = running
+            intensity[i:j] = intens_slice
+            # running max within event
+            run_max = np.maximum.accumulate(intens_slice)
+            max_int[i:j] = run_max
+            # Hobday 2018 categories from i_ratio vs (thresh - clim)
+            delta = thresh[i:j] - clim[i:j]
+            with np.errstate(divide="ignore", invalid="ignore"):
+                ratio = np.where((np.isfinite(delta) & (delta > 1e-6)), intens_slice / delta, np.nan)
+            cat = np.zeros(length, dtype=float)
+            cat[(ratio >= 1) & (ratio < 2)] = 1
+            cat[(ratio >= 2) & (ratio < 3)] = 2
+            cat[(ratio >= 3) & (ratio < 4)] = 3
+            cat[ratio >= 4] = 4
+            # if somehow in event but ratio < 1 (gap fill), treat as cat I
+            cat[(in_mhw[i:j] == 1) & (cat == 0)] = 1
+            category[i:j] = cat
         i = j
+
+    # days since last MHW day (0 while in event)
+    days_since = np.full(n, np.nan)
+    last = -10_000
+    for t in range(n):
+        if in_mhw[t] == 1:
+            days_since[t] = 0.0
+            last = t
+        elif last >= 0:
+            days_since[t] = float(t - last)
+
+    delta_full = thresh - clim
+    with np.errstate(divide="ignore", invalid="ignore"):
+        i_ratio = np.where(
+            np.isfinite(ssta) & np.isfinite(delta_full) & (delta_full > 1e-6),
+            ssta / delta_full,
+            np.nan,
+        )
+
+    ssta_pctile = _doy_sst_percentile(sst_a, doy, doy_window)
 
     df["clim"] = clim
     df["thresh"] = thresh
@@ -104,6 +171,12 @@ def detect_mhw(
     df["in_mhw"] = in_mhw
     df["mhw_duration"] = duration
     df["mhw_cum_intensity"] = cum_int
+    df["mhw_intensity"] = intensity
+    df["mhw_max_intensity"] = max_int
+    df["mhw_i_ratio"] = i_ratio
+    df["mhw_category"] = category
+    df["days_since_mhw"] = days_since
+    df["ssta_pctile"] = ssta_pctile
     return df
 
 

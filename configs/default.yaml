@@ -112,3 +112,30 @@ paths:
   smc_phyto_panel: data/processed/smc_station_week_panel.parquet
   smc_toxin_panel: data/processed/smc_toxin_station_week_panel.parquet
   smc_areas: data/processed/smc_areas.csv
+  raw_ibi: data/raw/ibi_daily.parquet
+  mhw_enriched: data/processed/mhw_daily_enriched.parquet
+  joined_ibi: data/processed/joined_features_ibi.parquet
+  metrics_ibi: data/processed/metrics_dino_ibi.json
+  ibi_report: data/processed/ibi_light_mhw_report.md
+  raw_era5_stations: data/raw/era5_wind_stations.parquet
+  joined_era5: data/processed/joined_features_era5.parquet
+
+# IBI multi-year physics + BGC optics (Copernicus). Station-pixel extracts preferred.
+ibi:
+  service: timeseries
+  t0: "2002-01-01"
+  t1: "2026-05-19"
+  product_phy: IBI_MULTIYEAR_PHY_005_002
+  product_bgc: IBI_MULTIYEAR_BGC_005_003
+
+# ERA5 10 m wind (CDS daily statistics). Credentials: ~/.cdsapirc (never commit).
+era5:
+  dataset: derived-era5-single-levels-daily-statistics
+  t0: "2002-01-01"
+  t1: "2026-08-25"
+  variables:
+    - 10m_u_component_of_wind
+    - 10m_v_component_of_wind
+  include_msl: false
+  # CDS area = [N, W, S, E]
+  area: [56.0, -11.0, 51.0, -5.0]

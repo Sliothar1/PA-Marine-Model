@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "best_mode": "strong_oisst",
+    "n_features": 9,
+    "calibration": "auto"
+  },
+  "y_dinophysis_nowcast": {
+    "lightgbm_test": {
+      "n": 14270,
+      "prevalence": 0.05178696566222845,
+      "pr_auc": 0.3058703295923314,
+      "pr_auc_clim": 0.18314021138094166,
+      "pr_auc_skill": 0.15024624779103285,
+      "brier": 0.11667858478385824,
+      "brier_clim": 0.05230444573776661,
+      "brier_skill": -1.2307584592108594
+    },
+    "lightgbm_test_calibrated": {
+      "n": 14270,
+      "prevalence": 0.05178696566222845,
+      "pr_auc": 0.29326665676644725,
+      "pr_auc_clim": 0.18314021138094166,
+      "pr_auc_skill": 0.13481682771002815,
+      "brier": 0.052914325701014425,
+      "brier_clim": 0.05230444573776661,
+      "brier_skill": -0.011660193596267243,
+      "calibration_method": "isotonic"
+    },
+    "lightgbm_val": {
+      "n": 9189,
+      "prevalence": 0.10730220916312982,
+      "pr_auc": 0.5530202640467549,
+      "pr_auc_clim": 0.28534935996932137,
+      "pr_auc_skill": 0.37454791066295395,
+      "brier": 0.09873800469143529,
+      "brier_clim": 0.08113478659456792,
+      "brier_skill": -0.21696264741326043
+    },
+    "lightgbm_val_calibrated": {
+      "n": 9189,
+      "prevalence": 0.10730220916312982,
+      "pr_auc": 0.5432791989076367,
+      "pr_auc_clim": 0.28534935996932137,
+      "pr_auc_skill": 0.36091738325070666,
+      "brier": 0.06425679103974931,
+      "brier_clim": 0.08113478659456792,
+      "brier_skill": 0.2080241566315849,
+      "calibration_method": "isotonic"
+    }
+  }
+}

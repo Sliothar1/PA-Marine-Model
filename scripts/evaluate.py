@@ -10,7 +10,7 @@ import pandas as pd
 
 from pa_marine.calibration import ProbCalibrator
 from pa_marine.config import load_config
-from pa_marine.features import feature_columns
+from pa_marine.features import feature_columns, select_feature_mode
 from pa_marine.metrics import climatology_probs, summarise
 from pa_marine.models import fit_predict, make_estimators
 
@@ -37,27 +37,26 @@ def main():
     p.add_argument(
         "--feature-mode",
         default="strong",
-        choices=["all", "strong", "sst"],
-        help="Default strong for Dinophysis (ablation winner 2026-09-01): drop weak MHW/noise. "
-        "all=full joined set; sst=SST/SSTA + woy + geo only.",
+        choices=[
+            "all",
+            "strong",
+            "sst",
+            "strong_rich_mhw",
+            "strong_rich_mhw_lean",
+            "strong_rich_mhw_top3",
+            "strong_ibi",
+            "strong_rich_mhw_ibi",
+            "strong_rich_mhw_lean_ibi",
+            "strong_rich_mhw_ibi_full",
+        ],
+        help="Default strong for Dinophysis (ablation winner 2026-09-01). "
+        "Also: strong_rich_mhw / strong_ibi / strong_rich_mhw_ibi(+_full).",
     )
     args = p.parse_args()
     cfg = load_config(args.config)
     path = args.joined or cfg["paths"]["joined"]
     df = pd.read_parquet(path) if path.endswith(".parquet") else pd.read_csv(path)
-    feats = feature_columns(df)
-    if args.feature_mode == "strong":
-        # Keep seasonal/geo + features that had gain_pct>=1% or clear perm signal in
-        # the 2026-09-01 Dinophysis study (see data/processed/dino_feature_report.md).
-        # Exact drop_weak winner set from dino_feature_report.md (gain>=1% & perm>0 + must).
-        strong = {
-            "woy_sin", "woy_cos", "latitude", "longitude",
-            "sst", "sst_lag0d", "sst_lag21d", "sst_roll7d", "sst_roll30d",
-        }
-        feats = [f for f in feats if f in strong]
-    elif args.feature_mode == "sst":
-        must = {"woy_sin", "woy_cos", "latitude", "longitude"}
-        feats = [f for f in feats if f.startswith("sst") or f.startswith("ssta") or f in must]
+    feats = select_feature_mode(df, args.feature_mode)
     train = df[df["split"] == "train"]
     val = df[df["split"] == "val"]
     results: dict = {"_meta": {"calibration": args.calibration, "feature_mode": args.feature_mode, "n_features": len(feats)}}
