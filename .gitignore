@@ -61,6 +61,7 @@ data/models/
 !data/processed/june2023_case_study_summary.csv
 !data/processed/june2023_case_study_daily.csv
 !data/processed/june2023_case_study_hab_weekly.csv
+!data/processed/june2023_dino_q_lag_corr.csv
 !data/processed/figures/
 !data/processed/figures/*.png
 !data/processed/rivers_report.md

@@ -4,7 +4,7 @@ Generated: **2026-09-01** (Europe/Dublin). Rebuild: `python scripts/build_june20
 
 Hackathon / paper narrative link to **Berthou et al. (2024)** — *Exceptional atmospheric conditions in June 2023 generated a northwest European marine heatwave which contributed to breaking land temperature records* (Commun Earth Environ 5:287; https://doi.org/10.1038/s43247-024-01413-8). That study describes an unprecedented ~16-day category-II Northwest European shelf MHW in June 2023 (local SST anomalies up to ~5 °C north of Ireland), forced by anticyclonic weather (weak winds, high solar radiation, tropical air) with shallow-ocean feedbacks.
 
-This case study places **Irish-bbox CRW MHW categories**, **Connemara HAB Dinophysis**, **Mace Head / Spiddal in-situ T–S–DO**, and **Met Éireann Mace Head wind/radiation** on a common May–Aug 2023 timeline. It is **descriptive**, not a causal attribution of Dinophysis blooms to the MHW.
+This case study places **Irish-bbox CRW MHW categories**, **Connemara HAB Dinophysis**, **Mace Head / Spiddal in-situ T–S–DO**, **Met Éireann Mace Head wind/radiation**, and **OPW Corrib / Owenboliskey freshwater discharge** on a common May–Aug 2023 timeline. It is **descriptive**, not a causal attribution of Dinophysis blooms to the MHW.
 
 ## Key numbers (June 2023)
 
@@ -17,6 +17,8 @@ This case study places **Irish-bbox CRW MHW categories**, **Connemara HAB Dinoph
 | Spiddal CTD mean / max T | 12.86 / 17.65 °C | ~20 m; early→late June warm-up |
 | Met Éireann mean wind / glorad | 11.1 kt / 2107 J/cm² | station dly275 Mace Head |
 | Dinophysis exceedance weeks (≥100 cells/L) | 2 | Rosmuc + Mannin in focus set |
+| Corrib Q (Wolfe Tone 30061) June mean | 25.43 m³/s | 75% of 2015–24 June clim (33.8); med 25.31 |
+| Owenboliskey Q (Shannagurraun 31075) June mean | 0.15 m³/s | 15% of clim (0.99); med 0.10 |
 
 Compact machine-readable summary: `data/processed/june2023_case_study_summary.csv`.
 
@@ -71,7 +73,48 @@ June buoy T (~16 °C) is warmer than May by ~3.4 °C; DO declines through summer
 
 **SmartBay Spiddal** `spiddal_obs_ctd` (~20 m): **30/30 June days**. Mean T **12.86 °C**, but strongly stratified in time — early June ~10.2 °C → late June ~17.3 °C, max **17.65 °C on 2023-06-30**. DO column empty in this NRT daily product. July–Aug Spiddal coverage is sparse (only a few days).
 
-### 4. Dinophysis — Connemara HAB stations
+### 4. Freshwater — Corrib & Owenboliskey (OPW Hydro-Data)
+
+Regional discharge from OPW `WEB.Day.Mean` archives (`rivers_daily.csv` / `rivers_week_primary_Q.csv`). Joined as **bay-scale columns** (not nearest-gauge assignment) per `rivers_hab_join_note.md`: Wolfe Tone Br **30061** (Corrib → Galway Bay) and Shannagurraun **31075** (Owenboliskey, local Connemara coastal).
+
+**June 2023 headline Q**
+
+| Gauge | Mean (m³/s) | Median | Min–Max | vs 2015–24 June clim |
+| --- | ---: | ---: | --- | ---: |
+| Corrib / Wolfe Tone (30061) | 25.43 | 25.31 | 20.57–31.04 | **75%** of clim mean 33.8 |
+| Owenboliskey / Shannagurraun (31075) | 0.15 | 0.10 | 0.08–0.54 | **15%** of clim mean 0.99 |
+
+May→June drop is sharp (Corrib ~62 → ~25 m³/s; Owenboliskey ~1.6 → ~0.15 m³/s), with July–August rebound — consistent with the anticyclonic / low-rainfall shelf story in Berthou et al., and with reduced freshwater pulse into Galway Bay during the MHW peak. Columns `q_corrib_m3s` / `q_owenboliskey_m3s` on the daily table; `q_corrib_week_m3s` / `q_owenboliskey_week_m3s` on the HAB weekly table.
+
+**Optional: Dinophysis ↔ Q lag correlations (report-only)**
+
+Spearman ρ of focus-station weekly Dinophysis counts vs regional weekly mean Q at lag 0 / 7 / 14 days. **Not** expected to beat the national OISST model — small *n*, descriptive only. Full table: `june2023_dino_q_lag_corr.csv`.
+
+| Scope | Q | Lag | n | Spearman ρ | p |
+| --- | --- | --- | ---: | ---: | ---: |
+| Mannin_177 | corrib | lag0d | 14 | -0.292 | 0.310 |
+| Mannin_177 | corrib | lag7d | 14 | -0.345 | 0.227 |
+| Mannin_177 | corrib | lag14d | 14 | -0.011 | 0.970 |
+| Mannin_177 | owenboliskey | lag0d | 14 | -0.132 | 0.652 |
+| Mannin_177 | owenboliskey | lag7d | 14 | -0.292 | 0.310 |
+| Mannin_177 | owenboliskey | lag14d | 14 | -0.110 | 0.707 |
+| Rosmuc_174 | corrib | lag0d | 19 | 0.026 | 0.916 |
+| Rosmuc_174 | corrib | lag7d | 19 | -0.118 | 0.630 |
+| Rosmuc_174 | corrib | lag14d | 19 | -0.127 | 0.605 |
+| Rosmuc_174 | owenboliskey | lag0d | 19 | -0.045 | 0.853 |
+| Rosmuc_174 | owenboliskey | lag7d | 19 | -0.027 | 0.912 |
+| Rosmuc_174 | owenboliskey | lag14d | 19 | -0.048 | 0.845 |
+| pooled_focus | corrib | lag0d | 108 | 0.064 | 0.513 |
+| pooled_focus | corrib | lag7d | 108 | -0.033 | 0.734 |
+| pooled_focus | corrib | lag14d | 108 | -0.024 | 0.809 |
+| pooled_focus | owenboliskey | lag0d | 108 | 0.040 | 0.685 |
+| pooled_focus | owenboliskey | lag7d | 108 | 0.073 | 0.454 |
+| pooled_focus | owenboliskey | lag14d | 108 | -0.012 | 0.899 |
+
+Caveats: 30061 is tidally influenced; 31075 sits below a sluice — treat as wetness / release proxies, not exact estuary flux.
+
+### 5. Dinophysis — Connemara HAB stations
+
 
 Stations chosen from `local_sites_report.md` nearest-to-sentinel demo set (Mannin, Rosmuc, Gubbaros, Cliffden Outer) plus nearby Ballynakill / Killary Inner. Exceedance label `y_dinophysis` = count ≥ **100 cells/L**.
 
@@ -104,8 +147,9 @@ Reading for the paper narrative (cautious):
 | --- | --- |
 | `data/processed/june2023_case_study.md` | This narrative |
 | `data/processed/june2023_case_study_summary.csv` | One-row-per-metric plot/paper table |
-| `data/processed/june2023_case_study_daily.csv` | May–Aug daily CRW + Mace + Spiddal + Met join |
-| `data/processed/june2023_case_study_hab_weekly.csv` | Focus-station Dinophysis + OISST MHW flags |
+| `data/processed/june2023_case_study_daily.csv` | May–Aug daily CRW + Mace + Spiddal + Met + Corrib/Owenboliskey Q |
+| `data/processed/june2023_case_study_hab_weekly.csv` | Focus-station Dinophysis + OISST MHW flags + weekly Corrib/Owenboliskey Q |
+| `data/processed/june2023_dino_q_lag_corr.csv` | Spearman Dinophysis ↔ Q lag-0/7/14d (report-only) |
 | `data/processed/figures/june2023_mhw_met_temp.png` | CRW frac / temps / Met wind+radiation |
 | `data/processed/figures/june2023_dinophysis_connemara.png` | Dinophysis time series |
 | `data/processed/figures/june2023_mace_head_tsdo.png` | Mace Head T / S / DO around June |
@@ -117,11 +161,12 @@ Reading for the paper narrative (cautious):
 - Mace Head buoy: `compass_mace_head_daily.parquet` (`local_sites_report.md`)
 - Spiddal CTD: `spiddal_ctd_daily.parquet`
 - Met Éireann: `mace_head_met_daily.csv` (clidata `dly275`)
+- OPW rivers: `rivers_daily.csv`, `rivers_week_primary_Q.csv` (Wolfe Tone 30061, Shannagurraun 31075); see `rivers_report.md`
 - Station selection rationale: `local_sites_report.md` (Mannin 177, Rosmuc 174, Cliffden Outer 650, Gubbaros 179)
 
 ## How to use in the hackathon story
 
 1. Open with Berthou et al. 2024 shelf-wide June 2023 MHW → zoom to Irish CRW frac_mhw = 1.0 mid-June.
-2. Show Met Éireann weakish June winds + radiation and Mace Head / Spiddal warming.
+2. Show Met Éireann weakish June winds + radiation, Mace Head / Spiddal warming, and **low June Corrib/Owenboliskey Q** (dry anticyclonic freshwater context).
 3. Overlay Connemara Dinophysis: pre-peak Rosmuc exceedance, quiet peak June, post-peak Mannin exceedance.
 4. Call out gaps (CONN ROMS archive, Lehanagh 2024+, no Chl) as future data asks — not as silent omissions.

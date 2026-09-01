@@ -2,6 +2,8 @@
 """Build June 2023 MHW × Dinophysis case-study tables, plots, and markdown.
 
 Uses existing processed artifacts only (no network). Outputs under data/processed/.
+Joins OPW Corrib (Wolfe Tone 30061) and Owenboliskey (Shannagurraun 31075)
+daily / ISO-week discharge into the case-study tables.
 """
 from __future__ import annotations
 
@@ -12,14 +14,124 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "processed"
 FIG = OUT / "figures"
 THRESH = 100  # cells/L Dinophysis exceedance (panel y_dinophysis)
 FOCUS_IDS = [174, 177, 179, 650, 163, 171]
+CORRIB_STN = 30061  # Wolfe Tone Br — Corrib → Galway Bay
+OWEN_STN = 31075  # Shannagurraun — Owenboliskey local coastal
 D0, D1 = pd.Timestamp("2023-05-01"), pd.Timestamp("2023-08-31")
+CLIM_YEARS = range(2015, 2025)
+
+
+def _load_river_daily() -> pd.DataFrame:
+    """Daily mean Q for Corrib + Owenboliskey, May–Aug window columns."""
+    rd = pd.read_csv(OUT / "rivers_daily.csv", parse_dates=["date"])
+    rd = rd[(rd["parameter"] == "Q") & (rd["station_no"].isin([CORRIB_STN, OWEN_STN]))].copy()
+    rd["date"] = pd.to_datetime(rd["date"]).dt.normalize()
+    piv = (
+        rd.pivot_table(index="date", columns="station_no", values="value", aggfunc="mean")
+        .rename(columns={CORRIB_STN: "q_corrib_m3s", OWEN_STN: "q_owenboliskey_m3s"})
+        .reset_index()
+    )
+    return piv[(piv["date"] >= D0) & (piv["date"] <= D1)].sort_values("date")
+
+
+def _load_river_week() -> pd.DataFrame:
+    """ISO-week mean Q for Corrib + Owenboliskey (regional columns)."""
+    rw = pd.read_csv(OUT / "rivers_week_primary_Q.csv")
+    rw = rw[(rw["parameter"] == "Q") & (rw["station_no"].isin([CORRIB_STN, OWEN_STN]))].copy()
+    piv = (
+        rw.pivot_table(
+            index=["iso_year", "iso_week"],
+            columns="station_no",
+            values="mean_value",
+            aggfunc="mean",
+        )
+        .rename(columns={CORRIB_STN: "q_corrib_week_m3s", OWEN_STN: "q_owenboliskey_week_m3s"})
+        .reset_index()
+    )
+    return piv
+
+
+def _june_q_stats(rd_full: pd.DataFrame, stn: int) -> dict:
+    """June 2023 headline stats vs 2015–2024 June climatology."""
+    q = rd_full[(rd_full["station_no"] == stn) & (rd_full["parameter"] == "Q")].copy()
+    q["date"] = pd.to_datetime(q["date"])
+    june = q[(q["date"] >= "2023-06-01") & (q["date"] <= "2023-06-30")]
+    clim = q[
+        (q["date"].dt.year.isin(CLIM_YEARS)) & (q["date"].dt.month == 6)
+    ]
+    mean_j = float(june["value"].mean())
+    mean_c = float(clim["value"].mean())
+    return {
+        "n_days": int(len(june)),
+        "mean": mean_j,
+        "median": float(june["value"].median()),
+        "min": float(june["value"].min()),
+        "max": float(june["value"].max()),
+        "clim_mean": mean_c,
+        "pct_clim": 100.0 * mean_j / mean_c if mean_c else float("nan"),
+    }
+
+
+def _dino_q_lag_corr(hab_out: pd.DataFrame, river_week: pd.DataFrame) -> pd.DataFrame:
+    """Spearman corr of Dinophysis vs lag-0/7/14d weekly Q (report-only)."""
+    h = hab_out.copy()
+    h["week_start"] = pd.to_datetime(h["week_start"])
+    rw = river_week.copy()
+    # Reconstruct Monday week_start from ISO year/week for reliable lagging
+    rw["week_start"] = pd.to_datetime(
+        rw["iso_year"].astype(str) + "-W" + rw["iso_week"].astype(str).str.zfill(2) + "-1",
+        format="%G-W%V-%u",
+    )
+    rw = rw.set_index("week_start").sort_index()
+
+    rows = []
+    scopes = [("pooled_focus", None)] + [(f"{n}_{i}", i) for i, n in [(174, "Rosmuc"), (177, "Mannin")]]
+    for lag_weeks, lag_label in [(0, "lag0d"), (1, "lag7d"), (2, "lag14d")]:
+        for qcol, qname in [
+            ("q_corrib_week_m3s", "corrib"),
+            ("q_owenboliskey_week_m3s", "owenboliskey"),
+        ]:
+            for scope, lid in scopes:
+                sub = h if lid is None else h[h["location_id"] == lid]
+                xs, ys = [], []
+                for _, r in sub.iterrows():
+                    q_date = r["week_start"] - pd.Timedelta(weeks=lag_weeks)
+                    if q_date not in rw.index:
+                        continue
+                    qv = rw.loc[q_date, qcol]
+                    if isinstance(qv, pd.Series):
+                        qv = qv.iloc[0]
+                    yv = r["count_dinophysis"]
+                    if pd.isna(qv) or pd.isna(yv):
+                        continue
+                    xs.append(float(qv))
+                    ys.append(float(yv))
+                min_n = 8 if lid is None else 6
+                if len(xs) < min_n:
+                    rho, p = float("nan"), float("nan")
+                else:
+                    rho, p = stats.spearmanr(xs, ys)
+                rows.append(
+                    {
+                        "q_source": qname,
+                        "lag": lag_label,
+                        "lag_weeks": lag_weeks,
+                        "n_pairs": len(xs),
+                        "spearman_rho": None if pd.isna(rho) else round(float(rho), 4),
+                        "p_value": None if pd.isna(p) else round(float(p), 4),
+                        "stations": scope,
+                    }
+                )
+    return pd.DataFrame(rows)
+
 
 
 def main() -> None:
@@ -41,6 +153,10 @@ def main() -> None:
     sp["date"] = pd.to_datetime(sp["date"], utc=True).dt.tz_localize(None)
 
     met = pd.read_csv(OUT / "mace_head_met_daily.csv", parse_dates=["date"])
+
+    river_daily = _load_river_daily()
+    river_week = _load_river_week()
+    rd_full = pd.read_csv(OUT / "rivers_daily.csv", parse_dates=["date"])
 
     crw_w = crw[(crw["date"] >= D0) & (crw["date"] <= D1)][
         ["date", "n_ocean", "n_mhw", "mean_cat", "max_cat", "frac_mhw"]
@@ -132,6 +248,14 @@ def main() -> None:
         on="date",
         how="left",
     )
+    daily = daily.merge(river_daily, on="date", how="left")
+
+    # Weekly HAB + regional Corrib / Owenboliskey Q (same week = lag-0)
+    hab_out = hab_out.copy()
+    hab_out["week_start"] = pd.to_datetime(hab_out["week_start"])
+    hab_out["iso_year"] = hab_out["week_start"].dt.isocalendar().year.astype(int)
+    hab_out["iso_week"] = hab_out["week_start"].dt.isocalendar().week.astype(int)
+    hab_out = hab_out.merge(river_week, on=["iso_year", "iso_week"], how="left")
 
     daily.to_csv(OUT / "june2023_case_study_daily.csv", index=False)
     hab_out.to_csv(OUT / "june2023_case_study_hab_weekly.csv", index=False)
@@ -255,12 +379,72 @@ def main() -> None:
             },
         ]
     )
+
+    q_corrib = _june_q_stats(rd_full, CORRIB_STN)
+    q_owen = _june_q_stats(rd_full, OWEN_STN)
+    q_rows = [
+        {
+            "metric": "q_corrib_june_mean_m3s",
+            "value": round(q_corrib["mean"], 3),
+            "unit": "m3/s",
+            "note": f"Wolfe Tone Br 30061; med={q_corrib['median']:.2f}; n={q_corrib['n_days']}",
+        },
+        {
+            "metric": "q_corrib_june_pct_clim_2015_2024",
+            "value": round(q_corrib["pct_clim"], 1),
+            "unit": "%",
+            "note": f"vs June clim mean {q_corrib['clim_mean']:.2f} m3/s",
+        },
+        {
+            "metric": "q_owenboliskey_june_mean_m3s",
+            "value": round(q_owen["mean"], 3),
+            "unit": "m3/s",
+            "note": f"Shannagurraun 31075; med={q_owen['median']:.2f}; n={q_owen['n_days']}",
+        },
+        {
+            "metric": "q_owenboliskey_june_pct_clim_2015_2024",
+            "value": round(q_owen["pct_clim"], 1),
+            "unit": "%",
+            "note": f"vs June clim mean {q_owen['clim_mean']:.2f} m3/s",
+        },
+        {
+            "metric": "q_corrib_june_min_max_m3s",
+            "value": round(q_corrib["min"], 3),
+            "unit": "m3/s",
+            "note": f"min; max={q_corrib['max']:.2f}",
+        },
+        {
+            "metric": "q_owenboliskey_june_min_max_m3s",
+            "value": round(q_owen["min"], 3),
+            "unit": "m3/s",
+            "note": f"min; max={q_owen['max']:.2f}",
+        },
+    ]
+    summary = pd.concat([summary, pd.DataFrame(q_rows)], ignore_index=True)
     summary.to_csv(OUT / "june2023_case_study_summary.csv", index=False)
+
+    corr = _dino_q_lag_corr(hab_out, river_week)
+    corr.to_csv(OUT / "june2023_dino_q_lag_corr.csv", index=False)
 
     _plot_mhw_met(crw_w, mh_w, sp_w, met_w)
     _plot_dino(hab_out)
     _plot_mace(mh_w)
-    _write_md(summary, hab_out, crw_w, june_crw, june_mh, june_sp, june_met, peak, peak_cat, mh_w)
+    _write_md(
+        summary,
+        hab_out,
+        crw_w,
+        june_crw,
+        june_mh,
+        june_sp,
+        june_met,
+        peak,
+        peak_cat,
+        mh_w,
+        q_corrib,
+        q_owen,
+        corr,
+        rd_full,
+    )
     print("Wrote case study artifacts to", OUT)
 
 
@@ -390,7 +574,7 @@ def _plot_mace(mh_w) -> None:
     plt.close(fig)
 
 
-def _write_md(summary, hab_out, crw_w, june_crw, june_mh, june_sp, june_met, peak, peak_cat, mh_w) -> None:
+def _write_md(summary, hab_out, crw_w, june_crw, june_mh, june_sp, june_met, peak, peak_cat, mh_w, q_corrib, q_owen, corr, rd_full) -> None:
     def mmean(df, col, a, b):
         s = df[(df.date >= a) & (df.date <= b)][col]
         return float(s.mean()) if len(s) else float("nan")
@@ -432,13 +616,29 @@ def _write_md(summary, hab_out, crw_w, june_crw, june_mh, june_sp, june_met, pea
         for _, r in hab_peak.iterrows()
     ]
 
+    # Compact corr table for markdown (pooled + Mannin/Rosmuc highlights)
+    corr_show = corr[
+        (corr["stations"].isin(["pooled_focus", "Rosmuc_174", "Mannin_177"]))
+    ].sort_values(["stations", "q_source", "lag_weeks"])
+    corr_lines = [
+        "| Scope | Q | Lag | n | Spearman ρ | p |",
+        "| --- | --- | --- | ---: | ---: | ---: |",
+    ]
+    for _, r in corr_show.iterrows():
+        rho = "—" if pd.isna(r.spearman_rho) else f"{r.spearman_rho:.3f}"
+        p = "—" if pd.isna(r.p_value) else f"{r.p_value:.3f}"
+        corr_lines.append(
+            f"| {r.stations} | {r.q_source} | {r.lag} | {int(r.n_pairs)} | {rho} | {p} |"
+        )
+    corr_md = "\n".join(corr_lines)
+
     md = f"""# June 2023 marine heatwave × Dinophysis — Connemara case study
 
 Generated: **2026-09-01** (Europe/Dublin). Rebuild: `python scripts/build_june2023_case_study.py`.
 
 Hackathon / paper narrative link to **Berthou et al. (2024)** — *Exceptional atmospheric conditions in June 2023 generated a northwest European marine heatwave which contributed to breaking land temperature records* (Commun Earth Environ 5:287; https://doi.org/10.1038/s43247-024-01413-8). That study describes an unprecedented ~16-day category-II Northwest European shelf MHW in June 2023 (local SST anomalies up to ~5 °C north of Ireland), forced by anticyclonic weather (weak winds, high solar radiation, tropical air) with shallow-ocean feedbacks.
 
-This case study places **Irish-bbox CRW MHW categories**, **Connemara HAB Dinophysis**, **Mace Head / Spiddal in-situ T–S–DO**, and **Met Éireann Mace Head wind/radiation** on a common May–Aug 2023 timeline. It is **descriptive**, not a causal attribution of Dinophysis blooms to the MHW.
+This case study places **Irish-bbox CRW MHW categories**, **Connemara HAB Dinophysis**, **Mace Head / Spiddal in-situ T–S–DO**, **Met Éireann Mace Head wind/radiation**, and **OPW Corrib / Owenboliskey freshwater discharge** on a common May–Aug 2023 timeline. It is **descriptive**, not a causal attribution of Dinophysis blooms to the MHW.
 
 ## Key numbers (June 2023)
 
@@ -451,6 +651,8 @@ This case study places **Irish-bbox CRW MHW categories**, **Connemara HAB Dinoph
 | Spiddal CTD mean / max T | {float(june_sp.temp_c.mean()):.2f} / {float(june_sp.temp_c.max()):.2f} °C | ~20 m; early→late June warm-up |
 | Met Éireann mean wind / glorad | {float(june_met.wdsp.mean()):.1f} kt / {float(june_met.glorad.mean()):.0f} J/cm² | station dly275 Mace Head |
 | Dinophysis exceedance weeks (≥{THRESH} cells/L) | {int(hab_out.y_dinophysis.sum())} | Rosmuc + Mannin in focus set |
+| Corrib Q (Wolfe Tone 30061) June mean | {q_corrib["mean"]:.2f} m³/s | {q_corrib["pct_clim"]:.0f}% of 2015–24 June clim ({q_corrib["clim_mean"]:.1f}); med {q_corrib["median"]:.2f} |
+| Owenboliskey Q (Shannagurraun 31075) June mean | {q_owen["mean"]:.2f} m³/s | {q_owen["pct_clim"]:.0f}% of clim ({q_owen["clim_mean"]:.2f}); med {q_owen["median"]:.2f} |
 
 Compact machine-readable summary: `data/processed/june2023_case_study_summary.csv`.
 
@@ -502,7 +704,29 @@ June buoy T (~16 °C) is warmer than May by ~3.4 °C; DO declines through summer
 
 **SmartBay Spiddal** `spiddal_obs_ctd` (~20 m): **30/30 June days**. Mean T **{float(june_sp.temp_c.mean()):.2f} °C**, but strongly stratified in time — early June ~10.2 °C → late June ~17.3 °C, max **{float(june_sp.temp_c.max()):.2f} °C on {june_sp.loc[june_sp.temp_c.idxmax(),'date'].date()}**. DO column empty in this NRT daily product. July–Aug Spiddal coverage is sparse (only a few days).
 
-### 4. Dinophysis — Connemara HAB stations
+### 4. Freshwater — Corrib & Owenboliskey (OPW Hydro-Data)
+
+Regional discharge from OPW `WEB.Day.Mean` archives (`rivers_daily.csv` / `rivers_week_primary_Q.csv`). Joined as **bay-scale columns** (not nearest-gauge assignment) per `rivers_hab_join_note.md`: Wolfe Tone Br **30061** (Corrib → Galway Bay) and Shannagurraun **31075** (Owenboliskey, local Connemara coastal).
+
+**June 2023 headline Q**
+
+| Gauge | Mean (m³/s) | Median | Min–Max | vs 2015–24 June clim |
+| --- | ---: | ---: | --- | ---: |
+| Corrib / Wolfe Tone (30061) | {q_corrib["mean"]:.2f} | {q_corrib["median"]:.2f} | {q_corrib["min"]:.2f}–{q_corrib["max"]:.2f} | **{q_corrib["pct_clim"]:.0f}%** of clim mean {q_corrib["clim_mean"]:.1f} |
+| Owenboliskey / Shannagurraun (31075) | {q_owen["mean"]:.2f} | {q_owen["median"]:.2f} | {q_owen["min"]:.2f}–{q_owen["max"]:.2f} | **{q_owen["pct_clim"]:.0f}%** of clim mean {q_owen["clim_mean"]:.2f} |
+
+May→June drop is sharp (Corrib ~62 → ~25 m³/s; Owenboliskey ~1.6 → ~0.15 m³/s), with July–August rebound — consistent with the anticyclonic / low-rainfall shelf story in Berthou et al., and with reduced freshwater pulse into Galway Bay during the MHW peak. Columns `q_corrib_m3s` / `q_owenboliskey_m3s` on the daily table; `q_corrib_week_m3s` / `q_owenboliskey_week_m3s` on the HAB weekly table.
+
+**Optional: Dinophysis ↔ Q lag correlations (report-only)**
+
+Spearman ρ of focus-station weekly Dinophysis counts vs regional weekly mean Q at lag 0 / 7 / 14 days. **Not** expected to beat the national OISST model — small *n*, descriptive only. Full table: `june2023_dino_q_lag_corr.csv`.
+
+{corr_md}
+
+Caveats: 30061 is tidally influenced; 31075 sits below a sluice — treat as wetness / release proxies, not exact estuary flux.
+
+### 5. Dinophysis — Connemara HAB stations
+
 
 Stations chosen from `local_sites_report.md` nearest-to-sentinel demo set (Mannin, Rosmuc, Gubbaros, Cliffden Outer) plus nearby Ballynakill / Killary Inner. Exceedance label `y_dinophysis` = count ≥ **{THRESH} cells/L**.
 
@@ -529,8 +753,9 @@ Reading for the paper narrative (cautious):
 | --- | --- |
 | `data/processed/june2023_case_study.md` | This narrative |
 | `data/processed/june2023_case_study_summary.csv` | One-row-per-metric plot/paper table |
-| `data/processed/june2023_case_study_daily.csv` | May–Aug daily CRW + Mace + Spiddal + Met join |
-| `data/processed/june2023_case_study_hab_weekly.csv` | Focus-station Dinophysis + OISST MHW flags |
+| `data/processed/june2023_case_study_daily.csv` | May–Aug daily CRW + Mace + Spiddal + Met + Corrib/Owenboliskey Q |
+| `data/processed/june2023_case_study_hab_weekly.csv` | Focus-station Dinophysis + OISST MHW flags + weekly Corrib/Owenboliskey Q |
+| `data/processed/june2023_dino_q_lag_corr.csv` | Spearman Dinophysis ↔ Q lag-0/7/14d (report-only) |
 | `data/processed/figures/june2023_mhw_met_temp.png` | CRW frac / temps / Met wind+radiation |
 | `data/processed/figures/june2023_dinophysis_connemara.png` | Dinophysis time series |
 | `data/processed/figures/june2023_mace_head_tsdo.png` | Mace Head T / S / DO around June |
@@ -542,12 +767,13 @@ Reading for the paper narrative (cautious):
 - Mace Head buoy: `compass_mace_head_daily.parquet` (`local_sites_report.md`)
 - Spiddal CTD: `spiddal_ctd_daily.parquet`
 - Met Éireann: `mace_head_met_daily.csv` (clidata `dly275`)
+- OPW rivers: `rivers_daily.csv`, `rivers_week_primary_Q.csv` (Wolfe Tone 30061, Shannagurraun 31075); see `rivers_report.md`
 - Station selection rationale: `local_sites_report.md` (Mannin 177, Rosmuc 174, Cliffden Outer 650, Gubbaros 179)
 
 ## How to use in the hackathon story
 
 1. Open with Berthou et al. 2024 shelf-wide June 2023 MHW → zoom to Irish CRW frac_mhw = 1.0 mid-June.
-2. Show Met Éireann weakish June winds + radiation and Mace Head / Spiddal warming.
+2. Show Met Éireann weakish June winds + radiation, Mace Head / Spiddal warming, and **low June Corrib/Owenboliskey Q** (dry anticyclonic freshwater context).
 3. Overlay Connemara Dinophysis: pre-peak Rosmuc exceedance, quiet peak June, post-peak Mannin exceedance.
 4. Call out gaps (CONN ROMS archive, Lehanagh 2024+, no Chl) as future data asks — not as silent omissions.
 """

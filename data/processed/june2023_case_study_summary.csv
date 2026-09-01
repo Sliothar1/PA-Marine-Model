@@ -17,3 +17,9 @@ dino_cliffden_max_count,80.0,cells/L,
 dino_exceedance_weeks_connemara,2.0,weeks,threshold >=100 cells/L
 lehanagh_coverage_starts,2024.0,year,no 2023 overlap — gap
 imi_conn_roms_june2023,0.0,available,archive not on public rolling ERDDAP/THREDDS
+q_corrib_june_mean_m3s,25.426,m3/s,Wolfe Tone Br 30061; med=25.31; n=30
+q_corrib_june_pct_clim_2015_2024,75.2,%,vs June clim mean 33.83 m3/s
+q_owenboliskey_june_mean_m3s,0.148,m3/s,Shannagurraun 31075; med=0.10; n=30
+q_owenboliskey_june_pct_clim_2015_2024,15.0,%,vs June clim mean 0.99 m3/s
+q_corrib_june_min_max_m3s,20.572,m3/s,min; max=31.04
+q_owenboliskey_june_min_max_m3s,0.078,m3/s,min; max=0.54
