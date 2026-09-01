@@ -1,0 +1,145 @@
+scientific_name,time,latitude,longitude,location_name,location_id,count,week_no
+Dinophysis acuminata,2018-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,29
+Pseudo-nitzschia seriata complex,2018-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,29
+Karenia mikimotoi,2018-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,29
+Dinophysis acuminata,2018-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,29
+Pseudo-nitzschia seriata complex,2018-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,29
+Karenia mikimotoi,2018-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,29
+Dinophysis acuminata,2018-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,24.0,30
+Pseudo-nitzschia seriata complex,2018-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,1200.0,30
+Karenia mikimotoi,2018-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,12.0,30
+Dinophysis acuminata,2018-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,16.0,30
+Pseudo-nitzschia seriata complex,2018-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,800.0,30
+Karenia mikimotoi,2018-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,8.0,30
+Dinophysis acuminata,2018-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,48.0,31
+Pseudo-nitzschia seriata complex,2018-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,2400.0,31
+Karenia mikimotoi,2018-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,60.0,31
+Dinophysis acuminata,2018-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,32.0,31
+Pseudo-nitzschia seriata complex,2018-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,1600.0,31
+Karenia mikimotoi,2018-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,40.0,31
+Dinophysis acuminata,2018-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,96.0,32
+Pseudo-nitzschia seriata complex,2018-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,12000.0,32
+Karenia mikimotoi,2018-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,240.0,32
+Dinophysis acuminata,2018-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,64.0,32
+Pseudo-nitzschia seriata complex,2018-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,8000.0,32
+Karenia mikimotoi,2018-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,160.0,32
+Dinophysis acuminata,2018-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,144.0,33
+Pseudo-nitzschia seriata complex,2018-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,72000.0,33
+Karenia mikimotoi,2018-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,960.0,33
+Dinophysis acuminata,2018-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,96.0,33
+Pseudo-nitzschia seriata complex,2018-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,48000.0,33
+Karenia mikimotoi,2018-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,640.0,33
+Dinophysis acuminata,2018-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,240.0,34
+Pseudo-nitzschia seriata complex,2018-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,96000.0,34
+Karenia mikimotoi,2018-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,6000.0,34
+Dinophysis acuminata,2018-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,160.0,34
+Pseudo-nitzschia seriata complex,2018-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,64000.0,34
+Karenia mikimotoi,2018-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,4000.0,34
+Dinophysis acuminata,2018-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,48.0,35
+Pseudo-nitzschia seriata complex,2018-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,1200.0,35
+Karenia mikimotoi,2018-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,120.0,35
+Dinophysis acuminata,2018-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,32.0,35
+Pseudo-nitzschia seriata complex,2018-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,800.0,35
+Karenia mikimotoi,2018-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,80.0,35
+Dinophysis acuminata,2018-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,36
+Pseudo-nitzschia seriata complex,2018-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,36
+Karenia mikimotoi,2018-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,36
+Dinophysis acuminata,2018-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,36
+Pseudo-nitzschia seriata complex,2018-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,36
+Karenia mikimotoi,2018-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,36
+Dinophysis acuminata,2020-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,29
+Pseudo-nitzschia seriata complex,2020-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,29
+Karenia mikimotoi,2020-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,29
+Dinophysis acuminata,2020-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,29
+Pseudo-nitzschia seriata complex,2020-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,29
+Karenia mikimotoi,2020-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,29
+Dinophysis acuminata,2020-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,12.0,30
+Pseudo-nitzschia seriata complex,2020-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,600.0,30
+Karenia mikimotoi,2020-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,30
+Dinophysis acuminata,2020-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,8.0,30
+Pseudo-nitzschia seriata complex,2020-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,400.0,30
+Karenia mikimotoi,2020-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,30
+Dinophysis acuminata,2020-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,36.0,31
+Pseudo-nitzschia seriata complex,2020-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,4800.0,31
+Karenia mikimotoi,2020-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,24.0,31
+Dinophysis acuminata,2020-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,24.0,31
+Pseudo-nitzschia seriata complex,2020-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,3200.0,31
+Karenia mikimotoi,2020-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,16.0,31
+Dinophysis acuminata,2020-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,108.0,32
+Pseudo-nitzschia seriata complex,2020-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,24000.0,32
+Karenia mikimotoi,2020-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,120.0,32
+Dinophysis acuminata,2020-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,72.0,32
+Pseudo-nitzschia seriata complex,2020-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,16000.0,32
+Karenia mikimotoi,2020-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,80.0,32
+Dinophysis acuminata,2020-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,180.0,33
+Pseudo-nitzschia seriata complex,2020-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,84000.0,33
+Karenia mikimotoi,2020-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,480.0,33
+Dinophysis acuminata,2020-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,120.0,33
+Pseudo-nitzschia seriata complex,2020-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,56000.0,33
+Karenia mikimotoi,2020-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,320.0,33
+Dinophysis acuminata,2020-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,48.0,34
+Pseudo-nitzschia seriata complex,2020-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,3600.0,34
+Karenia mikimotoi,2020-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,2400.0,34
+Dinophysis acuminata,2020-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,32.0,34
+Pseudo-nitzschia seriata complex,2020-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,2400.0,34
+Karenia mikimotoi,2020-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,1600.0,34
+Dinophysis acuminata,2020-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,24.0,35
+Pseudo-nitzschia seriata complex,2020-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,35
+Karenia mikimotoi,2020-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,60.0,35
+Dinophysis acuminata,2020-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,16.0,35
+Pseudo-nitzschia seriata complex,2020-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,35
+Karenia mikimotoi,2020-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,40.0,35
+Dinophysis acuminata,2020-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,36
+Pseudo-nitzschia seriata complex,2020-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,36
+Karenia mikimotoi,2020-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,36
+Dinophysis acuminata,2020-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,36
+Pseudo-nitzschia seriata complex,2020-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,36
+Karenia mikimotoi,2020-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,36
+Dinophysis acuminata,2023-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,12.0,28
+Pseudo-nitzschia seriata complex,2023-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,120.0,28
+Karenia mikimotoi,2023-07-16T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,28
+Dinophysis acuminata,2023-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,8.0,28
+Pseudo-nitzschia seriata complex,2023-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,80.0,28
+Karenia mikimotoi,2023-07-16T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,28
+Dinophysis acuminata,2023-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,60.0,29
+Pseudo-nitzschia seriata complex,2023-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,2400.0,29
+Karenia mikimotoi,2023-07-23T00:00:00Z,51.60611,-9.55528,Bantry,111,6.0,29
+Dinophysis acuminata,2023-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,40.0,29
+Pseudo-nitzschia seriata complex,2023-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,1600.0,29
+Karenia mikimotoi,2023-07-23T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,4.0,29
+Dinophysis acuminata,2023-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,132.0,30
+Pseudo-nitzschia seriata complex,2023-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,48000.0,30
+Karenia mikimotoi,2023-07-30T00:00:00Z,51.60611,-9.55528,Bantry,111,96.0,30
+Dinophysis acuminata,2023-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,88.0,30
+Pseudo-nitzschia seriata complex,2023-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,32000.0,30
+Karenia mikimotoi,2023-07-30T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,64.0,30
+Dinophysis acuminata,2023-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,360.0,31
+Pseudo-nitzschia seriata complex,2023-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,108000.0,31
+Karenia mikimotoi,2023-08-06T00:00:00Z,51.60611,-9.55528,Bantry,111,720.0,31
+Dinophysis acuminata,2023-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,240.0,31
+Pseudo-nitzschia seriata complex,2023-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,72000.0,31
+Karenia mikimotoi,2023-08-06T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,480.0,31
+Dinophysis acuminata,2023-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,96.0,32
+Pseudo-nitzschia seriata complex,2023-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,24000.0,32
+Karenia mikimotoi,2023-08-13T00:00:00Z,51.60611,-9.55528,Bantry,111,3600.0,32
+Dinophysis acuminata,2023-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,64.0,32
+Pseudo-nitzschia seriata complex,2023-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,16000.0,32
+Karenia mikimotoi,2023-08-13T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,2400.0,32
+Dinophysis acuminata,2023-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,24.0,33
+Pseudo-nitzschia seriata complex,2023-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,120.0,33
+Karenia mikimotoi,2023-08-20T00:00:00Z,51.60611,-9.55528,Bantry,111,240.0,33
+Dinophysis acuminata,2023-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,16.0,33
+Pseudo-nitzschia seriata complex,2023-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,80.0,33
+Karenia mikimotoi,2023-08-20T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,160.0,33
+Dinophysis acuminata,2023-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,34
+Pseudo-nitzschia seriata complex,2023-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,34
+Karenia mikimotoi,2023-08-27T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,34
+Dinophysis acuminata,2023-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,34
+Pseudo-nitzschia seriata complex,2023-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,34
+Karenia mikimotoi,2023-08-27T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,34
+Dinophysis acuminata,2023-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,35
+Pseudo-nitzschia seriata complex,2023-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,35
+Karenia mikimotoi,2023-09-03T00:00:00Z,51.60611,-9.55528,Bantry,111,0.0,35
+Dinophysis acuminata,2023-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,35
+Pseudo-nitzschia seriata complex,2023-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,35
+Karenia mikimotoi,2023-09-03T00:00:00Z,51.77194,-9.81194,Kilmakilloge,187,0.0,35

@@ -1,0 +1,86 @@
+domain:
+  lat_min: 51.0
+  lat_max: 56.0
+  lon_min: -11.0
+  lon_max: -5.0
+
+hab:
+  erddap_base: https://erddap3.marine.ie/erddap
+  dataset_id: habs_phyto
+  # Verified 2026-09-01 via info.json / tabledap CSV:
+  # scientific_name, time, latitude, longitude, location_name, location_id,
+  # count, week_no, location_code, region_name
+  columns:
+    - scientific_name
+    - time
+    - latitude
+    - longitude
+    - location_name
+    - location_id
+    - count
+    - week_no
+  taxa:
+    dinophysis:
+      name_contains: ["Dinophysis"]
+      threshold_cells_l: 100.0
+      threshold_mode: fixed
+    pseudo_nitzschia:
+      name_contains: ["Pseudo-nitzschia"]
+      threshold_cells_l: 50000.0
+      threshold_mode: fixed
+    karenia_mikimotoi:
+      name_contains: ["Karenia mikimotoi"]
+      threshold_mode: positive_percentile
+      percentile: 95
+      # Fallback if too few positives in training data
+      threshold_cells_l: 1000.0
+
+sst:
+  provider: ncdcOisst21Agg
+  # Public NOAA OISST v2.1 daily, no Copernicus login.
+  erddap_base: https://coastwatch.pfeg.noaa.gov/erddap
+  dataset_id: ncdcOisst21Agg
+  variable: sst
+  anomaly_variable: anom
+  zlev: 0.0
+  # OISST longitudes are 0–360. Irish −11…−5 maps to 349…355.
+  lon_convention: 0_360
+  # Optional later (requires Copernicus Marine credentials; not used by default)
+  copernicus_ostia:
+    enabled: false
+    product: SST_GLO_SST_L4_REP_OBSERVATIONS_010_011
+    note: "Set sst.provider to ostia and supply CMEMS credentials via env; not implemented in v1 client."
+
+mhw:
+  method: hobday_2016
+  min_duration_days: 5
+  max_gap_days: 2
+  percentile: 90
+  climatology_doy_window: 11
+
+features:
+  lags_days: [0, 7, 14, 21]
+  rolling_days: [7, 14, 30]
+  include_week_fourier: true
+  include_lonlat: true
+
+labels:
+  # nowcast: exceedance in [week_start, week_start + 14d]
+  # ahead_7d: exceedance in [week_start + 7d, week_start + 14d] using features known at week_start
+  horizons:
+    nowcast_days: [0, 14]
+    ahead_7d_days: [7, 14]
+
+splits:
+  train: [2003, 2018]
+  val: [2019, 2021]
+  test_from: 2022
+
+paths:
+  raw_hab: data/raw/habs_phyto.csv
+  raw_sst: data/raw/oisst_daily.parquet
+  panel: data/processed/station_week_panel.parquet
+  mhw: data/processed/mhw_daily.parquet
+  joined: data/processed/joined_features.parquet
+  models_dir: data/models
+  metrics: data/processed/metrics.json
