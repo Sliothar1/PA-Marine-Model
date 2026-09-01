@@ -109,3 +109,6 @@ paths:
   joined: data/processed/joined_features.parquet
   models_dir: data/models
   metrics: data/processed/metrics.json
+  smc_phyto_panel: data/processed/smc_station_week_panel.parquet
+  smc_toxin_panel: data/processed/smc_toxin_station_week_panel.parquet
+  smc_areas: data/processed/smc_areas.csv

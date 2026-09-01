@@ -1,5 +1,7 @@
 # OSTIA vs OISST — Dinophysis comparison (2026-09-01)
 
+**One-liner:** OSTIA calibrated Dinophysis test PR-AUC ≈ **0.24** vs OISST strong ≈ **0.29**; keep **OISST** as default, OSTIA optional (`--provider ostia`).
+
 ## Setup
 
 | | NOAA OISST v2.1 | Copernicus OSTIA L4 REP |

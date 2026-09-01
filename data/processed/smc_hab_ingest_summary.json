@@ -1,0 +1,42 @@
+{
+  "generated": "2026-09-01",
+  "phytoplankton": {
+    "n_raw_rows": 21621,
+    "n_station_weeks": 21417,
+    "n_sites_sin": 131,
+    "n_area_names": 109,
+    "date_min": "2009-02-23",
+    "date_max": "2026-08-31",
+    "prevalence_dinophysis_ge100": 0.18564691600130737,
+    "prevalence_pseudo_nitzschia_ge50000": 0.08806088621188775,
+    "prevalence_alexandrium_ge40": 0.2135686604099547,
+    "frac_sin_in_smc_areas": 0.8711771023019097,
+    "has_lat_lon": false,
+    "note": "First Scotland HAB panel has no lat/lon. Geocode Sin\u2192coords before SST/MHW join. Thresholds: Dinophysis\u2265100, Pseudo-nitzschia\u226550000, Alexandrium\u226540 cells/L."
+  },
+  "biotoxins": {
+    "n_raw_rows": 43218,
+    "n_station_weeks": 42757,
+    "n_sites_sin": 289,
+    "date_min": "2009-03-23",
+    "date_max": "2026-08-24",
+    "prevalence_dsp": 0.037257057323946956,
+    "prevalence_asp": 0.00011693991627101995,
+    "prevalence_psp": 0.004420328835044554,
+    "prevalence_aza": 0.0006314755478635078,
+    "prevalence_ytx": 0.0,
+    "frac_sin_in_smc_areas": 0.8017400659541127,
+    "thresholds": {
+      "dsp_ug_oa_eq_kg": 160.0,
+      "asp_mg_kg": 20.0,
+      "psp_ug_stx_eq_kg": 800.0,
+      "aza_ug_kg": 160.0,
+      "ytx_mg_kg": 3.75
+    }
+  },
+  "outputs": {
+    "phyto_panel": "/workspace/pa-marine-model/data/processed/smc_station_week_panel.parquet",
+    "toxin_panel": "/workspace/pa-marine-model/data/processed/smc_toxin_station_week_panel.parquet",
+    "areas_lookup": "/workspace/pa-marine-model/data/processed/smc_areas.csv"
+  }
+}

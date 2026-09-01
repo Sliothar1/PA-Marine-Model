@@ -31,3 +31,5 @@ data/models/
 !data/processed/metrics_dino_ostia.json
 !data/processed/smc_areas.csv
 !data/processed/smc_note.md
+!data/processed/smc_hab_ingest_summary.json
+!data/processed/smc_hab_report.md

@@ -177,18 +177,23 @@ python scripts/ingest_biotoxin.py --skip-download
 
 Writes `toxin_station_week_panel.parquet`, optional SST join, and `biotoxin_ingest_summary.json` / `biotoxin_ingest_report.md`. Raw CSVs stay under gitignored `data/raw/`.
 
-## Scotland SMC (sanitary classifications only)
+## Scotland SMC (sanitary + HAB)
 
-Annual A/B/C sanitary shellfish classifications from Food Standards Scotland / SMC
-live at `data/raw/smc_classifications.csv` (gitignored). Unique production-area
-lookup: `data/processed/smc_areas.csv`. Loader: `src/pa_marine/smc.py`.
+Annual A/B/C sanitary classifications: `data/raw/smc_classifications.csv` (gitignored);
+area lookup `data/processed/smc_areas.csv`. Rebuild: `python scripts/ingest_smc.py`.
+
+**HAB phytoplankton + biotoxins** (FSS/SMC official-control exports, 2026-09-01):
 
 ```bash
-python scripts/ingest_smc.py
+# place CSVs at data/raw/smc_phytoplankton.csv and data/raw/smc_biotoxins.csv
+python scripts/ingest_smc_hab.py
 ```
 
-**This is not phytoplankton / HAB / toxin data.** Scotland HAB labels still need
-a separate SMC phytoplankton or toxin export. See `data/processed/smc_note.md`.
+Builds SIN × ISO-week panels (`smc_station_week_panel.parquet`,
+`smc_toxin_station_week_panel.parquet`) with Dinophysis ≥100 / Pseudo-nitzschia ≥50k /
+Alexandrium ≥40 exceedance (and DSP/ASP/PSP toxin flags). Joins `smc_areas` on `Sin`.
+**No lat/lon in the export** — geocode Sin→coords before SST join. See
+`data/processed/smc_hab_report.md` and `smc_note.md`.
 
 ## England & Wales labels (parallel panel)
 
