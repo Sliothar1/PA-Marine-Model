@@ -1,0 +1,556 @@
+{
+  "_meta": {
+    "target": "y_dinophysis_nowcast",
+    "features": [
+      "woy_sin",
+      "woy_cos",
+      "latitude",
+      "longitude"
+    ],
+    "feature_note": "Seasonality + geo only; UK OISST/MHW not joined. No OSTIA download. Irish strong ablation showed woy/geo dominate Dinophysis ranking.",
+    "uk_adapted_split": {
+      "train": [
+        2018,
+        2021
+      ],
+      "val": [
+        2022,
+        2022
+      ],
+      "test_from": 2023
+    },
+    "irish_year_split_inadequate": true,
+    "irish_year_split_counts": {
+      "test": {
+        "n": 3712,
+        "positives": 193,
+        "years": [
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "train": {
+        "n": 849,
+        "positives": 67,
+        "years": [
+          2018
+        ]
+      },
+      "val": {
+        "n": 2685,
+        "positives": 123,
+        "years": [
+          2019,
+          2020,
+          2021
+        ]
+      }
+    },
+    "label_alignment": "UK Dinophysiaceae \u2265100 cells/L proxy vs Irish Dinophysis \u2265100 cells/L"
+  },
+  "rates": {
+    "uk_same_week": 0.05285674855092465,
+    "uk_nowcast": 0.07825006900358819,
+    "uk_n_station_weeks": 7246,
+    "uk_years": [
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "ie_same_week": 0.06228842247799594,
+    "ie_nowcast": 0.10526216805837658,
+    "ie_n_station_weeks": 53172
+  },
+  "uk_adapted_time_split": {
+    "logreg_val": {
+      "n": 884,
+      "prevalence": 0.08597285067873303,
+      "pr_auc": 0.23387993888480546,
+      "pr_auc_clim": 0.16497227938358744,
+      "pr_auc_skill": 0.08252140354137082,
+      "brier": 0.15943921979637274,
+      "brier_clim": 0.07706333241717356,
+      "brier_skill": -1.0689375192506172,
+      "calibrated": false
+    },
+    "logreg_val_calibrated": {
+      "n": 884,
+      "prevalence": 0.08597285067873303,
+      "pr_auc": 0.2545656070469641,
+      "pr_auc_clim": 0.16497227938358744,
+      "pr_auc_skill": 0.10729383642166924,
+      "brier": 0.06768306573085346,
+      "brier_clim": 0.07706333241717356,
+      "brier_skill": 0.12172152944984382,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_pr_auc": 0.23387993888480546,
+      "raw_brier": 0.15943921979637274
+    },
+    "logreg_test": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.3149321498385442,
+      "pr_auc_clim": 0.19012075759906577,
+      "pr_auc_skill": 0.15411111398468216,
+      "brier": 0.16683381932438404,
+      "brier_clim": 0.06553159108912684,
+      "brier_skill": -1.5458533289307774,
+      "calibrated": false
+    },
+    "logreg_test_calibrated": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.26061859086109335,
+      "pr_auc_clim": 0.19012075759906577,
+      "pr_auc_skill": 0.08704733937004316,
+      "brier": 0.06205193683968473,
+      "brier_clim": 0.06553159108912684,
+      "brier_skill": 0.05309888241092109,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_pr_auc": 0.3149321498385442,
+      "raw_brier": 0.16683381932438404
+    },
+    "lightgbm_val": {
+      "n": 884,
+      "prevalence": 0.08597285067873303,
+      "pr_auc": 0.33301884074078525,
+      "pr_auc_clim": 0.16497227938358744,
+      "pr_auc_skill": 0.2012466858383418,
+      "brier": 0.09736439837327426,
+      "brier_clim": 0.07706333241717356,
+      "brier_skill": -0.2634335334242126,
+      "calibrated": false
+    },
+    "lightgbm_val_calibrated": {
+      "n": 884,
+      "prevalence": 0.08597285067873303,
+      "pr_auc": 0.33533071700246897,
+      "pr_auc_clim": 0.16497227938358744,
+      "pr_auc_skill": 0.20401530801052203,
+      "brier": 0.06415868777473109,
+      "brier_clim": 0.07706333241717356,
+      "brier_skill": 0.16745505596078625,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_pr_auc": 0.33301884074078525,
+      "raw_brier": 0.09736439837327426
+    },
+    "lightgbm_test": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.48371894940388893,
+      "pr_auc_clim": 0.19012075759906577,
+      "pr_auc_skill": 0.3625209493386128,
+      "brier": 0.09236314891125187,
+      "brier_clim": 0.06553159108912684,
+      "brier_skill": -0.4094446262663227,
+      "calibrated": false
+    },
+    "lightgbm_test_calibrated": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.44426381230150974,
+      "pr_auc_clim": 0.19012075759906577,
+      "pr_auc_skill": 0.31380364058846855,
+      "brier": 0.05417013731747229,
+      "brier_clim": 0.06553159108912684,
+      "brier_skill": 0.17337369019779025,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_pr_auc": 0.48371894940388893,
+      "raw_brier": 0.09236314891125187
+    }
+  },
+  "leave_one_year_out": {
+    "2018": {
+      "n_train": 6397,
+      "n_test": 849,
+      "test_prevalence": 0.11071849234393404,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 849,
+          "prevalence": 0.11071849234393404,
+          "pr_auc": 0.41840975640558037,
+          "pr_auc_clim": 0.3614094866113247,
+          "pr_auc_skill": 0.08925949978771872,
+          "brier": 0.07816434576917153,
+          "brier_clim": 0.08690208693949487,
+          "brier_skill": 0.10054696587904677,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.47289742821707703,
+          "raw_brier": 0.15173771646289141
+        },
+        "lightgbm_test_calibrated": {
+          "n": 849,
+          "prevalence": 0.11071849234393404,
+          "pr_auc": 0.5293211648371429,
+          "pr_auc_clim": 0.3614094866113247,
+          "pr_auc_skill": 0.2629410783677261,
+          "brier": 0.06986862973560481,
+          "brier_clim": 0.08690208693949487,
+          "brier_skill": 0.1960074585521694,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.6154058888849022,
+          "raw_brier": 0.0853603364576806
+        }
+      }
+    },
+    "2019": {
+      "n_train": 6359,
+      "n_test": 887,
+      "test_prevalence": 0.05636978579481398,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 887,
+          "prevalence": 0.05636978579481398,
+          "pr_auc": 0.22709730949260157,
+          "pr_auc_clim": 0.16436481588296165,
+          "pr_auc_skill": 0.0750716279089245,
+          "brier": 0.05021629817413742,
+          "brier_clim": 0.05142563018141963,
+          "brier_skill": 0.02351613393974794,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.22008787173571148,
+          "raw_brier": 0.18106688419575276
+        },
+        "lightgbm_test_calibrated": {
+          "n": 887,
+          "prevalence": 0.05636978579481398,
+          "pr_auc": 0.2937541281408743,
+          "pr_auc_clim": 0.16436481588296165,
+          "pr_auc_skill": 0.15483947387235733,
+          "brier": 0.05057273178536044,
+          "brier_clim": 0.05142563018141963,
+          "brier_skill": 0.01658508399508829,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.34262753768474385,
+          "raw_brier": 0.1053393111494029
+        }
+      }
+    },
+    "2020": {
+      "n_train": 6359,
+      "n_test": 887,
+      "test_prevalence": 0.07328072153325817,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 887,
+          "prevalence": 0.07328072153325817,
+          "pr_auc": 0.3551350036610025,
+          "pr_auc_clim": 0.14885131625902354,
+          "pr_auc_skill": 0.24235916866524304,
+          "brier": 0.05273879042784351,
+          "brier_clim": 0.06586383360778576,
+          "brier_skill": 0.1992754211378115,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.3910364166641951,
+          "raw_brier": 0.18377394968503838
+        },
+        "lightgbm_test_calibrated": {
+          "n": 887,
+          "prevalence": 0.07328072153325817,
+          "pr_auc": 0.4936992282597535,
+          "pr_auc_clim": 0.14885131625902354,
+          "pr_auc_skill": 0.40515590118174327,
+          "brier": 0.04952047571136425,
+          "brier_clim": 0.06586383360778576,
+          "brier_skill": 0.24813857622902724,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.5661667067151522,
+          "raw_brier": 0.12082385137006812
+        }
+      }
+    },
+    "2021": {
+      "n_train": 6335,
+      "n_test": 911,
+      "test_prevalence": 0.07244785949506037,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 911,
+          "prevalence": 0.07244785949506037,
+          "pr_auc": 0.30648406605036393,
+          "pr_auc_clim": 0.13598906491121127,
+          "pr_auc_skill": 0.1973296797703515,
+          "brier": 0.05976575597450182,
+          "brier_clim": 0.06684009148817076,
+          "brier_skill": 0.10583970422782762,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.3148191346367553,
+          "raw_brier": 0.1826366506447503
+        },
+        "lightgbm_test_calibrated": {
+          "n": 911,
+          "prevalence": 0.07244785949506037,
+          "pr_auc": 0.42121025897435244,
+          "pr_auc_clim": 0.13598906491121127,
+          "pr_auc_skill": 0.3301129447323845,
+          "brier": 0.05383482262502472,
+          "brier_clim": 0.06684009148817076,
+          "brier_skill": 0.1945728764516681,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.48066841892575946,
+          "raw_brier": 0.11028625986074202
+        }
+      }
+    },
+    "2022": {
+      "n_train": 6362,
+      "n_test": 884,
+      "test_prevalence": 0.08597285067873303,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 884,
+          "prevalence": 0.08597285067873303,
+          "pr_auc": 0.23481651336512674,
+          "pr_auc_clim": 0.16303500410717126,
+          "pr_auc_skill": 0.08576405179452323,
+          "brier": 0.07588585360819176,
+          "brier_clim": 0.07668069793634244,
+          "brier_skill": 0.010365637631656988,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.24877946743382054,
+          "raw_brier": 0.15950561740175911
+        },
+        "lightgbm_test_calibrated": {
+          "n": 884,
+          "prevalence": 0.08597285067873303,
+          "pr_auc": 0.31841629777634556,
+          "pr_auc_clim": 0.16303500410717126,
+          "pr_auc_skill": 0.1856484971673421,
+          "brier": 0.06619130700665306,
+          "brier_clim": 0.07668069793634244,
+          "brier_skill": 0.136793107157127,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.32929488942978863,
+          "raw_brier": 0.10104562581094699
+        }
+      }
+    },
+    "2023": {
+      "n_train": 6259,
+      "n_test": 987,
+      "test_prevalence": 0.12259371833839919,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 987,
+          "prevalence": 0.12259371833839919,
+          "pr_auc": 0.41218007600438666,
+          "pr_auc_clim": 0.29731237776009783,
+          "pr_auc_skill": 0.1634690787325015,
+          "brier": 0.08716481811441075,
+          "brier_clim": 0.09978804234961318,
+          "brier_skill": 0.12650036956308086,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.4359123492673629,
+          "raw_brier": 0.17302379919670918
+        },
+        "lightgbm_test_calibrated": {
+          "n": 987,
+          "prevalence": 0.12259371833839919,
+          "pr_auc": 0.6153581373841289,
+          "pr_auc_clim": 0.29731237776009783,
+          "pr_auc_skill": 0.45261329438281783,
+          "brier": 0.0685099369866529,
+          "brier_clim": 0.09978804234961318,
+          "brier_skill": 0.3134454251880764,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.6737218247677744,
+          "raw_brier": 0.09132936411291152
+        }
+      }
+    },
+    "2024": {
+      "n_train": 6356,
+      "n_test": 890,
+      "test_prevalence": 0.035955056179775284,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 890,
+          "prevalence": 0.035955056179775284,
+          "pr_auc": 0.1040180121844677,
+          "pr_auc_clim": 0.10243537279980734,
+          "pr_auc_skill": 0.0017632595321822595,
+          "brier": 0.0420809888439458,
+          "brier_clim": 0.038860648811272706,
+          "brier_skill": -0.08286892090537967,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.11111090999678351,
+          "raw_brier": 0.17222733824968775
+        },
+        "lightgbm_test_calibrated": {
+          "n": 890,
+          "prevalence": 0.035955056179775284,
+          "pr_auc": 0.20341530190034168,
+          "pr_auc_clim": 0.10243537279980734,
+          "pr_auc_skill": 0.11250435460622468,
+          "brier": 0.04098543927144886,
+          "brier_clim": 0.038860648811272706,
+          "brier_skill": -0.05467717408670225,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.31167580944459616,
+          "raw_brier": 0.10521518120907858
+        }
+      }
+    },
+    "2025": {
+      "n_train": 6295,
+      "n_test": 951,
+      "test_prevalence": 0.06624605678233439,
+      "metrics": {
+        "logreg_test_calibrated": {
+          "n": 951,
+          "prevalence": 0.06624605678233439,
+          "pr_auc": 0.3295906296953145,
+          "pr_auc_clim": 0.17396627482342272,
+          "pr_auc_skill": 0.18839951702773963,
+          "brier": 0.0542616426578742,
+          "brier_clim": 0.058165020251606525,
+          "brier_skill": 0.06710867763558481,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.3805377530344476,
+          "raw_brier": 0.16128340969260407
+        },
+        "lightgbm_test_calibrated": {
+          "n": 951,
+          "prevalence": 0.06624605678233439,
+          "pr_auc": 0.504849383072466,
+          "pr_auc_clim": 0.17396627482342272,
+          "pr_auc_skill": 0.40056852179771707,
+          "brier": 0.04684528933303036,
+          "brier_clim": 0.058165020251606525,
+          "brier_skill": 0.19461406305043816,
+          "calibrated": true,
+          "calibration_method": "isotonic",
+          "raw_pr_auc": 0.6117779882158587,
+          "raw_brier": 0.0867594417137147
+        }
+      }
+    }
+  },
+  "transfer_ireland_to_uk": {
+    "n_ie_train": 29683,
+    "n_uk_test": 2828,
+    "features": [
+      "woy_sin",
+      "woy_cos",
+      "latitude",
+      "longitude"
+    ],
+    "logreg_uk_test": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.21415515606526547,
+      "pr_auc_clim": 0.15927500838805214,
+      "pr_auc_skill": 0.06527716937733698,
+      "brier": 0.2355437300001582,
+      "brier_clim": 0.07730175203636744,
+      "brier_skill": -2.047068453110146,
+      "calibrated": false
+    },
+    "logreg_uk_test_calibrated": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.19866780611730234,
+      "pr_auc_clim": 0.15927500838805214,
+      "pr_auc_skill": 0.0468557472684631,
+      "brier": 0.08618434024414078,
+      "brier_clim": 0.07730175203636744,
+      "brier_skill": -0.11490798039861283,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_pr_auc": 0.21415515606526547
+    },
+    "lightgbm_uk_test": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.13084197891585256,
+      "pr_auc_clim": 0.15927500838805214,
+      "pr_auc_skill": -0.03381965536397825,
+      "brier": 0.12412497540313772,
+      "brier_clim": 0.07730175203636744,
+      "brier_skill": -0.6057200792129755,
+      "calibrated": false
+    },
+    "lightgbm_uk_test_calibrated": {
+      "n": 2828,
+      "prevalence": 0.07637906647807638,
+      "pr_auc": 0.13188822020569033,
+      "pr_auc_clim": 0.15927500838805214,
+      "pr_auc_skill": -0.03257520408647813,
+      "brier": 0.0791263949610678,
+      "brier_clim": 0.07730175203636744,
+      "brier_skill": -0.023604160017510756,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_pr_auc": 0.13084197891585256
+    }
+  },
+  "irish_strong_reference": {
+    "lightgbm_test_calibrated": {
+      "n": 14270,
+      "prevalence": 0.05178696566222845,
+      "pr_auc": 0.29326665676644725,
+      "pr_auc_clim": 0.18314021138094166,
+      "pr_auc_skill": 0.13481682771002815,
+      "brier": 0.052914325701014425,
+      "brier_clim": 0.05230444573776661,
+      "brier_skill": -0.011660193596267243,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_brier": 0.11667858478385824,
+      "raw_brier_skill": -1.2307584592108594,
+      "raw_pr_auc": 0.3058703295923314
+    },
+    "lightgbm_test": {
+      "n": 14270,
+      "prevalence": 0.05178696566222845,
+      "pr_auc": 0.3058703295923314,
+      "pr_auc_clim": 0.18314021138094166,
+      "pr_auc_skill": 0.15024624779103285,
+      "brier": 0.11667858478385824,
+      "brier_clim": 0.05230444573776661,
+      "brier_skill": -1.2307584592108594,
+      "calibrated": false
+    },
+    "logreg_test_calibrated": {
+      "n": 14270,
+      "prevalence": 0.05178696566222845,
+      "pr_auc": 0.2333292897158852,
+      "pr_auc_clim": 0.18314021138094166,
+      "pr_auc_skill": 0.06144148485970971,
+      "brier": 0.05260200039706262,
+      "brier_clim": 0.05230444573776661,
+      "brier_skill": -0.005688898048701763,
+      "calibrated": true,
+      "calibration_method": "isotonic",
+      "raw_brier": 0.17346260064428567,
+      "raw_brier_skill": -2.3164026154479713,
+      "raw_pr_auc": 0.24488348088110606
+    }
+  }
+}

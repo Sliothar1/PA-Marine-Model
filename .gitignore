@@ -23,3 +23,5 @@ data/models/
 *.joblib
 .ipynb_checkpoints/
 .pytest_cache/
+!data/processed/uk_dino_metrics.json
+!data/processed/uk_dino_report.md

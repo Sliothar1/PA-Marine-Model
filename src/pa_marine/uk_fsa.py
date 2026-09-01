@@ -149,16 +149,28 @@ def osgb_to_lonlat(grid_refs: pd.Series) -> tuple[pd.Series, pd.Series]:
     return pd.Series(lons, index=grid_refs.index), pd.Series(lats, index=grid_refs.index)
 
 
+def _open_csv(path: Path, **kwargs) -> pd.DataFrame:
+    """Read FSA CSV trying utf-8 then Windows cp1252 (2023/2024 Azure exports)."""
+    last_err: Exception | None = None
+    for enc in ("utf-8", "utf-8-sig", "cp1252", "latin-1"):
+        try:
+            return pd.read_csv(path, encoding=enc, on_bad_lines="skip", **kwargs)
+        except UnicodeDecodeError as exc:
+            last_err = exc
+            continue
+    raise last_err  # type: ignore[misc]
+
+
 def _read_raw_csv(path: Path) -> pd.DataFrame:
     # Try tidy header first
-    peek = pd.read_csv(path, nrows=3, encoding="utf-8", on_bad_lines="skip")
+    peek = _open_csv(path, nrows=3)
     cols0 = [_norm_header(c) for c in peek.columns]
     if any("samplenumber" in c.replace(" ", "") or c == "sample number" for c in cols0) or any(
         "datesamplecollected" in c.replace(" ", "") for c in cols0
     ):
-        return pd.read_csv(path, encoding="utf-8", on_bad_lines="skip")
+        return _open_csv(path)
     # Excel-export: title row then header
-    df = pd.read_csv(path, header=1, encoding="utf-8", on_bad_lines="skip")
+    df = _open_csv(path, header=1)
     # drop fully empty trailing columns
     df = df.dropna(axis=1, how="all")
     return df

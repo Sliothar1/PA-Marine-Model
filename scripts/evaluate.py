@@ -36,10 +36,10 @@ def main():
     p.add_argument("--out", default=None)
     p.add_argument(
         "--feature-mode",
-        default="all",
+        default="strong",
         choices=["all", "strong", "sst"],
-        help="all=joined features; strong=drop weak MHW/noise (dino ablation winner); "
-        "sst=SST/SSTA + woy + geo only.",
+        help="Default strong for Dinophysis (ablation winner 2026-09-01): drop weak MHW/noise. "
+        "all=full joined set; sst=SST/SSTA + woy + geo only.",
     )
     args = p.parse_args()
     cfg = load_config(args.config)

@@ -27,3 +27,18 @@ def test_parse_tidy_fixture(tmp_path: Path):
     panel = uk_station_week_panel(df)
     assert panel["y_dinophysis"].sum() >= 1
     assert panel["y_pseudo_nitzschia"].sum() >= 1
+
+
+def test_cp1252_excel_export(tmp_path: Path):
+    csv = tmp_path / "uk_cp1252.csv"
+    # Em-dash (0x97 in cp1252) in a title row, then tidy header — mirrors 2024 Azure exports.
+    body = (
+        "Phytoplankton results \u2014 FSA\n"
+        "Sample number,Production area,Bed ID,Local authority,Grid reference,Sampling point,"
+        "Date sample collected,Alexandrium spp. cells L-1 (PSP),Dinophysiaceae cells L-1 (DSP),"
+        "Prorocentrum lima cells L-1 (DSP),Pseudo-nitzschia spp. cells L-1 (ASP)\n"
+        "1,West Mersea,B013Z,Colchester BC,TM00001301,The Hard,2024-07-06,ND,150,ND,ND\n"
+    )
+    csv.write_bytes(body.encode("cp1252"))
+    df = load_fsa_csv(csv)
+    assert float(df.iloc[0]["dinophysiaceae"]) == 150.0

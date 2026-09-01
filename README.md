@@ -105,13 +105,13 @@ python scripts/download.py
 python scripts/build_panel.py
 python scripts/compute_mhw.py --max-stations 5 --t0 2015-01-01 --t1 2024-12-31
 python scripts/join_features.py
-python scripts/evaluate.py --horizon both --calibration auto
+python scripts/evaluate.py --horizon both --calibration auto --feature-mode strong
 ```
 
 Re-evaluate on existing joined features (no OISST re-download):
 
 ```bash
-python scripts/evaluate.py --joined data/processed/joined_features.parquet --horizon both
+python scripts/evaluate.py --joined data/processed/joined_features.parquet --horizon both --feature-mode strong
 ```
 
 Probe connectivity:
@@ -132,6 +132,10 @@ python -m pa_marine.cli probe
 ## License
 
 MIT. HAB data © Marine Institute (see ERDDAP license). OISST © NOAA.
+
+## Default Dinophysis feature mode: `strong`
+
+`scripts/evaluate.py` defaults to `--feature-mode strong` for Irish Dinophysis. The 2026-09-01 ablation (`dino_feature_report.md`) showed LightGBM **gain/permutation** dominated by week-of-year Fourier + lat/lon, with a small SST roll/lag contribution; most `in_mhw*` / duration features were near-zero noise. Dropping those weak MHW columns (**9 features**) raised val-calibrated **test** PR-AUC for `y_dinophysis_nowcast` from **0.281 → 0.293** vs full `all` (44 features). Use `--feature-mode all` only when you explicitly want the full joined set (e.g. Pseudo-nitzschia exploration).
 
 ## Dinophysis feature study (2026-09-01)
 
@@ -163,5 +167,13 @@ Public FSA/Cefas phytoplankton CSVs from [data.gov.uk](https://www.data.gov.uk/d
 python scripts/ingest_uk_fsa.py --download   # or drop CSVs into data/raw/uk_phyto/
 ```
 
-Adapter: `src/pa_marine/uk_fsa.py` (OSGB grid → WGS84 via `pyproj`). Builds `data/processed/uk_station_week_panel.parquet` with Dinophysiaceae (≥100 cells L⁻¹) as Dinophysis proxy. **Not merged into Irish training yet.**
+Adapter: `src/pa_marine/uk_fsa.py` (OSGB grid → WGS84 via `pyproj`; utf-8/cp1252 CSV encodings). Builds `data/processed/uk_station_week_panel.parquet` with Dinophysiaceae (≥100 cells L⁻¹) as Dinophysis proxy. **Not merged into Irish training yet.**
+
+UK-only Dinophysis eval (adapted time split + LOYO + Ireland→UK transfer; seasonality/geo features only — no OSTIA):
+
+```bash
+python scripts/evaluate_uk_dino.py
+```
+
+See `data/processed/uk_dino_report.md` and `uk_dino_metrics.json`.
 
