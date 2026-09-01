@@ -4,6 +4,8 @@ Train models that, **at each Irish HAB monitoring station**, predict whether a s
 
 This is a research nowcast / short-range forecast pipeline, not an operational warning product.
 
+**Primary target:** `dinophysis`. Keep `pseudo_nitzschia`. Treat `karenia_mikimotoi` as exploratory (threshold too high / too rare for useful skill).
+
 ## Verified data sources (HTTP, 2026-09-01)
 
 **Labels** — Marine Institute ERDDAP `tabledap/habs_phyto`  
@@ -18,7 +20,7 @@ Taxon groups (name match on `scientific_name`):
 | --- | --- | --- |
 | `dinophysis` | names containing `Dinophysis` (acuminata, acuta, spp., …) | ≥ 100 cells L⁻¹ |
 | `pseudo_nitzschia` | `Pseudo-nitzschia` (delicatissima / seriata complexes) | ≥ 50,000 cells L⁻¹ |
-| `karenia_mikimotoi` | `Karenia mikimotoi` | **95th percentile of positive station-week counts on the training split** (fallback 1000 cells L⁻¹ if too few positives). The fitted threshold is printed by `build_panel.py`. |
+| `karenia_mikimotoi` | `Karenia mikimotoi` | **95th percentile of positive station-week counts on the training split** (fallback 1000 cells L⁻¹ if too few positives). Fitted threshold on the 2026-09-01 full run: **~128,300 cells L⁻¹**. |
 
 **SST** — NOAA OISST v2.1 daily via public ERDDAP `ncdcOisst21Agg` (no Copernicus login)  
 https://coastwatch.pfeg.noaa.gov/erddap/info/ncdcOisst21Agg/index.html  
@@ -55,11 +57,27 @@ Attached to the **Sunday (ISO week end)** so features use only SST through the m
 
 Climatology baseline: mean exceedance rate by ISO week-of-year on **train** only.
 
-## Models & metrics
+## Models, calibration & metrics
 
 - sklearn logistic regression (balanced)  
 - LightGBM or XGBoost if installed; otherwise sklearn `HistGradientBoostingClassifier`  
-Per taxon and horizon: **PR-AUC**, **Brier**, **skill vs week-of-year climatology**.
+- **Probability calibration:** isotonic (fallback sigmoid if too few positives) fitted on the **validation split only**, then applied to test. Use `scripts/evaluate.py --calibration auto` (default).
+
+Per taxon and horizon: **PR-AUC**, **Brier**, **skill vs week-of-year climatology** — reported raw and calibrated in `data/processed/metrics.json`.
+
+### Full-run test numbers (2026-09-01; see `data/processed/run_summary.md`)
+
+207 stations, 53,172 station-weeks; HAB through 2026-08-30; OISST through **2026-08-16** (ERDDAP axis max).
+
+**Dinophysis nowcast (primary)** — LightGBM: PR-AUC **0.296 → 0.280** after calibration (clim 0.183; PR skill ~**0.12**). Brier skill **−1.10 → −0.01** (raw over-confidence from `class_weight=balanced`; calibration fixes reliability without large ranking change).
+
+**Pseudo-nitzschia nowcast** — LightGBM: small PR skill (~0.04–0.05); Brier skill **−1.23 → +0.02** after calibration.
+
+**Karenia** — fails: test prevalence ≪ 0.1%; PR ≈ / below climatology. Exploratory only.
+
+Ahead-7d Dinophysis LightGBM: PR skill ~0.08 after calibration; Brier skill **−1.89 → −0.05**.
+
+Honest summary: modest PR skill on Dinophysis vs seasonal climatology; calibration is required for usable probabilities; Karenia is not a viable target at the fitted threshold.
 
 ## Install
 
@@ -87,8 +105,13 @@ python scripts/download.py
 python scripts/build_panel.py
 python scripts/compute_mhw.py --max-stations 5 --t0 2015-01-01 --t1 2024-12-31
 python scripts/join_features.py
-python scripts/evaluate.py --horizon nowcast
-python scripts/evaluate.py --horizon ahead7
+python scripts/evaluate.py --horizon both --calibration auto
+```
+
+Re-evaluate on existing joined features (no OISST re-download):
+
+```bash
+python scripts/evaluate.py --joined data/processed/joined_features.parquet --horizon both
 ```
 
 Probe connectivity:
@@ -104,6 +127,7 @@ python -m pa_marine.cli probe
 - OISST 0.25° is coarse vs inshore stations; nearest-neighbour, no coastal mask.
 - MHW climatology in v1 uses the full local series (not a fixed 30-year baseline).
 - Do not treat skill on the tiny fixture as scientific evidence.
+- Raw (uncalibrated) Brier skill is negative vs week-of-year climatology; use calibrated probabilities for reliability.
 
 ## License
 

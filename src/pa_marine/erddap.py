@@ -16,7 +16,7 @@ class ErddapError(RuntimeError):
     pass
 
 
-def _get(url: str, timeout: int = 120) -> str:
+def _get(url: str, timeout: int = 180) -> str:
     r = requests.get(url, timeout=timeout)
     if r.status_code != 200:
         raise ErddapError(f"HTTP {r.status_code} for {url[:180]}\n{r.text[:500]}")
@@ -28,7 +28,7 @@ def tabledap_csv(
     dataset_id: str,
     variables: Iterable[str],
     constraints: Iterable[str] | None = None,
-    timeout: int = 180,
+    timeout: int = 300,
 ) -> pd.DataFrame:
     """Fetch tabledap CSV. Constraints must already be URL-safe except we encode them.
 
@@ -56,7 +56,7 @@ def griddap_csv(
     base: str,
     dataset_id: str,
     query: str,
-    timeout: int = 180,
+    timeout: int = 300,
 ) -> pd.DataFrame:
     """query is the ERDDAP griddap expression after '?' (already encoded or safe)."""
     url = f"{base.rstrip('/')}/griddap/{dataset_id}.csv?{query}"

@@ -18,7 +18,7 @@ def main():
     p.add_argument("--sst-in", default=None, help="Existing daily SST parquet; skip download if set")
     p.add_argument("--out", default=None)
     p.add_argument("--t0", default="2002-01-01")
-    p.add_argument("--t1", default="2026-08-31")
+    p.add_argument("--t1", default="2026-08-16")
     p.add_argument("--max-stations", type=int, default=None)
     args = p.parse_args()
     cfg = load_config(args.config)
