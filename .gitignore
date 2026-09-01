@@ -71,3 +71,6 @@ data/models/
 !data/processed/rivers_hab_station_map.csv
 !data/processed/rivers_stations_selected.csv
 !data/processed/rivers_week_primary_Q.csv
+!data/processed/briefs/
+!data/processed/briefs/*.md
+!data/processed/briefs/*.txt

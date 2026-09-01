@@ -65,7 +65,7 @@ Rebuild from **existing** processed files (no network):
 
 ```bash
 python scripts/build_june2023_case_study.py
-scripts/train_dsp_closure_risk.py
+python scripts/train_dsp_closure_risk.py
 ```
 
 | Artifact | Role |
@@ -81,6 +81,8 @@ scripts/train_dsp_closure_risk.py
 Demo beats (see case study for caveats): Irish-bbox CRW mean frac_mhw in June ≈ **0.96**, peak **1.0** on 19–20 Jun (max cat **5**); Mace Head June mean T ≈ **16 °C**; Rosmuc exceedance week of **29 May**, Mannin week of **10 Jul** — bookend / lag relative to peak MHW, **not** proof of causation.
 
 Scout P0 (CRW, SmartBay, Met Éireann, CONN ROMS note): `scripts/ingest_scout_p0.py` → `scout_ingest_report.md`.
+
+**Productised idea 3 — event brief:** when a shelf MHW is underway, generate an industry/gov situational note with `python scripts/mhw_hab_brief.py` → `data/processed/briefs/mhw_hab_brief_YYYY-MM-DD.md` (+ `.txt`). Flagship: June 2023 (`mhw_hab_brief_2023-06-30.*`). Spec: [`docs/MHW_EVENT_PRODUCT.md`](MHW_EVENT_PRODUCT.md).
 
 ---
 
@@ -126,10 +128,19 @@ python scripts/train_scotland_dino.py --skip-download
 
 ```bash
 python scripts/build_june2023_case_study.py
-scripts/train_dsp_closure_risk.py
+python scripts/train_dsp_closure_risk.py
 ```
 
 Requires processed CRW summary, HAB panel, joined features, Mace Head daily, Spiddal CTD, Met daily (see case-study “Sources” section).
+
+### D2. MHW event brief (“Will this heatwave matter for HABs?”)
+
+```bash
+python scripts/mhw_hab_brief.py                 # June 2023 flagship
+python scripts/mhw_hab_brief.py --latest        # last ~30 days of CRW
+```
+
+Writes `data/processed/briefs/mhw_hab_brief_YYYY-MM-DD.md` + `.txt`. Product note: [`docs/MHW_EVENT_PRODUCT.md`](MHW_EVENT_PRODUCT.md).
 
 ### E. Optional local re-ingest (network)
 
@@ -162,6 +173,30 @@ Honest takeaway: **closure risk ranks about as well as cell exceedance** on SST 
 
 ---
 
+## Event product — MHW × HAB brief (idea 3)
+
+**Question for operators / agencies:** *Will this heatwave matter for HABs?*
+
+Automated desk brief when Irish-bbox CRW shows a shelf MHW: CRW fraction/categories, national + Connemara Dinophysis exceedance vs climatology, closure/DSP context, Mace Head temperature anomaly, Corrib/Owenboliskey Q anomaly — markdown + plain-English text.
+
+```bash
+python scripts/mhw_hab_brief.py
+# → data/processed/briefs/mhw_hab_brief_2023-06-30.md
+# → data/processed/briefs/mhw_hab_brief_2023-06-30.txt
+```
+
+| Artifact | Role |
+| --- | --- |
+| `docs/MHW_EVENT_PRODUCT.md` | What it is, who it’s for, how to run, limits |
+| `scripts/mhw_hab_brief.py` | Generator (default June 2023; `--latest` for recent CRW) |
+| `data/processed/briefs/mhw_hab_brief_2023-06-30.md` | Flagship June 2023 brief |
+| `…/mhw_hab_brief_2023-06-30.txt` | Plain-English twin |
+
+Demo beat: June 2023 was a **severe shelf-wide MHW** (CRW frac ≈ 0.96) but national Dinophysis/closure rates were **not** above climatology — use the brief to argue for heightened monitoring **without** assuming MHW ⇒ immediate bloom. **Not** an official warning product.
+
+
+---
+
 ## 5. Honest limits (what did **not** help)
 
 Quote these so judges trust the science:
@@ -186,7 +221,7 @@ Other caveats: irregular HAB sampling (missing week ≠ true negative); OISST 0.
 | 0–2 h | Clone, `pip install -e ".[dev]"`, fixture + `demo_snapshot.py`, skim this doc + `june2023_case_study.md` |
 | 2–6 h | Deck: problem → Ireland/Scotland metrics → June 2023 figures → honest limits |
 | 6–12 h | Live demo path: snapshot → open three PNGs → optional `evaluate.py --feature-mode strong` if parquet present |
-| Next (if time) | Ablate river Q features (see §7); **DSP/closure ops prototype** (`train_dsp_closure_risk.py`); England/Wales transfer |
+| Next (if time) | Ablate river Q features (see §7); **DSP/closure ops prototype**; **MHW event brief** (`mhw_hab_brief.py`); England/Wales transfer |
 
 ---
 
@@ -219,8 +254,13 @@ scripts/evaluate.py --feature-mode strong
 scripts/train_scotland_dino.py
 scripts/build_june2023_case_study.py
 scripts/train_dsp_closure_risk.py
+scripts/mhw_hab_brief.py
 scripts/ingest_sentinel_sites.py
 scripts/ingest_scout_p0.py
+
+docs/MHW_EVENT_PRODUCT.md
+data/processed/briefs/mhw_hab_brief_2023-06-30.md
+data/processed/briefs/mhw_hab_brief_2023-06-30.txt
 
 data/processed/metrics_dino_strong.json
 data/processed/scotland_dino_metrics.json
