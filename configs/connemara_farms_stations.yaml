@@ -1,0 +1,130 @@
+# Connemara Farms HAB monitoring station set (product idea 2)
+# Mapped to Marine Institute NMP / habs_phyto location_id where available.
+# Lat/lon from existing station_week_panel.parquet (NMP metadata).
+# Sentinel buoys: Mace Head / Lehanagh from local_sites_report.md (no HAB labels).
+
+generated: "2026-09-01"
+region: Connemara
+product: connemara_farms_hab_scores
+
+stations:
+  - site_key: killary_inner
+    grower_label: Killary Inner
+    location_id: 171
+    location_name: Killary Harbour Inner
+    latitude: 53.6
+    longitude: -9.75528
+    role: nmp_core
+    status: active
+    notes: Long NMP record; good OISST coverage.
+
+  - site_key: killary_middle
+    grower_label: Killary Middle
+    location_id: 172
+    location_name: Killary Harbour Middle
+    latitude: 53.60389
+    longitude: -9.80278
+    role: nmp_core
+    status: active
+    notes: Long NMP record; good OISST coverage.
+
+  - site_key: killary_outer
+    grower_label: Killary Outer
+    location_id: 175
+    location_name: Killary Harbour Outer
+    latitude: 53.61472
+    longitude: -9.83306
+    role: nmp_core
+    status: active
+    notes: Highest historical Dinophysis positives in the set.
+
+  - site_key: mannin
+    grower_label: Mannin
+    location_id: 177
+    location_name: Mannin
+    latitude: 53.45944
+    longitude: -10.07
+    role: nmp_core
+    status: active
+    notes: Active; June 2023 case-study site.
+
+  - site_key: rosmuc
+    grower_label: Rosmuc
+    location_id: 174
+    location_name: Rosmuc
+    latitude: 53.33194
+    longitude: -9.59861
+    role: nmp_core
+    status: active_oisst_gap
+    notes: >
+      HAB samples present, but OISST SST is null at this pixel (landmask /
+      inshore). Scores use week-of-year + lat/lon; SST features missing.
+
+  - site_key: clifden
+    grower_label: Clifden
+    location_id: 650
+    location_name: Cliffden Outer
+    latitude: 53.4915
+    longitude: -10.13339
+    role: nmp_core
+    status: active
+    notes: NMP spelling is "Cliffden Outer"; shown to growers as Clifden.
+
+  - site_key: ballynakill
+    grower_label: Ballynakill
+    location_id: 163
+    location_name: Ballynakill
+    latitude: 53.57167
+    longitude: -9.99722
+    role: nmp_core
+    status: active
+    notes: Long NMP record; good OISST coverage.
+
+  - site_key: lehannagh_pool_nmp
+    grower_label: Lehanagh (NMP)
+    location_id: 633
+    location_name: Lehannagh Pool
+    latitude: 53.4012
+    longitude: -9.8266
+    role: nmp_nearby
+    status: sparse_historical
+    notes: >
+      Only 25 station-weeks (2009–2020); no recent HAB samples. Kept in set
+      for site continuity; not used for grower "latest week" tables unless data
+      reappears. Nearby Lehanagh Pool sentinel buoy is separate.
+
+  - site_key: gubbaros_nearby
+    grower_label: Gubbaros (nearby)
+    location_id: 179
+    location_name: Gubbaros
+    latitude: 53.50917
+    longitude: -10.07139
+    role: nmp_nearby
+    status: active
+    notes: Nearby Clifden/Mannin reference used in local_sites / June 2023 demos.
+
+  - site_key: mace_head_buoy
+    grower_label: Mace Head buoy
+    location_id: null
+    location_name: Mace Head (compass_mace_head)
+    latitude: 53.3306
+    longitude: -9.9326
+    role: sentinel_buoy
+    status: buoy_only
+    erddap_dataset: compass_mace_head
+    notes: >
+      Sentinel hydrography (T/S/DO/nitrate); no Dinophysis labels. Context only
+      — see data/processed/local_sites_report.md. Not scored for HAB exceedance.
+
+  - site_key: lehanagh_buoy
+    grower_label: Lehanagh buoy
+    location_id: null
+    location_name: Lehanagh Pool (sentinel_lehanagh)
+    latitude: 53.4001
+    longitude: -9.8207
+    role: sentinel_buoy
+    status: buoy_only
+    erddap_dataset: sentinel_lehanagh
+    notes: >
+      NRT from May 2024; no published QC delayed-mode set. Context only —
+      not scored for HAB exceedance.

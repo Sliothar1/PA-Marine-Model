@@ -74,3 +74,9 @@ data/models/
 !data/processed/briefs/
 !data/processed/briefs/*.md
 !data/processed/briefs/*.txt
+
+!data/processed/connemara_farms_stations.csv
+!data/processed/connemara_farms_scores.csv
+!data/processed/connemara_farms_latest.csv
+!data/processed/connemara_farms_scores.html
+!data/processed/connemara_farms_metrics.json

@@ -1,0 +1,12 @@
+site_key,grower_label,location_id,location_name,latitude,longitude,role,status,erddap_dataset,notes
+killary_inner,Killary Inner,171.0,Killary Harbour Inner,53.6,-9.75528,nmp_core,active,,Long NMP record; good OISST coverage.
+killary_middle,Killary Middle,172.0,Killary Harbour Middle,53.60389,-9.80278,nmp_core,active,,Long NMP record; good OISST coverage.
+killary_outer,Killary Outer,175.0,Killary Harbour Outer,53.61472,-9.83306,nmp_core,active,,Highest historical Dinophysis positives in the set.
+mannin,Mannin,177.0,Mannin,53.45944,-10.07,nmp_core,active,,Active; June 2023 case-study site.
+rosmuc,Rosmuc,174.0,Rosmuc,53.33194,-9.59861,nmp_core,active_oisst_gap,,"HAB samples present, but OISST SST is null at this pixel (landmask / inshore). Scores use week-of-year + lat/lon; SST features missing."
+clifden,Clifden,650.0,Cliffden Outer,53.4915,-10.13339,nmp_core,active,,"NMP spelling is ""Cliffden Outer""; shown to growers as Clifden."
+ballynakill,Ballynakill,163.0,Ballynakill,53.57167,-9.99722,nmp_core,active,,Long NMP record; good OISST coverage.
+lehannagh_pool_nmp,Lehanagh (NMP),633.0,Lehannagh Pool,53.4012,-9.8266,nmp_nearby,sparse_historical,,"Only 25 station-weeks (2009–2020); no recent HAB samples. Kept in set for site continuity; not used for grower ""latest week"" tables unless data reappears. Nearby Lehanagh Pool sentinel buoy is separate."
+gubbaros_nearby,Gubbaros (nearby),179.0,Gubbaros,53.50917,-10.07139,nmp_nearby,active,,Nearby Clifden/Mannin reference used in local_sites / June 2023 demos.
+mace_head_buoy,Mace Head buoy,,Mace Head (compass_mace_head),53.3306,-9.9326,sentinel_buoy,buoy_only,compass_mace_head,Sentinel hydrography (T/S/DO/nitrate); no Dinophysis labels. Context only — see data/processed/local_sites_report.md. Not scored for HAB exceedance.
+lehanagh_buoy,Lehanagh buoy,,Lehanagh Pool (sentinel_lehanagh),53.4001,-9.8207,sentinel_buoy,buoy_only,sentinel_lehanagh,NRT from May 2024; no published QC delayed-mode set. Context only — not scored for HAB exceedance.

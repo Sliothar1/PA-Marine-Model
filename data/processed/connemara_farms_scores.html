@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Connemara Farms — weekly HAB risk</title>
+<style>
+  body { font-family: system-ui, Segoe UI, sans-serif; margin: 1.5rem; max-width: 1100px; color: #1a1a1a; }
+  h1 { font-size: 1.45rem; }
+  .note { background: #f4f7fb; border-left: 4px solid #2b6cb0; padding: 0.75rem 1rem; margin: 1rem 0; }
+  .warn { background: #fff8e6; border-left: 4px solid #c05621; padding: 0.75rem 1rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+  th, td { border: 1px solid #d0d7de; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+  th { background: #eef2f7; }
+  .Higher { color: #9b2c2c; }
+  .Moderate { color: #c05621; }
+  .Lower { color: #276749; }
+  footer { margin-top: 1.5rem; font-size: 0.85rem; color: #555; }
+</style>
+</head>
+<body>
+  <h1>Connemara Farms — weekly Dinophysis risk</h1>
+  <p>Simple view for shellfish growers. Scores are <strong>research nowcasts</strong>
+  from sea-surface temperature patterns (NOAA OISST) plus season and location —
+  <em>not</em> an official Marine Institute warning.</p>
+  <div class="note">
+    <strong>How to read the score:</strong> probability that Dinophysis will be at or
+    above 100 cells per litre in the current or next monitoring week (0–2 week
+    nowcast). Compare to the “seasonal usual” for that week of year.
+    Always follow official HAB / biotoxin notices before harvesting.
+  </div>
+  <p>Generated: <strong>2026-09-01 21:56 IST</strong>.
+  Model: national Irish <code>strong</code> OISST LightGBM (calibrated), applied to Connemara sites.
+  Latest weeks shown: <strong>2026-01-12 → 2026-08-24</strong>.</p>
+
+  <h2>Latest site scores</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Site</th>
+        <th>Week</th>
+        <th>Risk</th>
+        <th>vs seasonal usual</th>
+        <th>Recent Dinophysis cells L⁻¹</th>
+        <th>Closure-risk proxy</th>
+        <th>Plain language</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Clifden</td><td>2026-W35</td><td><strong>Higher</strong> (19.2%)</td><td>-2.2% vs seasonal usual</td><td>40</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W35</td><td><strong>Higher</strong> (19.2%)</td><td>-2.2% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Killary Outer</td><td>2026-W35</td><td><strong>Moderate</strong> (14.9%)</td><td>-6.5% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Mannin</td><td>2026-W35</td><td><strong>Higher</strong> (26.9%)</td><td>+5.5% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Ballynakill</td><td>2026-W34</td><td><strong>Moderate</strong> (14.9%)</td><td>-7.0% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Clifden</td><td>2026-W34</td><td><strong>Higher</strong> (25.0%)</td><td>+3.1% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W34</td><td><strong>Higher</strong> (26.9%)</td><td>+5.0% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Killary Middle</td><td>2026-W34</td><td><strong>Moderate</strong> (14.9%)</td><td>-7.0% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Mannin</td><td>2026-W34</td><td><strong>Higher</strong> (26.9%)</td><td>+5.0% vs seasonal usual</td><td>40</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Rosmuc</td><td>2026-W34</td><td><strong>Lower</strong> (5.1%)</td><td>-16.8% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Ballynakill</td><td>2026-W33</td><td><strong>Moderate</strong> (10.2%)</td><td>-14.6% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Clifden</td><td>2026-W33</td><td><strong>Higher</strong> (26.9%)</td><td>+2.2% vs seasonal usual</td><td>80</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W33</td><td><strong>Moderate</strong> (14.9%)</td><td>-9.8% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Outer</td><td>2026-W33</td><td><strong>Moderate</strong> (14.9%)</td><td>-9.8% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Ballynakill</td><td>2026-W32</td><td><strong>Lower</strong> (6.7%)</td><td>-18.1% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Clifden</td><td>2026-W32</td><td><strong>Higher</strong> (36.4%)</td><td>+11.5% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W32</td><td><strong>Moderate</strong> (10.2%)</td><td>-14.7% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Outer</td><td>2026-W32</td><td><strong>Moderate</strong> (10.2%)</td><td>-14.7% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Mannin</td><td>2026-W32</td><td><strong>Higher</strong> (26.9%)</td><td>+2.1% vs seasonal usual</td><td>80</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Rosmuc</td><td>2026-W32</td><td><strong>Lower</strong> (6.7%)</td><td>-18.1% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Ballynakill</td><td>2026-W31</td><td><strong>Lower</strong> (6.7%)</td><td>-23.1% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Killary Outer</td><td>2026-W31</td><td><strong>Moderate</strong> (10.2%)</td><td>-19.7% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Inner</td><td>2026-W30</td><td><strong>Moderate</strong> (14.9%)</td><td>-18.7% vs seasonal usual</td><td>40</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Middle</td><td>2026-W30</td><td><strong>Higher</strong> (16.1%)</td><td>-17.4% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Mannin</td><td>2026-W30</td><td><strong>Higher</strong> (38.6%)</td><td>+5.0% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Killary Middle</td><td>2026-W29</td><td><strong>Moderate</strong> (14.9%)</td><td>-18.0% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Inner</td><td>2026-W28</td><td><strong>Moderate</strong> (10.2%)</td><td>-23.3% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Middle</td><td>2026-W28</td><td><strong>Moderate</strong> (14.9%)</td><td>-18.6% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Inner</td><td>2026-W27</td><td><strong>Higher</strong> (26.9%)</td><td>-9.7% vs seasonal usual</td><td>40</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Rosmuc</td><td>2026-W24</td><td><strong>Moderate</strong> (10.2%)</td><td>-24.4% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Rosmuc</td><td>2026-W23</td><td><strong>Lower</strong> (6.7%)</td><td>-22.6% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Killary Inner</td><td>2026-W03</td><td><strong>Lower</strong> (0.0%)</td><td>+0.0% vs seasonal usual</td><td>0</td><td>5.3%</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Skill (honest)</h2>
+  <ul>
+    <li>National test (2022+) calibrated PR-AUC:
+      <strong>0.293267</strong>
+      vs seasonal clim <strong>0.18314</strong>
+      (PR skill 0.134817).</li>
+    <li>Connemara-site test subset:
+      <strong>0.068432</strong>
+      (n=1558, prevalence=0.028883).</li>
+  </ul>
+
+  <div class="warn">
+    <strong>Gaps / caveats</strong>
+    <ul><li><strong>Rosmuc</strong> (active_oisst_gap): HAB samples present, but OISST SST is null at this pixel (landmask / inshore). Scores use week-of-year + lat/lon; SST features missing.</li><li><strong>Lehanagh (NMP)</strong> (sparse_historical): Only 25 station-weeks (2009–2020); no recent HAB samples. Kept in set for site continuity; not used for grower &quot;latest week&quot; tables unless data reappears. Nearby Lehanagh Pool sentinel buoy is separate.</li><li><strong>Mace Head buoy</strong> (buoy_only): Sentinel hydrography (T/S/DO/nitrate); no Dinophysis labels. Context only — see data/processed/local_sites_report.md. Not scored for HAB exceedance.</li><li><strong>Lehanagh buoy</strong> (buoy_only): NRT from May 2024; no published QC delayed-mode set. Context only — not scored for HAB exceedance.</li></ul>
+    <p>Closure-risk proxy uses the national area-closed model (all toxins + admin rules),
+    only where toxin/status join exists. Rosmuc lacks OISST SST at the station pixel.</p>
+  </div>
+
+  <footer>
+    PA-Marine-Model · Connemara Farms product idea 2 · regenerate with
+    <code>python scripts/score_connemara_farms.py</code>
+  </footer>
+</body>
+</html>

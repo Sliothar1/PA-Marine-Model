@@ -1,0 +1,185 @@
+{
+  "generated": "2026-09-01 21:56 IST",
+  "model_choice": "national_apply_strong_oisst",
+  "model_choice_rationale": "Apply the national Irish Dinophysis strong-OISST model rather than retraining on Connemara alone: local positives are too sparse for a stable site-level fit, and the national protocol already has documented test skill (PR-AUC \u2248 0.293 vs clim \u2248 0.183).",
+  "model": {
+    "model": "lightgbm",
+    "target": "y_dinophysis_nowcast",
+    "feature_mode": "strong",
+    "features": [
+      "sst",
+      "sst_lag0d",
+      "sst_lag21d",
+      "sst_roll7d",
+      "sst_roll30d",
+      "woy_sin",
+      "woy_cos",
+      "latitude",
+      "longitude"
+    ],
+    "n_train": 29683,
+    "n_train_pos": 3871,
+    "calibration": "isotonic",
+    "train_years": "2003-2018 (config year_split)",
+    "val_years": "2019-2021",
+    "test_years": "2022+"
+  },
+  "nmp_location_ids": [
+    163,
+    171,
+    172,
+    174,
+    175,
+    177,
+    179,
+    633,
+    650
+  ],
+  "national_test_calibrated": {
+    "n": 14270,
+    "prevalence": 0.051787,
+    "pr_auc": 0.293267,
+    "pr_auc_clim": 0.18314,
+    "pr_auc_skill": 0.134817,
+    "brier": 0.052914,
+    "brier_clim": 0.052304,
+    "brier_skill": -0.01166
+  },
+  "national_val_calibrated": {
+    "n": 9189,
+    "prevalence": 0.107302,
+    "pr_auc": 0.543279,
+    "pr_auc_clim": 0.285349,
+    "pr_auc_skill": 0.360917,
+    "brier": 0.064257,
+    "brier_clim": 0.081135,
+    "brier_skill": 0.208024
+  },
+  "connemara_coverage": {
+    "n_station_weeks": 4796,
+    "n_stations_scored": 9,
+    "week_span": [
+      "2002-11-18 00:00:00",
+      "2026-08-24 00:00:00"
+    ],
+    "sst_nonnull_rate": 0.904921,
+    "dino_positives": 99,
+    "per_station": [
+      {
+        "location_id": 163,
+        "name": "Ballynakill",
+        "n_weeks": 622,
+        "year_min": 2008,
+        "year_max": 2026,
+        "sst_nn": 618,
+        "dino_pos": 5
+      },
+      {
+        "location_id": 171,
+        "name": "Killary Harbour Inner",
+        "n_weeks": 660,
+        "year_min": 2004,
+        "year_max": 2026,
+        "sst_nn": 657,
+        "dino_pos": 9
+      },
+      {
+        "location_id": 172,
+        "name": "Killary Harbour Middle",
+        "n_weeks": 745,
+        "year_min": 2002,
+        "year_max": 2026,
+        "sst_nn": 741,
+        "dino_pos": 18
+      },
+      {
+        "location_id": 174,
+        "name": "Rosmuc",
+        "n_weeks": 428,
+        "year_min": 2014,
+        "year_max": 2026,
+        "sst_nn": 0,
+        "dino_pos": 4
+      },
+      {
+        "location_id": 175,
+        "name": "Killary Harbour Outer",
+        "n_weeks": 869,
+        "year_min": 2002,
+        "year_max": 2026,
+        "sst_nn": 865,
+        "dino_pos": 34
+      },
+      {
+        "location_id": 177,
+        "name": "Mannin",
+        "n_weeks": 413,
+        "year_min": 2014,
+        "year_max": 2026,
+        "sst_nn": 409,
+        "dino_pos": 4
+      },
+      {
+        "location_id": 179,
+        "name": "Gubbaros",
+        "n_weeks": 565,
+        "year_min": 2008,
+        "year_max": 2026,
+        "sst_nn": 560,
+        "dino_pos": 8
+      },
+      {
+        "location_id": 633,
+        "name": "Lehannagh Pool",
+        "n_weeks": 25,
+        "year_min": 2009,
+        "year_max": 2020,
+        "sst_nn": 25,
+        "dino_pos": 5
+      },
+      {
+        "location_id": 650,
+        "name": "Cliffden Outer",
+        "n_weeks": 469,
+        "year_min": 2014,
+        "year_max": 2026,
+        "sst_nn": 465,
+        "dino_pos": 12
+      }
+    ]
+  },
+  "connemara_test_calibrated": {
+    "n": 1558,
+    "prevalence": 0.028883,
+    "pr_auc": 0.068432,
+    "pr_auc_clim": 0.075223,
+    "pr_auc_skill": -0.007343,
+    "brier": 0.035753,
+    "brier_clim": 0.044115,
+    "brier_skill": 0.189555
+  },
+  "dsp_closure_model": {
+    "model": "lightgbm",
+    "target": "y_closed",
+    "features": [
+      "sst",
+      "sst_lag0d",
+      "sst_lag21d",
+      "sst_roll7d",
+      "sst_roll30d",
+      "woy_sin",
+      "woy_cos",
+      "latitude",
+      "longitude"
+    ],
+    "n_train": 31290,
+    "calibration": "isotonic",
+    "note": "National area-closed head (multi-toxin + admin); not DSP-only."
+  },
+  "outputs": {
+    "stations_csv": "data/processed/connemara_farms_stations.csv",
+    "scores_csv": "data/processed/connemara_farms_scores.csv",
+    "latest_csv": "data/processed/connemara_farms_latest.csv",
+    "html": "data/processed/connemara_farms_scores.html"
+  }
+}
