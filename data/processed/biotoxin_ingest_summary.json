@@ -1,0 +1,71 @@
+{
+  "raw_pivot_rows": 81836,
+  "raw_long_rows": 222519,
+  "raw_status_rows": 62544,
+  "toxin_station_weeks": 48818,
+  "toxin_locations": 154,
+  "status_area_weeks": 85734,
+  "status_areas": 161,
+  "time_min": "2001-12-24 00:00:00+00:00",
+  "time_max": "2026-04-20 00:00:00+00:00",
+  "rates": {
+    "exceed_dsp_rate": 0.03326641812446229,
+    "exceed_asp_rate": 0.02015649965176779,
+    "exceed_azp_rate": 0.03050104469662829,
+    "exceed_psp_rate": 0.00047113769511245853,
+    "exceed_ptx_rate": 0.0,
+    "exceed_ytx_rate": 0.0,
+    "exceed_any_rate": 0.07874144782662133,
+    "closed_rate_among_matched": 0.3000392505216188,
+    "status_match_frac": 0.9915809742308165
+  },
+  "toxin_target_usable": true,
+  "toxin_target_note": "DSP exceedance rate=0.0333; measured_dsp=0.976. Usable if national coverage, non-degenerate positive rate, and DSP often measured.",
+  "sst_join": {
+    "toxin_join_key": "location_id (int) + week_start / ISO week",
+    "n_toxin_locations": 154,
+    "mhw_locations": 207,
+    "toxin_mhw_overlap": 128,
+    "toxin_only_locations": 26,
+    "mhw_only_locations": 79,
+    "sst_join_works": true,
+    "note": "SST/MHW daily features were built on phyto location_ids. Toxin sites that appear in phyto share the same location_id and join cleanly; toxin-only sites need new OISST pixel pulls.",
+    "phyto_locations": 207,
+    "toxin_phyto_overlap": 128,
+    "status_join_key": "parent_area_name (string) + ISO week \u2014 no lat/lon/location_id on habs_status"
+  },
+  "toxin_joined_rows": 48158,
+  "toxin_joined_sst_coverage": 0.3145894763071556,
+  "dinophysis_dsp_agreement": {
+    "n_joined_station_weeks": 25253,
+    "n_shared_locations": 116,
+    "phyto_locations": 207,
+    "toxin_locations": 154,
+    "location_overlap": 128,
+    "usable": true,
+    "n_dsp_measured_overlaps": 25071,
+    "phyto_positive_rate": 0.05667903155039687,
+    "dsp_exceed_rate": 0.04200071796099079,
+    "confusion": {
+      "tp": 402,
+      "fp": 651,
+      "fn": 1019,
+      "tn": 22999
+    },
+    "precision_dsp_given_phyto": 0.3817663817663818,
+    "recall_dsp_given_phyto": 0.282899366643209,
+    "precision_phyto_given_dsp": 0.282899366643209,
+    "agreement_rate": 0.9333891747437278,
+    "pearson_binary": 0.2943776820510271,
+    "pearson_count_vs_max_dsp": 0.13889196912588217,
+    "spearman_count_vs_max_dsp": 0.29821036198275863
+  },
+  "artifacts": {
+    "raw_pivot": "data/raw/habs_biotoxin_pivot.csv",
+    "raw_long": "data/raw/habs_biotoxin.csv",
+    "raw_status": "data/raw/habs_status.csv",
+    "toxin_panel": "data/processed/toxin_station_week_panel.parquet",
+    "status_panel": "data/processed/status_area_week_panel.parquet",
+    "toxin_joined": "data/processed/toxin_joined_features.parquet"
+  }
+}

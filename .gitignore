@@ -25,3 +25,5 @@ data/models/
 .pytest_cache/
 !data/processed/uk_dino_metrics.json
 !data/processed/uk_dino_report.md
+!data/processed/biotoxin_ingest_summary.json
+!data/processed/biotoxin_ingest_report.md

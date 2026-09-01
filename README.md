@@ -29,6 +29,14 @@ Verified variables: `sst`, `anom`, `err`, `ice` on `(time, zlev, latitude, longi
 
 Copernicus OSTIA is listed in `configs/default.yaml` as a future option (`sst.copernicus_ostia.enabled: false`). v1 does not call CMEMS.
 
+
+**Biotoxin / harvest status (optional toxin target)** — same ERDDAP host  
+`tabledap/habs_biotoxin_pivot`, `habs_biotoxin`, `habs_status`  
+Schemas verified via `info.json` (2026-09-01). Ingest: `python scripts/ingest_biotoxin.py`.  
+Station-week DSP/ASP/… exceedance (`resultvalue >= threshold`) joins phyto/SST on shared `location_id`.  
+`habs_status` has **no lat/lon/location_id** — closed flags join only via `parent_area_name` + ISO week.  
+See `data/processed/biotoxin_ingest_report.md`.
+
 Tomcat on the Marine Institute ERDDAP **rejects unencoded `>` / `<`** in the query string; the client percent-encodes constraints.
 
 ## MHW (Hobday et al. 2016)
@@ -158,6 +166,16 @@ Wind proxies skipped (ERA5/Open-Meteo for all stations × decades exceeds cheap 
 python scripts/dino_feature_study.py
 python scripts/evaluate.py --feature-mode strong --calibration auto
 ```
+
+
+## National biotoxin / harvest status
+
+```bash
+python scripts/ingest_biotoxin.py            # re-download from ERDDAP
+python scripts/ingest_biotoxin.py --skip-download
+```
+
+Writes `toxin_station_week_panel.parquet`, optional SST join, and `biotoxin_ingest_summary.json` / `biotoxin_ingest_report.md`. Raw CSVs stay under gitignored `data/raw/`.
 
 ## England & Wales labels (parallel panel)
 

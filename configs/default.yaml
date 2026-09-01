@@ -35,6 +35,13 @@ hab:
       # Fallback if too few positives in training data
       threshold_cells_l: 1000.0
 
+biotoxin:
+  erddap_base: https://erddap3.marine.ie/erddap
+  # Verified 2026-09-01 via info.json
+  pivot_dataset_id: habs_biotoxin_pivot
+  long_dataset_id: habs_biotoxin
+  status_dataset_id: habs_status
+
 sst:
   provider: ncdcOisst21Agg
   # Public NOAA OISST v2.1 daily, no Copernicus login.
@@ -78,6 +85,12 @@ splits:
 
 paths:
   raw_hab: data/raw/habs_phyto.csv
+  raw_biotoxin_pivot: data/raw/habs_biotoxin_pivot.csv
+  raw_biotoxin: data/raw/habs_biotoxin.csv
+  raw_hab_status: data/raw/habs_status.csv
+  toxin_panel: data/processed/toxin_station_week_panel.parquet
+  status_panel: data/processed/status_area_week_panel.parquet
+  toxin_joined: data/processed/toxin_joined_features.parquet
   raw_sst: data/raw/oisst_daily.parquet
   panel: data/processed/station_week_panel.parquet
   mhw: data/processed/mhw_daily.parquet
