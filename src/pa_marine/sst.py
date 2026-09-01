@@ -1,4 +1,4 @@
-"""Daily SST at HAB stations from NOAA OISST v2.1 (ncdcOisst21Agg)."""
+"""Daily SST at HAB stations: NOAA OISST v2.1 (default) or Copernicus OSTIA L4."""
 from __future__ import annotations
 
 import time
@@ -102,7 +102,7 @@ def download_oisst_irish_bbox_years(
     return cube[["date", "sst", "anom", "grid_lat", "grid_lon"]]
 
 
-def download_sst_for_stations(
+def _download_oisst_for_stations(
     stations: pd.DataFrame,
     cfg: dict[str, Any],
     t0: str,
@@ -145,3 +145,229 @@ def download_sst_for_stations(
     )
     out = out.rename(columns={"latitude": "request_lat", "longitude": "request_lon"})
     return out
+
+
+# ---------------------------------------------------------------------------
+# Copernicus OSTIA L4 reprocessed (~0.05°)
+# ---------------------------------------------------------------------------
+
+def snap_ostia(x: float, origin: float = -179.975, step: float = 0.05) -> float:
+    return origin + round((x - origin) / step) * step
+
+
+def _require_copernicusmarine():
+    try:
+        import copernicusmarine  # noqa: F401
+        import xarray  # noqa: F401
+    except ImportError as exc:  # pragma: no cover
+        raise ImportError(
+            "copernicusmarine and xarray are required for OSTIA downloads "
+            "(pip install 'pa-marine[ostia]' or copernicusmarine xarray)"
+        ) from exc
+    import copernicusmarine as cm
+
+    return cm
+
+
+def _ostia_cfg(cfg: dict[str, Any]) -> dict[str, Any]:
+    ostia = dict(cfg.get("sst", {}).get("copernicus_ostia") or {})
+    ostia.setdefault("product", "SST_GLO_SST_L4_REP_OBSERVATIONS_010_011")
+    ostia.setdefault("dataset_id", "METOFFICE-GLO-SST-L4-REP-OBS-SST")
+    ostia.setdefault("variable", "analysed_sst")
+    ostia.setdefault("service", "timeseries")
+    ostia.setdefault("kelvin_to_celsius", True)
+    return ostia
+
+
+def _nearest_ocean_pixel_map(
+    stations: pd.DataFrame,
+    mask_sst: "Any",  # xarray.DataArray lat×lon
+) -> pd.DataFrame:
+    """Map each station to the nearest finite (ocean) OSTIA pixel."""
+    import numpy as np
+
+    lats = np.asarray(mask_sst.latitude.values, dtype=float)
+    lons = np.asarray(mask_sst.longitude.values, dtype=float)
+    ocean = np.isfinite(np.asarray(mask_sst.values, dtype=float))
+    lat_grid, lon_grid = np.meshgrid(lats, lons, indexing="ij")
+    rows = []
+    uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]]
+    for row in uniq.itertuples(index=False):
+        dist = (lat_grid - float(row.latitude)) ** 2 + (lon_grid - float(row.longitude)) ** 2
+        dist = np.where(ocean, dist, np.inf)
+        if not np.isfinite(dist).any():
+            print(f"OSTIA skip {row.location_id}: no ocean pixel in mask bbox")
+            continue
+        i, j = np.unravel_index(int(np.argmin(dist)), dist.shape)
+        rows.append(
+            {
+                "location_id": row.location_id,
+                "request_lat": float(row.latitude),
+                "request_lon": float(row.longitude),
+                "grid_lat": float(lats[i]),
+                "grid_lon": float(lons[j]),
+                "dist_deg": float(np.sqrt(dist[i, j])),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def download_ostia_for_stations(
+    stations: pd.DataFrame,
+    cfg: dict[str, Any],
+    t0: str,
+    t1: str,
+    max_stations: int | None = None,
+) -> pd.DataFrame:
+    """Nearest-ocean-pixel OSTIA foundation SST (°C) per location_id.
+
+    Uses the Copernicus Marine Python API (`open_dataset`, timeseries/ARCO)
+    and extracts only unique station pixels (much smaller than a full Irish cube).
+    Credentials: existing `~/.copernicusmarine` login (never printed).
+    """
+    import numpy as np
+    import xarray as xr
+
+    cm = _require_copernicusmarine()
+    ostia = _ostia_cfg(cfg)
+    # Callers reach this via --provider ostia / download_sst_for_stations dispatch.
+    # Config flag documents default enablement; do not block explicit pulls.
+    if not ostia.get("enabled", False):
+        print("NOTE: sst.copernicus_ostia.enabled is false; proceeding with explicit OSTIA pull")
+
+    domain = cfg.get("domain", {})
+    lat_min = float(domain.get("lat_min", 51.0)) - 0.1
+    lat_max = float(domain.get("lat_max", 56.0)) + 0.1
+    lon_min = float(domain.get("lon_min", -11.0)) - 0.1
+    lon_max = float(domain.get("lon_max", -5.0)) + 0.1
+
+    uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]].copy()
+    if max_stations is not None:
+        uniq = uniq.head(max_stations)
+
+    print("OSTIA: loading ocean mask (1 day)…")
+    mask_ds = cm.open_dataset(
+        dataset_id=ostia["dataset_id"],
+        variables=[ostia["variable"]],
+        minimum_longitude=lon_min,
+        maximum_longitude=lon_max,
+        minimum_latitude=lat_min,
+        maximum_latitude=lat_max,
+        start_datetime="2020-06-15",
+        end_datetime="2020-06-15",
+        service=ostia.get("service", "timeseries"),
+    )
+    mask_da = mask_ds[ostia["variable"]].isel(time=0).load()
+    pixel_map = _nearest_ocean_pixel_map(uniq, mask_da)
+    if pixel_map.empty:
+        return pd.DataFrame()
+
+    # Stable unique pixel list + station→pixel_id map
+    pix = (
+        pixel_map[["grid_lat", "grid_lon"]]
+        .drop_duplicates()
+        .reset_index(drop=True)
+        .reset_index(names="pixel_id")
+    )
+    station_pix = pixel_map.merge(pix, on=["grid_lat", "grid_lon"], how="inner")
+    print(
+        f"OSTIA: {len(station_pix)} stations → {len(pix)} unique ocean pixels "
+        f"(median dist {pixel_map['dist_deg'].median():.3f}°)"
+    )
+
+    y0 = pd.Timestamp(t0).year
+    y1 = pd.Timestamp(t1).year
+    hard_end = pd.Timestamp(ostia.get("t1_cap", "2026-03-31"))
+    frames: list[pd.DataFrame] = []
+    lat_da = xr.DataArray(pix["grid_lat"].to_numpy(dtype=float), dims="pixel")
+    lon_da = xr.DataArray(pix["grid_lon"].to_numpy(dtype=float), dims="pixel")
+
+    for y in range(y0, y1 + 1):
+        a = max(pd.Timestamp(t0), pd.Timestamp(f"{y}-01-01"))
+        b = min(pd.Timestamp(t1), pd.Timestamp(f"{y}-12-31"), hard_end)
+        if a > b:
+            continue
+        a_s, b_s = a.strftime("%Y-%m-%d"), b.strftime("%Y-%m-%d")
+        print(f"OSTIA pixels year {y} {a_s}..{b_s}")
+        try:
+            ds = cm.open_dataset(
+                dataset_id=ostia["dataset_id"],
+                variables=[ostia["variable"]],
+                minimum_longitude=float(pix["grid_lon"].min() - 0.05),
+                maximum_longitude=float(pix["grid_lon"].max() + 0.05),
+                minimum_latitude=float(pix["grid_lat"].min() - 0.05),
+                maximum_latitude=float(pix["grid_lat"].max() + 0.05),
+                start_datetime=a_s,
+                end_datetime=b_s,
+                service=ostia.get("service", "timeseries"),
+            )
+            da = (
+                ds[ostia["variable"]]
+                .sel(latitude=lat_da, longitude=lon_da, method="nearest")
+                .load()
+            )
+        except Exception as exc:  # noqa: BLE001
+            print(f"  OSTIA skip year {y}: {exc}")
+            continue
+
+        times = pd.to_datetime(np.asarray(da.time.values)).tz_localize(None)
+        # Keep *requested* grid coords (nearest may equal them); index by pixel dim order
+        vals = np.asarray(da.values, dtype=float)  # (time, pixel)
+        if ostia.get("kelvin_to_celsius", True):
+            vals = vals - 273.15
+        n_t, n_p = vals.shape
+        assert n_p == len(pix), (n_p, len(pix))
+        pixel_daily = pd.DataFrame(
+            {
+                "date": np.repeat(times, n_p),
+                "sst": vals.reshape(-1),
+                "pixel_id": np.tile(pix["pixel_id"].to_numpy(), n_t),
+                "grid_lat": np.tile(pix["grid_lat"].to_numpy(), n_t),
+                "grid_lon": np.tile(pix["grid_lon"].to_numpy(), n_t),
+            }
+        )
+        part = pixel_daily.merge(
+            station_pix[
+                ["location_id", "request_lat", "request_lon", "pixel_id", "grid_lat", "grid_lon"]
+            ],
+            on=["pixel_id", "grid_lat", "grid_lon"],
+            how="inner",
+        )
+        part["anom"] = np.nan
+        frames.append(
+            part[
+                [
+                    "date",
+                    "sst",
+                    "anom",
+                    "grid_lat",
+                    "grid_lon",
+                    "location_id",
+                    "request_lat",
+                    "request_lon",
+                ]
+            ]
+        )
+        print(f"  rows={len(part)} nan_sst={float(np.isnan(part['sst']).mean()):.3f}")
+
+    if not frames:
+        return pd.DataFrame()
+    out = pd.concat(frames, ignore_index=True)
+    out["date"] = pd.to_datetime(out["date"]).dt.normalize()
+    out = out.drop_duplicates(["location_id", "date"])
+    return out
+
+def download_sst_for_stations(
+    stations: pd.DataFrame,
+    cfg: dict[str, Any],
+    t0: str,
+    t1: str,
+    max_stations: int | None = None,
+    provider: str | None = None,
+) -> pd.DataFrame:
+    """Dispatch SST download by provider (OISST default, or OSTIA)."""
+    prov = (provider or cfg.get("sst", {}).get("provider") or "ncdcOisst21Agg").lower()
+    if prov in {"ostia", "copernicus_ostia", "cmems_ostia"}:
+        return download_ostia_for_stations(stations, cfg, t0, t1, max_stations)
+    # default: NOAA OISST (existing implementation below was renamed — see wrapper)
+    return _download_oisst_for_stations(stations, cfg, t0, t1, max_stations)

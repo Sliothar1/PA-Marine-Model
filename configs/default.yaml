@@ -43,6 +43,7 @@ biotoxin:
   status_dataset_id: habs_status
 
 sst:
+  # Default remains NOAA OISST. Set provider: ostia (or pass --provider ostia) for CMEMS.
   provider: ncdcOisst21Agg
   # Public NOAA OISST v2.1 daily, no Copernicus login.
   erddap_base: https://coastwatch.pfeg.noaa.gov/erddap
@@ -52,11 +53,18 @@ sst:
   zlev: 0.0
   # OISST longitudes are 0–360. Irish −11…−5 maps to 349…355.
   lon_convention: 0_360
-  # Optional later (requires Copernicus Marine credentials; not used by default)
+  # Copernicus OSTIA L4 reprocessed (~0.05°). Verified 2026-09-01 via describe:
+  # product SST_GLO_SST_L4_REP_OBSERVATIONS_010_011 /
+  # dataset METOFFICE-GLO-SST-L4-REP-OBS-SST (analysed_sst, Kelvin; axis ~1981-10-01..2026-03-31).
+  # Uses ~/.copernicusmarine credentials (never commit). Station-pixel extract preferred.
   copernicus_ostia:
-    enabled: false
+    enabled: true
     product: SST_GLO_SST_L4_REP_OBSERVATIONS_010_011
-    note: "Set sst.provider to ostia and supply CMEMS credentials via env; not implemented in v1 client."
+    dataset_id: METOFFICE-GLO-SST-L4-REP-OBS-SST
+    variable: analysed_sst
+    service: timeseries
+    kelvin_to_celsius: true
+    t1_cap: "2026-03-31"
 
 mhw:
   method: hobday_2016
@@ -92,6 +100,10 @@ paths:
   status_panel: data/processed/status_area_week_panel.parquet
   toxin_joined: data/processed/toxin_joined_features.parquet
   raw_sst: data/raw/oisst_daily.parquet
+  raw_sst_ostia: data/raw/ostia_daily.parquet
+  mhw_ostia: data/processed/mhw_daily_ostia.parquet
+  joined_ostia: data/processed/joined_features_ostia.parquet
+  metrics_ostia: data/processed/metrics_dino_ostia.json
   panel: data/processed/station_week_panel.parquet
   mhw: data/processed/mhw_daily.parquet
   joined: data/processed/joined_features.parquet

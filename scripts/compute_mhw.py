@@ -17,22 +17,38 @@ def main():
     p.add_argument("--panel", default=None)
     p.add_argument("--sst-in", default=None, help="Existing daily SST parquet; skip download if set")
     p.add_argument("--out", default=None)
+    p.add_argument("--sst-out", default=None, help="Where to write downloaded daily SST parquet")
     p.add_argument("--t0", default="2002-01-01")
     p.add_argument("--t1", default="2026-08-16")
     p.add_argument("--max-stations", type=int, default=None)
+    p.add_argument(
+        "--provider",
+        default=None,
+        help="SST provider override: ncdcOisst21Agg (default) or ostia",
+    )
     args = p.parse_args()
     cfg = load_config(args.config)
     panel_path = args.panel or cfg["paths"]["panel"]
     panel = pd.read_parquet(panel_path) if panel_path.endswith(".parquet") else pd.read_csv(panel_path)
+    provider = (args.provider or cfg.get("sst", {}).get("provider") or "ncdcOisst21Agg").lower()
     if args.sst_in:
         sst = pd.read_parquet(args.sst_in) if args.sst_in.endswith(".parquet") else pd.read_csv(args.sst_in)
     else:
-        sst = download_sst_for_stations(panel, cfg, args.t0, args.t1, args.max_stations)
-        raw = cfg["paths"]["raw_sst"]
+        sst = download_sst_for_stations(panel, cfg, args.t0, args.t1, args.max_stations, provider=provider)
+        if provider in {"ostia", "copernicus_ostia", "cmems_ostia"}:
+            raw = args.sst_out or cfg["paths"].get("raw_sst_ostia", "data/raw/ostia_daily.parquet")
+        else:
+            raw = args.sst_out or cfg["paths"]["raw_sst"]
         Path(raw).parent.mkdir(parents=True, exist_ok=True)
         sst.to_parquet(raw, index=False)
+        print(f"wrote {raw} n={len(sst)}")
     mhw = mhw_for_stations(sst, cfg)
-    out = args.out or cfg["paths"]["mhw"]
+    if args.out:
+        out = args.out
+    elif provider in {"ostia", "copernicus_ostia", "cmems_ostia"}:
+        out = cfg["paths"].get("mhw_ostia", "data/processed/mhw_daily_ostia.parquet")
+    else:
+        out = cfg["paths"]["mhw"]
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     mhw.to_parquet(out, index=False) if out.endswith(".parquet") else mhw.to_csv(out, index=False)
     print(f"wrote {out} n={len(mhw)}")

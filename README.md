@@ -27,7 +27,7 @@ https://coastwatch.pfeg.noaa.gov/erddap/info/ncdcOisst21Agg/index.html
 
 Verified variables: `sst`, `anom`, `err`, `ice` on `(time, zlev, latitude, longitude)`. Longitudes are **0–360**. Irish −11…−5° maps to 349…355. `zlev=0`.
 
-Copernicus OSTIA is listed in `configs/default.yaml` as a future option (`sst.copernicus_ostia.enabled: false`). v1 does not call CMEMS.
+Copernicus OSTIA L4 REP (`SST_GLO_SST_L4_REP_OBSERVATIONS_010_011` / `METOFFICE-GLO-SST-L4-REP-OBS-SST`) is enabled in `configs/default.yaml` (`sst.copernicus_ostia.enabled: true`) and selectable with `scripts/compute_mhw.py --provider ostia` (requires `copernicusmarine` + local CMEMS login). Default provider remains NOAA OISST. See `data/processed/ostia_vs_oisst_report.md` for Dinophysis PR-AUC comparison.
 
 
 **Biotoxin / harvest status (optional toxin target)** — same ERDDAP host  
