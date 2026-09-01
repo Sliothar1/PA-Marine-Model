@@ -44,3 +44,9 @@ data/models/
 !data/processed/smc_geocode_report.md
 !data/processed/scotland_dino_metrics.json
 !data/processed/scotland_dino_report.md
+!data/processed/local_sites_report.md
+!data/processed/local_sites_summary.json
+!data/processed/nearest_hab_mace_head.csv
+!data/processed/nearest_hab_lehanagh.csv
+!data/processed/buoy_hab_corr_mace_head.csv
+!data/processed/buoy_hab_corr_lehanagh.csv

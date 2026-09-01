@@ -119,6 +119,9 @@ paths:
   ibi_report: data/processed/ibi_light_mhw_report.md
   raw_era5_stations: data/raw/era5_wind_stations.parquet
   joined_era5: data/processed/joined_features_era5.parquet
+  local_sites_report: data/processed/local_sites_report.md
+  local_sites_summary: data/processed/local_sites_summary.json
+  raw_sentinel_dir: data/raw/sentinel
 
 # IBI multi-year physics + BGC optics (Copernicus). Station-pixel extracts preferred.
 ibi:
@@ -143,3 +146,16 @@ era5:
   times: ["00:00", "06:00", "12:00", "18:00"]
   # CDS area = [N, W, S, E]
   area: [56.0, -11.0, 51.0, -5.0]
+
+# Connemara sentinel buoys (Marine Institute ERDDAP, verified 2026-09-01).
+sentinel:
+  erddap_base: https://erddap.marine.ie/erddap
+  mace_head:
+    dataset_id: compass_mace_head
+    qc_dataset_id: sbe37_macehead
+    lat: 53.3306
+    lon: -9.9326
+  lehanagh:
+    dataset_id: sentinel_lehanagh
+    lat: 53.4001
+    lon: -9.8207

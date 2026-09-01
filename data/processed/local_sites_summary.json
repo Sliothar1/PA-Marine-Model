@@ -1,0 +1,810 @@
+{
+  "mace_head": {
+    "site_key": "mace_head",
+    "label": "Mace Head",
+    "dataset_id": "compass_mace_head",
+    "lat": 53.3306,
+    "lon": -9.9326,
+    "raw_csv": "/workspace/pa-marine-model/data/raw/sentinel/compass_mace_head.csv",
+    "daily_parquet": "/workspace/pa-marine-model/data/raw/sentinel/compass_mace_head_daily.parquet",
+    "week_parquet": "/workspace/pa-marine-model/data/processed/compass_mace_head_week.parquet",
+    "n_rows": 232298,
+    "n_days": 2999,
+    "n_weeks": 432,
+    "t_min": "2018-05-01 13:50:00+00:00",
+    "t_max": "2026-08-31 00:00:00+00:00",
+    "variables": [
+      "time",
+      "latitude",
+      "longitude",
+      "depth",
+      "sbe_temp_avg",
+      "sbe_salinity_avg",
+      "sbe_do_avg",
+      "suna_nitrate_conc_avg",
+      "sami_ph_avg",
+      "seafet_ph_ext_avg",
+      "contros_pco2_avg",
+      "wind_speed",
+      "wind_direction",
+      "wind_gust",
+      "air_temperature",
+      "air_pressure"
+    ],
+    "daily_columns": [
+      "date",
+      "temp_c",
+      "salinity",
+      "do_mg_l",
+      "nitrate_umol_l",
+      "ph_sami",
+      "ph_seafet",
+      "pco2_uatm",
+      "wind_speed_ms",
+      "wind_dir_deg",
+      "wind_gust_ms",
+      "air_temp_c",
+      "air_pressure_mbar",
+      "n_obs",
+      "latitude",
+      "longitude"
+    ],
+    "qc": {
+      "dataset_id": "sbe37_macehead",
+      "raw_csv": "/workspace/pa-marine-model/data/raw/sentinel/sbe37_macehead.csv",
+      "daily_parquet": "/workspace/pa-marine-model/data/raw/sentinel/sbe37_macehead_daily.parquet",
+      "n_rows": 63101,
+      "t_min": "2018-06-12 13:23:47+00:00",
+      "t_max": "2022-03-23 11:47:06+00:00"
+    },
+    "daily_processed": "/workspace/pa-marine-model/data/processed/compass_mace_head_daily.parquet",
+    "min_year_for_join": 2018,
+    "nearest_csv": "/workspace/pa-marine-model/data/processed/nearest_hab_mace_head.csv",
+    "n_near_30km": 37,
+    "n_near_overlap": 8,
+    "join_location_ids": [
+      633,
+      177,
+      169,
+      179,
+      174,
+      650,
+      163,
+      825
+    ],
+    "n_joined_station_weeks": 1706,
+    "corr_csv": "/workspace/pa-marine-model/data/processed/buoy_hab_corr_mace_head.csv",
+    "joined_parquet": "/workspace/pa-marine-model/data/processed/buoy_hab_join_mace_head.parquet",
+    "nearest": [
+      {
+        "location_id": 634,
+        "location_name": "Letterard",
+        "latitude": 53.37465,
+        "longitude": -9.8687,
+        "n_weeks": 24,
+        "year_min": 2009,
+        "year_max": 2012,
+        "dist_km": 6.479097651635469,
+        "overlap_years": false
+      },
+      {
+        "location_id": 628,
+        "location_name": "Crumpan Pier",
+        "latitude": 53.31217,
+        "longitude": -9.82692,
+        "n_weeks": 330,
+        "year_min": 2008,
+        "year_max": 2016,
+        "dist_km": 7.312264590734168,
+        "overlap_years": false
+      },
+      {
+        "location_id": 160,
+        "location_name": "Illaungorm",
+        "latitude": 53.38111,
+        "longitude": -9.85556,
+        "n_weeks": 3,
+        "year_min": 2004,
+        "year_max": 2004,
+        "dist_km": 7.595104607681819,
+        "overlap_years": false
+      },
+      {
+        "location_id": 373,
+        "location_name": "Saltpoint",
+        "latitude": 53.38459,
+        "longitude": -9.85832,
+        "n_weeks": 20,
+        "year_min": 2002,
+        "year_max": 2011,
+        "dist_km": 7.76791808494088,
+        "overlap_years": false
+      },
+      {
+        "location_id": 372,
+        "location_name": "Letterard",
+        "latitude": 53.38459,
+        "longitude": -9.85832,
+        "n_weeks": 174,
+        "year_min": 2005,
+        "year_max": 2014,
+        "dist_km": 7.76791808494088,
+        "overlap_years": false
+      },
+      {
+        "location_id": 374,
+        "location_name": "Outer Bertragh Buoi",
+        "latitude": 53.38459,
+        "longitude": -9.85832,
+        "n_weeks": 5,
+        "year_min": 2003,
+        "year_max": 2013,
+        "dist_km": 7.76791808494088,
+        "overlap_years": false
+      },
+      {
+        "location_id": 633,
+        "location_name": "Lehannagh Pool",
+        "latitude": 53.4012,
+        "longitude": -9.8266,
+        "n_weeks": 25,
+        "year_min": 2009,
+        "year_max": 2020,
+        "dist_km": 10.540069849504206,
+        "overlap_years": true
+      },
+      {
+        "location_id": 622,
+        "location_name": "Carraig Na Meachain",
+        "latitude": 53.24988,
+        "longitude": -9.82501,
+        "n_weeks": 3,
+        "year_min": 2008,
+        "year_max": 2008,
+        "dist_km": 11.476210024590213,
+        "overlap_years": false
+      },
+      {
+        "location_id": 400,
+        "location_name": "Ardmore",
+        "latitude": 53.3003,
+        "longitude": -9.76548,
+        "n_weeks": 69,
+        "year_min": 2003,
+        "year_max": 2015,
+        "dist_km": 11.6015831723331,
+        "overlap_years": false
+      },
+      {
+        "location_id": 401,
+        "location_name": "Birbeg",
+        "latitude": 53.28058,
+        "longitude": -9.77923,
+        "n_weeks": 8,
+        "year_min": 2007,
+        "year_max": 2008,
+        "dist_km": 11.609592324259056,
+        "overlap_years": false
+      },
+      {
+        "location_id": 416,
+        "location_name": "Birmore",
+        "latitude": 53.273,
+        "longitude": -9.785,
+        "n_weeks": 1,
+        "year_min": 2007,
+        "year_max": 2007,
+        "dist_km": 11.714061246100876,
+        "overlap_years": false
+      },
+      {
+        "location_id": 176,
+        "location_name": "Illauneragh",
+        "latitude": 53.27833,
+        "longitude": -9.74806,
+        "n_weeks": 1,
+        "year_min": 2005,
+        "year_max": 2005,
+        "dist_km": 13.56967368345634,
+        "overlap_years": false
+      },
+      {
+        "location_id": 396,
+        "location_name": "Oilean Iarthach",
+        "latitude": 53.28818,
+        "longitude": -9.73658,
+        "n_weeks": 12,
+        "year_min": 2004,
+        "year_max": 2008,
+        "dist_km": 13.851115761856171,
+        "overlap_years": false
+      },
+      {
+        "location_id": 399,
+        "location_name": "Red Flag",
+        "latitude": 53.23706,
+        "longitude": -9.78851,
+        "n_weeks": 47,
+        "year_min": 2003,
+        "year_max": 2010,
+        "dist_km": 14.13994562387237,
+        "overlap_years": false
+      },
+      {
+        "location_id": 398,
+        "location_name": "Danoish",
+        "latitude": 53.26618,
+        "longitude": -9.74297,
+        "n_weeks": 116,
+        "year_min": 2003,
+        "year_max": 2014,
+        "dist_km": 14.495505711341599,
+        "overlap_years": false
+      }
+    ],
+    "correlations": [
+      {
+        "x": "do_mg_l",
+        "y": "count_dinophysis",
+        "n": 1564,
+        "pearson_r": -0.09236809851223003,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "count_pseudo_nitzschia",
+        "n": 1564,
+        "pearson_r": -0.04644686936791779,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "count_karenia_mikimotoi",
+        "n": 1564,
+        "pearson_r": -0.050246483347571556,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "y_dinophysis",
+        "n": 1564,
+        "pearson_r": -0.04075096816495626,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "y_dinophysis_nowcast",
+        "n": 1564,
+        "pearson_r": -0.0254579847453677,
+        "note": ""
+      },
+      {
+        "x": "nitrate_umol_l",
+        "y": "count_dinophysis",
+        "n": 1476,
+        "pearson_r": -0.10400360700943316,
+        "note": ""
+      },
+      {
+        "x": "nitrate_umol_l",
+        "y": "count_pseudo_nitzschia",
+        "n": 1476,
+        "pearson_r": -0.09274538125334343,
+        "note": ""
+      },
+      {
+        "x": "nitrate_umol_l",
+        "y": "count_karenia_mikimotoi",
+        "n": 1476,
+        "pearson_r": -0.02092167140896403,
+        "note": ""
+      },
+      {
+        "x": "nitrate_umol_l",
+        "y": "y_dinophysis",
+        "n": 1476,
+        "pearson_r": -0.06090421166493753,
+        "note": ""
+      },
+      {
+        "x": "nitrate_umol_l",
+        "y": "y_dinophysis_nowcast",
+        "n": 1476,
+        "pearson_r": -0.10163907900091244,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "count_dinophysis",
+        "n": 1672,
+        "pearson_r": 0.13705327621441069,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "count_pseudo_nitzschia",
+        "n": 1672,
+        "pearson_r": 0.09748762447580488,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "count_karenia_mikimotoi",
+        "n": 1672,
+        "pearson_r": 0.0438382594259619,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "y_dinophysis",
+        "n": 1672,
+        "pearson_r": 0.09859480136309999,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "y_dinophysis_nowcast",
+        "n": 1672,
+        "pearson_r": 0.12562651019256665,
+        "note": ""
+      },
+      {
+        "x": "salinity",
+        "y": "count_dinophysis",
+        "n": 1656,
+        "pearson_r": -0.018890730714972687,
+        "note": ""
+      },
+      {
+        "x": "salinity",
+        "y": "count_pseudo_nitzschia",
+        "n": 1656,
+        "pearson_r": 0.03494931558245999,
+        "note": ""
+      },
+      {
+        "x": "salinity",
+        "y": "count_karenia_mikimotoi",
+        "n": 1656,
+        "pearson_r": 0.009868050517881309,
+        "note": ""
+      },
+      {
+        "x": "salinity",
+        "y": "y_dinophysis",
+        "n": 1656,
+        "pearson_r": -0.09274038545330741,
+        "note": ""
+      },
+      {
+        "x": "salinity",
+        "y": "y_dinophysis_nowcast",
+        "n": 1656,
+        "pearson_r": -0.1439855598893135,
+        "note": ""
+      }
+    ]
+  },
+  "lehanagh": {
+    "site_key": "lehanagh",
+    "label": "Lehanagh Pool",
+    "dataset_id": "sentinel_lehanagh",
+    "lat": 53.4001,
+    "lon": -9.8207,
+    "raw_csv": "/workspace/pa-marine-model/data/raw/sentinel/sentinel_lehanagh.csv",
+    "daily_parquet": "/workspace/pa-marine-model/data/raw/sentinel/sentinel_lehanagh_daily.parquet",
+    "week_parquet": "/workspace/pa-marine-model/data/processed/sentinel_lehanagh_week.parquet",
+    "n_rows": 106549,
+    "n_days": 821,
+    "n_weeks": 119,
+    "t_min": "2024-05-27 13:30:00+00:00",
+    "t_max": "2026-08-31 00:00:00+00:00",
+    "variables": [
+      "time",
+      "latitude",
+      "longitude",
+      "depth",
+      "SBE_Temp_Avg",
+      "SBE_Salinity_Avg",
+      "SBE_DO_Avg",
+      "EXO2_Temperature",
+      "EXO2_Salinity",
+      "EXO2_RDO_Concentration",
+      "EXO2_RDO_Saturation",
+      "EXO2_Chlorophyll_ug",
+      "EXO2_Chlorophyll_RFU",
+      "EXO2_Phycoerythrin",
+      "EXO2_Turbidity",
+      "Wind_Speed",
+      "Wind_Direction",
+      "Wind_Gust",
+      "Air_Temperature",
+      "Air_Pressure"
+    ],
+    "daily_columns": [
+      "date",
+      "temp_c",
+      "salinity",
+      "do_mg_l",
+      "exo_temp_c",
+      "exo_salinity",
+      "exo_do_mg_l",
+      "exo_do_sat_pct",
+      "chl_ug_l",
+      "chl_rfu",
+      "phycoerythrin",
+      "turbidity_ntu",
+      "wind_speed_ms",
+      "wind_dir_deg",
+      "wind_gust_ms",
+      "air_temp_c",
+      "air_pressure_mbar",
+      "n_obs",
+      "latitude",
+      "longitude"
+    ],
+    "qc": null,
+    "daily_processed": "/workspace/pa-marine-model/data/processed/sentinel_lehanagh_daily.parquet",
+    "min_year_for_join": 2024,
+    "nearest_csv": "/workspace/pa-marine-model/data/processed/nearest_hab_lehanagh.csv",
+    "n_near_30km": 47,
+    "n_near_overlap": 10,
+    "join_location_ids": [
+      174,
+      177,
+      179,
+      163,
+      171,
+      172,
+      650,
+      175
+    ],
+    "n_joined_station_weeks": 719,
+    "corr_csv": "/workspace/pa-marine-model/data/processed/buoy_hab_corr_lehanagh.csv",
+    "joined_parquet": "/workspace/pa-marine-model/data/processed/buoy_hab_join_lehanagh.parquet",
+    "nearest": [
+      {
+        "location_id": 633,
+        "location_name": "Lehannagh Pool",
+        "latitude": 53.4012,
+        "longitude": -9.8266,
+        "n_weeks": 25,
+        "year_min": 2009,
+        "year_max": 2020,
+        "dist_km": 0.4098256959024758,
+        "overlap_years": false
+      },
+      {
+        "location_id": 374,
+        "location_name": "Outer Bertragh Buoi",
+        "latitude": 53.38459,
+        "longitude": -9.85832,
+        "n_weeks": 5,
+        "year_min": 2003,
+        "year_max": 2013,
+        "dist_km": 3.032677447890407,
+        "overlap_years": false
+      },
+      {
+        "location_id": 373,
+        "location_name": "Saltpoint",
+        "latitude": 53.38459,
+        "longitude": -9.85832,
+        "n_weeks": 20,
+        "year_min": 2002,
+        "year_max": 2011,
+        "dist_km": 3.032677447890407,
+        "overlap_years": false
+      },
+      {
+        "location_id": 372,
+        "location_name": "Letterard",
+        "latitude": 53.38459,
+        "longitude": -9.85832,
+        "n_weeks": 174,
+        "year_min": 2005,
+        "year_max": 2014,
+        "dist_km": 3.032677447890407,
+        "overlap_years": false
+      },
+      {
+        "location_id": 160,
+        "location_name": "Illaungorm",
+        "latitude": 53.38111,
+        "longitude": -9.85556,
+        "n_weeks": 3,
+        "year_min": 2004,
+        "year_max": 2004,
+        "dist_km": 3.1308867868856893,
+        "overlap_years": false
+      },
+      {
+        "location_id": 634,
+        "location_name": "Letterard",
+        "latitude": 53.37465,
+        "longitude": -9.8687,
+        "n_weeks": 24,
+        "year_min": 2009,
+        "year_max": 2012,
+        "dist_km": 4.259250214319421,
+        "overlap_years": false
+      },
+      {
+        "location_id": 628,
+        "location_name": "Crumpan Pier",
+        "latitude": 53.31217,
+        "longitude": -9.82692,
+        "n_weeks": 330,
+        "year_min": 2008,
+        "year_max": 2016,
+        "dist_km": 9.78607992867115,
+        "overlap_years": false
+      },
+      {
+        "location_id": 400,
+        "location_name": "Ardmore",
+        "latitude": 53.3003,
+        "longitude": -9.76548,
+        "n_weeks": 69,
+        "year_min": 2003,
+        "year_max": 2015,
+        "dist_km": 11.68686471340732,
+        "overlap_years": false
+      },
+      {
+        "location_id": 401,
+        "location_name": "Birbeg",
+        "latitude": 53.28058,
+        "longitude": -9.77923,
+        "n_weeks": 8,
+        "year_min": 2007,
+        "year_max": 2008,
+        "dist_km": 13.572201242465288,
+        "overlap_years": false
+      },
+      {
+        "location_id": 396,
+        "location_name": "Oilean Iarthach",
+        "latitude": 53.28818,
+        "longitude": -9.73658,
+        "n_weeks": 12,
+        "year_min": 2004,
+        "year_max": 2008,
+        "dist_km": 13.640384038199784,
+        "overlap_years": false
+      },
+      {
+        "location_id": 416,
+        "location_name": "Birmore",
+        "latitude": 53.273,
+        "longitude": -9.785,
+        "n_weeks": 1,
+        "year_min": 2007,
+        "year_max": 2007,
+        "dist_km": 14.330270200476749,
+        "overlap_years": false
+      },
+      {
+        "location_id": 176,
+        "location_name": "Illauneragh",
+        "latitude": 53.27833,
+        "longitude": -9.74806,
+        "n_weeks": 1,
+        "year_min": 2005,
+        "year_max": 2005,
+        "dist_km": 14.373433814044027,
+        "overlap_years": false
+      },
+      {
+        "location_id": 395,
+        "location_name": "Lettercallow",
+        "latitude": 53.29162,
+        "longitude": -9.70244,
+        "n_weeks": 19,
+        "year_min": 2004,
+        "year_max": 2008,
+        "dist_km": 14.391970812568065,
+        "overlap_years": false
+      },
+      {
+        "location_id": 392,
+        "location_name": "The Gurrig",
+        "latitude": 53.319,
+        "longitude": -9.647,
+        "n_weeks": 7,
+        "year_min": 2003,
+        "year_max": 2008,
+        "dist_km": 14.635189376142666,
+        "overlap_years": false
+      },
+      {
+        "location_id": 391,
+        "location_name": "Annaghbhan",
+        "latitude": 53.31887,
+        "longitude": -9.64703,
+        "n_weeks": 5,
+        "year_min": 2002,
+        "year_max": 2009,
+        "dist_km": 14.642547749563219,
+        "overlap_years": false
+      }
+    ],
+    "correlations": [
+      {
+        "x": "do_mg_l",
+        "y": "count_dinophysis",
+        "n": 703,
+        "pearson_r": -0.1285576257636141,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "count_pseudo_nitzschia",
+        "n": 703,
+        "pearson_r": -0.0049107287766714,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "count_karenia_mikimotoi",
+        "n": 703,
+        "pearson_r": 0.03258765552399238,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "y_dinophysis",
+        "n": 703,
+        "pearson_r": -0.05616166823963787,
+        "note": ""
+      },
+      {
+        "x": "do_mg_l",
+        "y": "y_dinophysis_nowcast",
+        "n": 703,
+        "pearson_r": -0.002355564758052402,
+        "note": ""
+      },
+      {
+        "x": "chl_ug_l",
+        "y": "count_dinophysis",
+        "n": 603,
+        "pearson_r": 0.04889982648806073,
+        "note": ""
+      },
+      {
+        "x": "chl_ug_l",
+        "y": "count_pseudo_nitzschia",
+        "n": 603,
+        "pearson_r": 0.003381660328214944,
+        "note": ""
+      },
+      {
+        "x": "chl_ug_l",
+        "y": "count_karenia_mikimotoi",
+        "n": 603,
+        "pearson_r": -0.02953353787107534,
+        "note": ""
+      },
+      {
+        "x": "chl_ug_l",
+        "y": "y_dinophysis",
+        "n": 603,
+        "pearson_r": 0.025441673722738294,
+        "note": ""
+      },
+      {
+        "x": "chl_ug_l",
+        "y": "y_dinophysis_nowcast",
+        "n": 603,
+        "pearson_r": 0.016190336882341443,
+        "note": ""
+      },
+      {
+        "x": "phycoerythrin",
+        "y": "count_dinophysis",
+        "n": 603,
+        "pearson_r": 0.029484365628204022,
+        "note": ""
+      },
+      {
+        "x": "phycoerythrin",
+        "y": "count_pseudo_nitzschia",
+        "n": 603,
+        "pearson_r": -0.019566438952293277,
+        "note": ""
+      },
+      {
+        "x": "phycoerythrin",
+        "y": "count_karenia_mikimotoi",
+        "n": 603,
+        "pearson_r": -0.03202568432522831,
+        "note": ""
+      },
+      {
+        "x": "phycoerythrin",
+        "y": "y_dinophysis",
+        "n": 603,
+        "pearson_r": 0.017034467724758428,
+        "note": ""
+      },
+      {
+        "x": "phycoerythrin",
+        "y": "y_dinophysis_nowcast",
+        "n": 603,
+        "pearson_r": -0.0009252381534232835,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "count_dinophysis",
+        "n": 703,
+        "pearson_r": 0.21963512922832792,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "count_pseudo_nitzschia",
+        "n": 703,
+        "pearson_r": 0.15662120001860946,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "count_karenia_mikimotoi",
+        "n": 703,
+        "pearson_r": -0.01569759725266472,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "y_dinophysis",
+        "n": 703,
+        "pearson_r": 0.08026951711660912,
+        "note": ""
+      },
+      {
+        "x": "temp_c",
+        "y": "y_dinophysis_nowcast",
+        "n": 703,
+        "pearson_r": 0.14039853649597878,
+        "note": ""
+      },
+      {
+        "x": "turbidity_ntu",
+        "y": "count_dinophysis",
+        "n": 603,
+        "pearson_r": 0.10163545628389213,
+        "note": ""
+      },
+      {
+        "x": "turbidity_ntu",
+        "y": "count_pseudo_nitzschia",
+        "n": 603,
+        "pearson_r": -0.0003097986711211143,
+        "note": ""
+      },
+      {
+        "x": "turbidity_ntu",
+        "y": "count_karenia_mikimotoi",
+        "n": 603,
+        "pearson_r": -0.01685743834935421,
+        "note": ""
+      },
+      {
+        "x": "turbidity_ntu",
+        "y": "y_dinophysis",
+        "n": 603,
+        "pearson_r": 0.13185906755094634,
+        "note": ""
+      },
+      {
+        "x": "turbidity_ntu",
+        "y": "y_dinophysis_nowcast",
+        "n": 603,
+        "pearson_r": 0.11885226920101472,
+        "note": ""
+      }
+    ]
+  }
+}

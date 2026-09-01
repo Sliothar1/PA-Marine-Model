@@ -37,6 +37,13 @@ Station-week DSP/ASP/… exceedance (`resultvalue >= threshold`) joins phyto/SST
 `habs_status` has **no lat/lon/location_id** — closed flags join only via `parent_area_name` + ISO week.  
 See `data/processed/biotoxin_ingest_report.md`.
 
+
+**Local Connemara sentinel buoys (hackathon)** — same host `erddap.marine.ie`  
+`tabledap/compass_mace_head` (Mace Head NRT, 2018–), QC delayed-mode `sbe37_macehead` (T/S/O₂ ~2018–2022),  
+`tabledap/sentinel_lehanagh` (Lehanagh Pool NRT, May 2024–).  
+Ingest: `python scripts/ingest_sentinel_sites.py`. Report: `data/processed/local_sites_report.md`.
+
+
 Tomcat on the Marine Institute ERDDAP **rejects unencoded `>` / `<`** in the query string; the client percent-encodes constraints.
 
 ## MHW (Hobday et al. 2016)
