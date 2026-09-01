@@ -148,6 +148,7 @@ python -m pa_marine.cli probe
 
 48-hour demo pack for Dinophysis exceedance + June 2023 MHW case study:
 
+- **Open [`docs/demo.html`](docs/demo.html) for a layman walkthrough** (plain English; figures in `docs/demo_assets/`)
 - Guide: [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md)
 - Snapshot (metrics + figure paths, no retrain): `python scripts/demo_snapshot.py`
 

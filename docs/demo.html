@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PA-Marine-Model — plain-English walkthrough</title>
+  <style>
+    :root {
+      --ink: #1a2332;
+      --muted: #5a6577;
+      --sea: #0b6e99;
+      --sea-soft: #e6f4fa;
+      --sand: #f7f5f1;
+      --card: #ffffff;
+      --accent: #c45c26;
+      --ok: #1f7a4c;
+      --border: #d9e0e8;
+      --shadow: 0 1px 3px rgba(26, 35, 50, 0.08);
+      --radius: 12px;
+      --max: 44rem;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.125rem;
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--sand);
+    }
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 1.25rem 1.25rem 3rem;
+    }
+    header.hero {
+      background: linear-gradient(145deg, #0b6e99 0%, #134e6f 55%, #1a2332 100%);
+      color: #f4fbff;
+      padding: 2.25rem 1.25rem 2.5rem;
+    }
+    header.hero .wrap { padding-top: 0; padding-bottom: 0; }
+    header.hero h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.6rem, 4.5vw, 2.15rem);
+      line-height: 1.25;
+      font-weight: 700;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    header.hero .tagline {
+      margin: 0;
+      font-size: 1.05rem;
+      opacity: 0.92;
+      max-width: 36rem;
+    }
+    header.hero .meta {
+      margin-top: 1.1rem;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+    header.hero a { color: #c8e9f8; }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 0.85rem 1rem;
+      margin: -1.4rem auto 1.75rem;
+      max-width: var(--max);
+      position: relative;
+      z-index: 1;
+    }
+    nav.toc ol {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+      columns: 1;
+    }
+    @media (min-width: 560px) {
+      nav.toc ol { columns: 2; }
+    }
+    nav.toc a {
+      color: var(--sea);
+      text-decoration: none;
+    }
+    nav.toc a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.35rem 1.25rem 1.45rem;
+      margin-bottom: 1.15rem;
+    }
+    h2 {
+      margin: 0 0 0.75rem;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 1.25rem;
+      color: var(--sea);
+      letter-spacing: -0.01em;
+    }
+    h3 {
+      margin: 1.1rem 0 0.45rem;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 1.02rem;
+      color: var(--ink);
+    }
+    p { margin: 0 0 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+    ul, ol { margin: 0 0 0.85rem; padding-left: 1.3rem; }
+    li { margin-bottom: 0.45rem; }
+    .lede { font-size: 1.15rem; color: var(--ink); }
+    .muted { color: var(--muted); font-size: 0.95rem; }
+    .callout {
+      background: var(--sea-soft);
+      border-left: 4px solid var(--sea);
+      padding: 0.85rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 0.9rem 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.98rem;
+    }
+    .stats {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: 1fr;
+      margin: 1rem 0;
+    }
+    @media (min-width: 520px) {
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+    .stat {
+      background: var(--sand);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .stat .label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .stat .big {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--sea);
+      line-height: 1.2;
+    }
+    .stat .vs {
+      margin-top: 0.35rem;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+    .stat .vs strong { color: var(--ok); }
+    figure {
+      margin: 1rem 0 0.35rem;
+    }
+    figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+    figcaption {
+      margin-top: 0.45rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    .grower {
+      background: #fffaf5;
+      border: 1px dashed #e0b089;
+      border-radius: 10px;
+      padding: 1rem 1.05rem;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.98rem;
+    }
+    .grower .week {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .pill {
+      display: inline-block;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .pill.low { background: #e6f6ec; color: #1f7a4c; }
+    .pill.watch { background: #fff3d6; color: #8a5a00; }
+    .pill.high { background: #fde8e4; color: #a33b22; }
+    footer {
+      margin-top: 1.5rem;
+      padding: 1.25rem 0 0.5rem;
+      border-top: 1px solid var(--border);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--sea); }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1rem;
+      margin: 0.75rem 0 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .links a {
+      color: var(--sea);
+      font-weight: 600;
+    }
+    .note-once {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Will this week’s shellfish harvest be at risk?</h1>
+    <p class="tagline">
+      A plain-English walkthrough of <strong>PA-Marine-Model</strong> —
+      a research demo that ranks risky weeks for Dinophysis blooms
+      (the algae behind DSP shellfish closures) using sea-surface temperature.
+    </p>
+    <p class="meta">
+      Cork Ocean Hackathon · Challenge&nbsp;4 · Research nowcast, <em>not</em> an official warning ·
+      <a href="https://github.com/Sliothar1/PA-Marine-Model">GitHub</a>
+    </p>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="On this page">
+    <ol>
+      <li><a href="#problem">The problem</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#proof">Proof — better than the calendar</a></li>
+      <li><a href="#june2023">June 2023 Connemara story</a></li>
+      <li><a href="#grower">What a grower sees</a></li>
+      <li><a href="#limits">Honest limits</a></li>
+    </ol>
+  </nav>
+
+  <section id="problem">
+    <h2>1. The problem</h2>
+    <p class="lede">
+      Along the Irish (and Scottish) coast, a microscopic alga called
+      <strong>Dinophysis</strong> can make shellfish unsafe. When counts rise,
+      harvesting areas get <strong>closed</strong> — costly for growers, and
+      hard to plan around.
+    </p>
+    <p>
+      Closures often arrive with little lead time. Seasonality helps a bit
+      (“summer is riskier”), but growers and regulators need something sharper
+      than a wall calendar: which <em>weeks</em> look unusually risky at
+      <em>this</em> bay, given the water temperature we’ve just seen?
+    </p>
+    <div class="callout">
+      <strong>Our question:</strong> at each monitoring station, will Dinophysis
+      exceed the alert level (≥&nbsp;100 cells per litre) in this week or the next?
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>2. How it works</h2>
+    <p>Three ideas, no jargon needed:</p>
+    <ul>
+      <li>
+        <strong>Watch the sea surface.</strong> We pull daily sea-surface
+        temperature (SST) from public satellite data (NOAA OISST) and summarise
+        recent warmth — this week, the last few weeks, and how unusual that is
+        for the time of year (including marine heatwave context).
+      </li>
+      <li>
+        <strong>Learn from past blooms.</strong> We train a model on years of
+        Marine Institute HAB samples (train on older years, test on recent
+        ones) so it learns patterns that link temperature + place + season to
+        Dinophysis exceedances.
+      </li>
+      <li>
+        <strong>Score each station-week.</strong> The model outputs a risk score
+        for the current and next week. We compare it to a simple
+        “same week of year historically” baseline — the calendar — to check we
+        are actually adding value.
+      </li>
+    </ul>
+    <p class="note-once">
+      Technical note (once): we measure ranking quality with a score called
+      PR-AUC. In plain English it means <em>better at ranking risky weeks</em>
+      ahead of quiet ones. Higher is better; we always quote it against the
+      calendar baseline.
+    </p>
+  </section>
+
+  <section id="proof">
+    <h2>3. Proof — better than the calendar</h2>
+    <p>
+      On held-out recent Irish data (2022+), the model ranks risky Dinophysis
+      weeks better than “what usually happens this week of year”:
+    </p>
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Ireland · Dinophysis cells</div>
+        <div class="big">~0.29</div>
+        <div class="vs">vs calendar <strong>~0.18</strong><br />
+          207 stations · modest but real lift</div>
+      </div>
+      <div class="stat">
+        <div class="label">Ireland · harvest area closed</div>
+        <div class="big">~0.32</div>
+        <div class="vs">vs calendar <strong>~0.21</strong><br />
+          ~0.46 when SST coverage is complete</div>
+      </div>
+    </div>
+    <p>
+      Closure risk ranks about as well as the cell-count target from the same
+      temperature features — the euro-relevant early-warning head of the demo.
+      Scotland (optional context): the same approach also beats its local
+      calendar (~0.67 vs ~0.59), partly helped by more frequent positives there.
+    </p>
+    <p class="muted">
+      Full numbers and caveats live in
+      <a href="HACKATHON_DEMO.md">HACKATHON_DEMO.md</a>
+      and the DSP / closure risk report.
+    </p>
+  </section>
+
+  <section id="june2023">
+    <h2>4. June 2023 — a Connemara local story</h2>
+    <p>
+      June 2023 brought an exceptional northwest European shelf
+      <strong>marine heatwave</strong> (see Berthou et al., 2024). We zoom to
+      Irish waters and Connemara — not to claim the heatwave “caused” blooms,
+      but to show how the same datasets line up on one timeline.
+    </p>
+    <ul>
+      <li>
+        Nearly the whole Irish box was in marine-heatwave conditions in June
+        (mean fraction in MHW ≈ <strong>0.96</strong>; peaked at 1.0 on 19–20 June).
+      </li>
+      <li>
+        <strong>Mace Head</strong> buoy mean temperature ≈ <strong>16&nbsp;°C</strong>
+        in June (about 3.4&nbsp;°C warmer than May).
+      </li>
+      <li>
+        <strong>Corrib</strong> outflow ran low — June mean ≈ 25&nbsp;m³/s,
+        about <strong>75%</strong> of the usual June average — consistent with
+        a dry, anticyclonic spell.
+      </li>
+      <li>
+        Dinophysis at focus stations: <strong>Rosmuc</strong> exceeded in the
+        week of <strong>29 May</strong> (320 cells/L); <strong>Mannin</strong>
+        exceeded in the week of <strong>10 July</strong> (120 cells/L) —
+        bookending the mid-June heatwave peak, not proving cause.
+      </li>
+    </ul>
+
+    <figure>
+      <img
+        src="demo_assets/june2023_mhw_met_temp.png"
+        alt="June 2023 Irish marine heatwave fraction, in-situ temperatures, and Met Éireann wind and radiation at Mace Head"
+        loading="lazy" />
+      <figcaption>
+        Irish-box marine heatwave fraction (top), Mace Head / Spiddal temperatures
+        (middle), and Mace Head wind + sunshine (bottom). Orange band = June 2023.
+        Same file also at
+        <code>../data/processed/figures/june2023_mhw_met_temp.png</code>.
+      </figcaption>
+    </figure>
+
+    <figure>
+      <img
+        src="demo_assets/june2023_dinophysis_connemara.png"
+        alt="Dinophysis cell counts at Connemara HAB stations May–August 2023"
+        loading="lazy" />
+      <figcaption>
+        Connemara Dinophysis time series — Rosmuc late-May spike and Mannin
+        mid-July exceedance around the heatwave window.
+      </figcaption>
+    </figure>
+
+    <figure>
+      <img
+        src="demo_assets/june2023_mace_head_tsdo.png"
+        alt="Mace Head buoy temperature, salinity and dissolved oxygen around June 2023"
+        loading="lazy" />
+      <figcaption>
+        Mace Head buoy temperature, salinity, and dissolved oxygen through the
+        May–August 2023 window (~16&nbsp;°C June mean T).
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="grower">
+    <h2>5. What a grower sees</h2>
+    <p>
+      Imagine a simple weekly glance — not a red-alert siren, just a ranked
+      heads-up beside the official monitoring programme:
+    </p>
+    <div class="grower">
+      <strong>Your bay · this Sunday’s score</strong>
+      <p style="margin:0.4rem 0 0;">
+        Model compares recent sea temperature and season to past bloom weeks
+        at stations like yours, then places this week on a risk ladder.
+      </p>
+      <div class="week">
+        <span class="pill low">Lower than usual</span>
+        <span class="pill watch">Worth a closer look</span>
+        <span class="pill high">Ranks with past problem weeks</span>
+      </div>
+      <p class="muted" style="margin:0.85rem 0 0;">
+        Always cross-check with Marine Institute HAB / biotoxin results.
+        This demo ranks risk; it does not open or close a harvest area.
+      </p>
+    </div>
+  </section>
+
+  <section id="limits">
+    <h2>6. Honest limits</h2>
+    <p>We show the gaps on purpose — that is how you know what to trust:</p>
+    <ul>
+      <li>
+        <strong>Research demo, not an operational warning.</strong> Do not use
+        this alone for harvest decisions.
+      </li>
+      <li>
+        <strong>Skill is modest.</strong> Beating the calendar (~0.29 vs ~0.18
+        for Irish cells; ~0.32 vs ~0.21 for closures) is real, not dramatic.
+      </li>
+      <li>
+        <strong>DSP toxin weeks are too rare</strong> in the recent test window
+        to claim a reliable toxin model yet — closure risk is the stronger
+        ops-style head.
+      </li>
+      <li>
+        <strong>Extra data didn’t always help.</strong> Adding some ocean
+        “colour / mixing”, wind, or richer heatwave flags did not beat the
+        simple strong SST set; coarser inshore satellite pixels can miss
+        sheltered sites (e.g. Rosmuc SST often missing).
+      </li>
+      <li>
+        <strong>June 2023 is a story, not proof.</strong> Two exceedance weeks
+        around a heatwave do not equal causation. Local ROMS archive and
+        Lehanagh Pool data for that June were not available on public feeds.
+      </li>
+      <li>
+        HAB sampling is irregular — a quiet week on the map may simply mean
+        “no sample,” not “no cells.”
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>
+      <strong>Go deeper:</strong>
+      technical teammate guide
+      <a href="HACKATHON_DEMO.md">docs/HACKATHON_DEMO.md</a>
+      · source &amp; issues on
+      <a href="https://github.com/Sliothar1/PA-Marine-Model">GitHub · Sliothar1/PA-Marine-Model</a>.
+    </p>
+    <p class="links">
+      <a href="HACKATHON_DEMO.md">Hackathon demo pack</a>
+      <a href="https://github.com/Sliothar1/PA-Marine-Model">Open repository</a>
+      <a href="../README.md">Project README</a>
+    </p>
+    <p>
+      Figures copied into <code>docs/demo_assets/</code> for offline viewing of this page;
+      originals live under <code>data/processed/figures/</code>.
+      HAB © Marine Institute · OISST © NOAA · MIT code · cite Berthou et al. (2024) for the June 2023 MHW narrative.
+    </p>
+  </footer>
+</div>
+
+</body>
+</html>

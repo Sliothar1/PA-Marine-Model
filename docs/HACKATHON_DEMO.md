@@ -4,6 +4,8 @@
 
 This is a research nowcast demo, **not** an operational warning product.
 
+**Open [`docs/demo.html`](demo.html) for a layman walkthrough** (non-technical one-pager; figures under `docs/demo_assets/`).
+
 Generated / verified artifacts: **2026-09-01** (Europe/Dublin). Snapshot without retrain:
 
 ```bash
@@ -209,6 +211,8 @@ EPA HydroNet remains interactive-only (data.gov.ie → SPA). **OPW Hydro-Data JS
 
 ```
 docs/HACKATHON_DEMO.md                 ← this file
+docs/demo.html                         ← layman one-pager walkthrough
+docs/demo_assets/june2023_*.png        ← figures bundled for local HTML
 scripts/demo_snapshot.py               ← print key metrics + figure paths
 scripts/run_pipeline.py --fixture
 scripts/evaluate.py --feature-mode strong
