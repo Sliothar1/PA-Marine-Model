@@ -27,3 +27,12 @@
 **Coordinates:** the HAB export has **no lat/lon**. Panels leave `latitude`/`longitude` null and set `has_coords=False`. **Geocode Sin → WGS84 before any OISST/OSTIA join.** Area lookup is joined on `Sin` only (`in_smc_areas` flag).
 
 Rebuild: `python scripts/ingest_smc_hab.py`.
+
+## Area closures (2026-09-01 ingest)
+
+**Raw (gitignored):** `data/raw/smc_area_closures.csv` — toxin/E.coli harvest closures (OA/DTX/PTX etc.), not Copernicus.
+
+**Processed:** `data/processed/smc_closures.csv` + `smc_closures_note.md`. Linked to `smc_areas` on AreaName; Pod retained; Sin preferred from Reason when present in areas.
+
+Rebuild: `python scripts/ingest_smc_closures.py`.
+

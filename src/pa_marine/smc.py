@@ -4,6 +4,9 @@ Sanitary classifications (A/B/C by SIN) are NOT HAB labels.
 Phytoplankton and biotoxin CSVs from Food Standards Scotland / SMC monitoring
 provide Dinophysis / Pseudo-nitzschia / Alexandrium cell counts and shellfish
 toxin results keyed by Sin (no lat/lon in the export).
+
+Area-closure CSVs are toxin-/E.coli-driven harvest closures (OA/DTX/PTX etc.),
+not Copernicus SST. Link to AreaName / Pod / Sin via smc_areas where possible.
 """
 from __future__ import annotations
 
@@ -358,3 +361,125 @@ def summarize_phyto_panel(panel: pd.DataFrame, n_raw: int) -> dict[str, Any]:
             "Thresholds: Dinophysis≥100, Pseudo-nitzschia≥50000, Alexandrium≥40 cells/L."
         ),
     }
+
+
+
+CLOSURE_REQUIRED_COLS = [
+    "Id",
+    "AreaId",
+    "AreaClosureStart",
+    "AreaClosureEnd",
+    "AreaName",
+    "Description",
+    "Reason",
+    "Pod",
+]
+
+_SIN_IN_REASON = re.compile(r"\b([A-Z]{2})\s+(\d+)\s+(\d+)\s+(\d+)\b")
+
+
+def _sin_from_reason(reason) -> str | None:
+    """Parse 'HL 179 996 08' style site codes from closure Reason text."""
+    if pd.isna(reason):
+        return None
+    m = _SIN_IN_REASON.search(str(reason))
+    if not m:
+        return None
+    return f"{m.group(1)}-{m.group(2)}-{m.group(3)}-{m.group(4)}"
+
+
+def _toxin_tags(reason) -> str:
+    """Coarse tag(s) from Reason: OA/DTX/PTX, ASP, PSP, AZA, YTX, Ecoli, other."""
+    if pd.isna(reason) or not str(reason).strip():
+        return "unspecified"
+    s = str(reason)
+    tags: list[str] = []
+    su = s.upper()
+    if "OA/DTX/PTX" in su or "OA/DTX" in su:
+        tags.append("OA/DTX/PTX")
+    if re.search(r"\bASP\b", su):
+        tags.append("ASP")
+    if re.search(r"\bPSP\b", su):
+        tags.append("PSP")
+    if re.search(r"\bAZA\b", su):
+        tags.append("AZA")
+    if re.search(r"\bYTX\b", su):
+        tags.append("YTX")
+    if re.search(r"\bE\s*COLI\b|\bECOLI\b", su, re.I):
+        tags.append("Ecoli")
+    return "|".join(tags) if tags else "other"
+
+
+def load_smc_area_closures(path: str | Path) -> pd.DataFrame:
+    """Load SMC area-closure CSV; parse start/end day-first; keep Pod as nullable Int64."""
+    path = Path(path)
+    df = pd.read_csv(path)
+    missing = [c for c in CLOSURE_REQUIRED_COLS if c not in df.columns]
+    if missing:
+        raise ValueError(f"SMC area closures missing columns: {missing}")
+    out = df[CLOSURE_REQUIRED_COLS].copy()
+    out["AreaClosureStart"] = pd.to_datetime(
+        out["AreaClosureStart"], dayfirst=True, errors="coerce"
+    )
+    out["AreaClosureEnd"] = pd.to_datetime(
+        out["AreaClosureEnd"], dayfirst=True, errors="coerce"
+    )
+    out["Pod"] = pd.to_numeric(out["Pod"], errors="coerce").astype("Int64")
+    return out
+
+
+def process_smc_area_closures(
+    closures: pd.DataFrame,
+    areas: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    """One row per closure Id, linked to smc_areas on AreaName (+ Sin from Reason).
+
+    Adds:
+      Sin_trigger — site code parsed from Reason (may differ from sanitary Sin)
+      Sin — preferred link: Sin_trigger if present in areas, else first AreaName Sin
+      AreaSins — pipe-joined SINs for AreaName in smc_areas
+      LocalAuthorityName, in_smc_areas, n_area_sins
+      toxin_tags, is_open (no AreaClosureEnd)
+    """
+    g = closures.copy()
+    g["Sin_trigger"] = g["Reason"].map(_sin_from_reason)
+    g["toxin_tags"] = g["Reason"].map(_toxin_tags)
+    g["is_open"] = g["AreaClosureEnd"].isna()
+
+    if areas is None or areas.empty:
+        g["Sin"] = g["Sin_trigger"]
+        g["AreaSins"] = pd.NA
+        g["LocalAuthorityName"] = pd.NA
+        g["in_smc_areas"] = False
+        g["n_area_sins"] = 0
+        g["sin_trigger_in_smc_areas"] = False
+        return g
+
+    area_sins = set(areas["Sin"].dropna().astype(str))
+    by_name = (
+        areas.groupby("AreaName", as_index=False)
+        .agg(
+            AreaSins=("Sin", lambda s: "|".join(sorted(set(map(str, s))))),
+            LocalAuthorityName=("LocalAuthorityName", "first"),
+            Sin_area_primary=("Sin", "first"),
+            n_area_sins=("Sin", "nunique"),
+        )
+    )
+    g = g.merge(by_name, on="AreaName", how="left")
+    g["in_smc_areas"] = g["AreaSins"].notna()
+    g["n_area_sins"] = g["n_area_sins"].fillna(0).astype(int)
+    g["sin_trigger_in_smc_areas"] = g["Sin_trigger"].isin(area_sins)
+
+    def _pick_sin(row):
+        trig = row.get("Sin_trigger")
+        if pd.notna(trig) and str(trig) in area_sins:
+            return str(trig)
+        primary = row.get("Sin_area_primary")
+        if pd.notna(primary):
+            return str(primary)
+        return trig if pd.notna(trig) else pd.NA
+
+    g["Sin"] = g.apply(_pick_sin, axis=1)
+    g = g.drop(columns=["Sin_area_primary"])
+    return g.reset_index(drop=True)
+

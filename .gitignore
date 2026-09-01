@@ -33,3 +33,5 @@ data/models/
 !data/processed/smc_note.md
 !data/processed/smc_hab_ingest_summary.json
 !data/processed/smc_hab_report.md
+!data/processed/smc_closures.csv
+!data/processed/smc_closures_note.md
