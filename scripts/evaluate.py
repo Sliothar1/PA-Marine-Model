@@ -48,9 +48,11 @@ def main():
             "strong_rich_mhw_ibi",
             "strong_rich_mhw_lean_ibi",
             "strong_rich_mhw_ibi_full",
+            "strong_era5_wind",
+            "strong_wind",
         ],
         help="Default strong for Dinophysis (ablation winner 2026-09-01). "
-        "Also: strong_rich_mhw / strong_ibi / strong_rich_mhw_ibi(+_full).",
+        "Also: strong_era5_wind / strong_rich_mhw / strong_ibi / strong_rich_mhw_ibi(+_full).",
     )
     args = p.parse_args()
     cfg = load_config(args.config)

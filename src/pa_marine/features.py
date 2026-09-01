@@ -214,6 +214,19 @@ IBI_LIGHT_MLD = {
     "zeu_roll30d",
 }
 
+# ERA5 10 m wind (speed + coast-relative components + 7/14d rolls when present)
+ERA5_WIND_CORE = {
+    "wind_speed",
+    "wind_alongshore",
+    "wind_crossshore",
+    "wind_speed_roll7d",
+    "wind_speed_roll14d",
+    "wind_alongshore_roll7d",
+    "wind_alongshore_roll14d",
+    "wind_crossshore_roll7d",
+    "wind_crossshore_roll14d",
+}
+
 IBI_SSS_CUR = {
     "so",
     "so_lag0d",
@@ -264,5 +277,8 @@ def select_feature_mode(df: pd.DataFrame, mode: str) -> list[str]:
         return [f for f in all_feats if f in keep]
     if mode == "strong_rich_mhw_ibi_full":
         keep = STRONG_OISST | RICH_MHW | IBI_LIGHT_MLD | IBI_SSS_CUR
+        return [f for f in all_feats if f in keep]
+    if mode in {"strong_era5_wind", "strong_wind"}:
+        keep = STRONG_OISST | ERA5_WIND_CORE
         return [f for f in all_feats if f in keep]
     raise ValueError(f"Unknown feature mode: {mode}")

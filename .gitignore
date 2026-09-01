@@ -50,3 +50,10 @@ data/models/
 !data/processed/nearest_hab_lehanagh.csv
 !data/processed/buoy_hab_corr_mace_head.csv
 !data/processed/buoy_hab_corr_lehanagh.csv
+!data/processed/scout_ingest_report.md
+!data/processed/scout_ingest_summary.json
+!data/processed/crw_mhw_ireland_daily_summary.csv
+!data/processed/mace_head_met_daily.csv
+!data/processed/era5_wind_dino_report.md
+!data/processed/metrics_dino_era5_wind.json
+!data/processed/metrics_dino_era5_strong.json
