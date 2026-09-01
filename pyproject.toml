@@ -21,6 +21,7 @@ dependencies = [
 boost = ["lightgbm>=4.0", "xgboost>=2.0"]
 uk = ["pyproj>=3.6"]
 ostia = ["copernicusmarine>=2.0", "xarray>=2024.1", "netCDF4>=1.6"]
+era5 = ["cdsapi>=0.7.7", "ecmwf-datastores-client>=0.5", "xarray>=2024.1", "netCDF4>=1.6"]
 dev = ["pytest>=7.0", "pyproj>=3.6"]
 
 [project.scripts]
