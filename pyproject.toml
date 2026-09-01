@@ -19,7 +19,8 @@ dependencies = [
 
 [project.optional-dependencies]
 boost = ["lightgbm>=4.0", "xgboost>=2.0"]
-dev = ["pytest>=7.0"]
+uk = ["pyproj>=3.6"]
+dev = ["pytest>=7.0", "pyproj>=3.6"]
 
 [project.scripts]
 pa-marine = "pa_marine.cli:main"

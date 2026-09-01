@@ -13,6 +13,10 @@ data/interim/
 data/processed/*
 !data/processed/metrics.json
 !data/processed/run_summary.md
+!data/processed/uk_ingest_summary.json
+!data/processed/dino_ablation_metrics.json
+!data/processed/dino_feature_report.md
+!data/processed/metrics_dino_strong.json
 data/models/
 *.parquet
 *.pkl

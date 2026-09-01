@@ -132,3 +132,36 @@ python -m pa_marine.cli probe
 ## License
 
 MIT. HAB data © Marine Institute (see ERDDAP license). OISST © NOAA.
+
+## Dinophysis feature study (2026-09-01)
+
+See `data/processed/dino_feature_report.md`. On existing `joined_features.parquet` (no OISST re-download):
+
+- LightGBM **gain** and **permutation** (val AP) are dominated by `woy_cos` / `latitude` / `woy_sin` / `longitude`; SST rolls/lags add modest signal; most `in_mhw*` / duration features are near-zero.
+- Bugfix: `feature_columns` no longer includes `location_id` (was matched by a naïve `endswith("d")`).
+- Ablations (LightGBM, val-calibrated **test** PR-AUC for `y_dinophysis_nowcast`):
+
+| mode | n_feat | test PR-AUC cal | vs baseline |
+| --- | ---: | ---: | ---: |
+| baseline `all` | 44 | 0.281 | — |
+| `strong` (drop weak) | 9 | **0.293** | **+0.012** |
+| `sst` (SST/SSTA+woy+geo) | 20 | 0.292 | +0.011 |
+| lag tweak 0/3/7/14 + rolls 7/14 | 39 | 0.279 | −0.002 |
+
+Wind proxies skipped (ERA5/Open-Meteo for all stations × decades exceeds cheap budget). Re-run with:
+
+```bash
+python scripts/dino_feature_study.py
+python scripts/evaluate.py --feature-mode strong --calibration auto
+```
+
+## England & Wales labels (parallel panel)
+
+Public FSA/Cefas phytoplankton CSVs from [data.gov.uk](https://www.data.gov.uk/dataset/9a86b044-58a3-46d0-8455-5046f5769627/phytoplankton-results-for-england-and-wales) / Azure `fsaopendata` blob + `fsadata.github.io` archive still download as of 2026-09-01.
+
+```bash
+python scripts/ingest_uk_fsa.py --download   # or drop CSVs into data/raw/uk_phyto/
+```
+
+Adapter: `src/pa_marine/uk_fsa.py` (OSGB grid → WGS84 via `pyproj`). Builds `data/processed/uk_station_week_panel.parquet` with Dinophysiaceae (≥100 cells L⁻¹) as Dinophysis proxy. **Not merged into Irish training yet.**
+

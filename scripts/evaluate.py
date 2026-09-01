@@ -34,14 +34,33 @@ def main():
         help="Fit calibrator on validation only (default: auto = isotonic if enough positives).",
     )
     p.add_argument("--out", default=None)
+    p.add_argument(
+        "--feature-mode",
+        default="all",
+        choices=["all", "strong", "sst"],
+        help="all=joined features; strong=drop weak MHW/noise (dino ablation winner); "
+        "sst=SST/SSTA + woy + geo only.",
+    )
     args = p.parse_args()
     cfg = load_config(args.config)
     path = args.joined or cfg["paths"]["joined"]
     df = pd.read_parquet(path) if path.endswith(".parquet") else pd.read_csv(path)
     feats = feature_columns(df)
+    if args.feature_mode == "strong":
+        # Keep seasonal/geo + features that had gain_pct>=1% or clear perm signal in
+        # the 2026-09-01 Dinophysis study (see data/processed/dino_feature_report.md).
+        # Exact drop_weak winner set from dino_feature_report.md (gain>=1% & perm>0 + must).
+        strong = {
+            "woy_sin", "woy_cos", "latitude", "longitude",
+            "sst", "sst_lag0d", "sst_lag21d", "sst_roll7d", "sst_roll30d",
+        }
+        feats = [f for f in feats if f in strong]
+    elif args.feature_mode == "sst":
+        must = {"woy_sin", "woy_cos", "latitude", "longitude"}
+        feats = [f for f in feats if f.startswith("sst") or f.startswith("ssta") or f in must]
     train = df[df["split"] == "train"]
     val = df[df["split"] == "val"]
-    results: dict = {"_meta": {"calibration": args.calibration}}
+    results: dict = {"_meta": {"calibration": args.calibration, "feature_mode": args.feature_mode, "n_features": len(feats)}}
     horizons = ["nowcast", "ahead7"] if args.horizon == "both" else [args.horizon]
     for horizon in horizons:
         targets = [c for c in df.columns if c.startswith("y_") and c.endswith(f"_{horizon}")]

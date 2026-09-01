@@ -97,3 +97,10 @@ sklearn **logreg** (balanced) and **lightgbm** 4.7.0. Horizons: nowcast and ahea
 - `.gitignore` — still ignores huge processed parquet; allows `metrics.json` + `run_summary.md`
 
 Metrics path: `data/processed/metrics.json`
+
+## Dinophysis feature study follow-up (same day)
+
+- Report: `data/processed/dino_feature_report.md`
+- Ablation JSON: `data/processed/dino_ablation_metrics.json`
+- Best quick win: `--feature-mode strong` → Dinophysis nowcast LightGBM **test PR-AUC cal 0.293** (baseline 0.281; Δ **+0.012**). SST-only close second (0.292). Lag densification did not help.
+- UK FSA ingest: `uk_ingest_summary.json` — 5,484 samples, 117 beds, 2018–2025; Dinophysiaceae rate ~0.056. Parallel panel only.

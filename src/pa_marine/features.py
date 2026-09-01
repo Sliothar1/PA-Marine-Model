@@ -52,14 +52,27 @@ def join_week_panel(panel: pd.DataFrame, mhw_daily: pd.DataFrame) -> pd.DataFram
 
 
 def feature_columns(df: pd.DataFrame) -> list[str]:
+    """Numeric model features: BASE_COLS + lag/roll engineered cols + seasonality/geo.
+
+    Intentionally excludes identifiers such as location_id (which ends with 'd').
+    """
     extra = ["woy_sin", "woy_cos", "latitude", "longitude"]
-    cols = [c for c in df.columns if any(c.startswith(b) for b in BASE_COLS) or c.endswith("d")]
+    skip = {"location_id", "iso_year", "iso_week", "n_samples", "feat_date"}
+    cols = []
+    for c in df.columns:
+        if c in skip:
+            continue
+        if any(c.startswith(b) for b in BASE_COLS):
+            cols.append(c)
+        elif c.endswith(("lag0d", "lag3d", "lag7d", "lag14d", "lag21d")) or c.endswith(
+            ("roll7d", "roll14d", "roll30d")
+        ):
+            cols.append(c)
     cols += [c for c in extra if c in df.columns]
-    # unique preserve order
     seen = set()
     out = []
     for c in cols:
-        if c not in seen and pd.api.types.is_numeric_dtype(df[c]):
+        if c not in seen and c not in skip and pd.api.types.is_numeric_dtype(df[c]):
             seen.add(c)
             out.append(c)
     return out

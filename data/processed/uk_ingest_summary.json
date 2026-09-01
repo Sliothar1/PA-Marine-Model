@@ -1,0 +1,12 @@
+{
+  "n_sample_rows": 5484,
+  "n_station_weeks": 5470,
+  "n_locations": 117,
+  "date_min": "2018-01-02 00:00:00",
+  "date_max": "2025-12-16 00:00:00",
+  "dino_rate": 0.05594149908592322,
+  "pn_rate": 0.029798903107861062,
+  "frac_with_coords": 0.9815356489945155,
+  "out": "/workspace/pa-marine-model/data/processed/uk_station_week_panel.parquet",
+  "note": "Dinophysiaceae (DSP family) used as Dinophysis proxy at 100 cells/L; Pseudo-nitzschia at 50,000 cells/L. Parallel UK panel only \u2014 not merged into Irish training yet."
+}
