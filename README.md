@@ -144,6 +144,13 @@ python -m pa_marine.cli probe
 - Do not treat skill on the tiny fixture as scientific evidence.
 - Raw (uncalibrated) Brier skill is negative vs week-of-year climatology; use calibrated probabilities for reliability.
 
+## Cork Ocean Hackathon (Challenge 4)
+
+48-hour demo pack for Dinophysis exceedance + June 2023 MHW case study:
+
+- Guide: [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md)
+- Snapshot (metrics + figure paths, no retrain): `python scripts/demo_snapshot.py`
+
 ## License
 
 MIT. HAB data © Marine Institute (see ERDDAP license). OISST © NOAA.
