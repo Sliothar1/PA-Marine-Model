@@ -177,6 +177,19 @@ python scripts/ingest_biotoxin.py --skip-download
 
 Writes `toxin_station_week_panel.parquet`, optional SST join, and `biotoxin_ingest_summary.json` / `biotoxin_ingest_report.md`. Raw CSVs stay under gitignored `data/raw/`.
 
+## Scotland SMC (sanitary classifications only)
+
+Annual A/B/C sanitary shellfish classifications from Food Standards Scotland / SMC
+live at `data/raw/smc_classifications.csv` (gitignored). Unique production-area
+lookup: `data/processed/smc_areas.csv`. Loader: `src/pa_marine/smc.py`.
+
+```bash
+python scripts/ingest_smc.py
+```
+
+**This is not phytoplankton / HAB / toxin data.** Scotland HAB labels still need
+a separate SMC phytoplankton or toxin export. See `data/processed/smc_note.md`.
+
 ## England & Wales labels (parallel panel)
 
 Public FSA/Cefas phytoplankton CSVs from [data.gov.uk](https://www.data.gov.uk/dataset/9a86b044-58a3-46d0-8455-5046f5769627/phytoplankton-results-for-england-and-wales) / Azure `fsaopendata` blob + `fsadata.github.io` archive still download as of 2026-09-01.
