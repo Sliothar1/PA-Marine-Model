@@ -27,6 +27,8 @@ data/models/
 !data/processed/uk_dino_report.md
 !data/processed/biotoxin_ingest_summary.json
 !data/processed/biotoxin_ingest_report.md
+!data/processed/dsp_closure_risk_metrics.json
+!data/processed/dsp_closure_risk_report.md
 !data/processed/ostia_vs_oisst_report.md
 !data/processed/metrics_dino_ostia.json
 !data/processed/smc_areas.csv

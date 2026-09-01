@@ -63,6 +63,7 @@ Rebuild from **existing** processed files (no network):
 
 ```bash
 python scripts/build_june2023_case_study.py
+scripts/train_dsp_closure_risk.py
 ```
 
 | Artifact | Role |
@@ -123,6 +124,7 @@ python scripts/train_scotland_dino.py --skip-download
 
 ```bash
 python scripts/build_june2023_case_study.py
+scripts/train_dsp_closure_risk.py
 ```
 
 Requires processed CRW summary, HAB panel, joined features, Mace Head daily, Spiddal CTD, Met daily (see case-study “Sources” section).
@@ -135,6 +137,26 @@ python scripts/ingest_scout_p0.py   # CRW / SmartBay / Met / CONN probe
 ```
 
 Full national ERDDAP + OISST is large — use README station-cap path if starting cold.
+
+---
+
+## Ops prototype — DSP / harvest-closure risk
+
+Highest-euro early-warning head: **shellfish DSP toxin exceedance** + optional **area closed** from `habs_status`, scored with the same **strong OISST** features / LightGBM+logreg / val calibration / clim baseline as Dinophysis cells.
+
+```bash
+python scripts/train_dsp_closure_risk.py
+# optional: complete-SST rows only
+python scripts/train_dsp_closure_risk.py --require-sst
+```
+
+| Target | Test PR-AUC (LGBM cal) | Clim | PR skill | Notes |
+| --- | ---: | ---: | ---: | --- |
+| **Area closed** | **~0.315** | ~0.208 | **~0.135** | Partially predictable from SST alone; ~0.46 / skill ~0.31 if SST complete |
+| DSP exceed (OA/DTX/PTX) | ~0.009 | ~0.004 | ~0.005 | **Not reliable** — only ~19 test positives (2022+ rarity) |
+| Dinophysis cells (ref) | ~0.293 | ~0.183 | ~0.135 | Same feature philosophy |
+
+Honest takeaway: **closure risk ranks about as well as cell exceedance** on SST strong features; **DSP toxin weeks are too scarce on the test window** to claim an ops toxin model yet. Full write-up: `data/processed/dsp_closure_risk_report.md` (+ `dsp_closure_risk_metrics.json`). Ingest path: `scripts/ingest_biotoxin.py`.
 
 ---
 
@@ -162,7 +184,7 @@ Other caveats: irregular HAB sampling (missing week ≠ true negative); OISST 0.
 | 0–2 h | Clone, `pip install -e ".[dev]"`, fixture + `demo_snapshot.py`, skim this doc + `june2023_case_study.md` |
 | 2–6 h | Deck: problem → Ireland/Scotland metrics → June 2023 figures → honest limits |
 | 6–12 h | Live demo path: snapshot → open three PNGs → optional `evaluate.py --feature-mode strong` if parquet present |
-| Next (if time) | Ablate river Q features (see §7); toxin/`habs_status` story; England/Wales transfer (`evaluate_uk_dino.py`) |
+| Next (if time) | Ablate river Q features (see §7); **DSP/closure ops prototype** (`train_dsp_closure_risk.py`); England/Wales transfer |
 
 ---
 
@@ -192,6 +214,7 @@ scripts/run_pipeline.py --fixture
 scripts/evaluate.py --feature-mode strong
 scripts/train_scotland_dino.py
 scripts/build_june2023_case_study.py
+scripts/train_dsp_closure_risk.py
 scripts/ingest_sentinel_sites.py
 scripts/ingest_scout_p0.py
 
@@ -201,6 +224,8 @@ data/processed/dino_feature_report.md
 data/processed/ibi_light_mhw_report.md
 data/processed/era5_wind_dino_report.md
 data/processed/ostia_vs_oisst_report.md
+data/processed/dsp_closure_risk_report.md
+data/processed/dsp_closure_risk_metrics.json
 data/processed/local_sites_report.md
 data/processed/june2023_case_study.md
 data/processed/figures/june2023_*.png
