@@ -20,6 +20,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from pa_marine.sst import haversine_km
+
 CDS_TERMS_URL = (
     "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=download"
 )
@@ -366,7 +368,7 @@ def _nearest_grid_map(stations: pd.DataFrame, lats: np.ndarray, lons: np.ndarray
     rows = []
     uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]]
     for row in uniq.itertuples(index=False):
-        dist = (lat_grid - float(row.latitude)) ** 2 + (lon_grid - float(row.longitude)) ** 2
+        dist = haversine_km(float(row.latitude), float(row.longitude), lat_grid, lon_grid)
         i, j = np.unravel_index(int(np.argmin(dist)), dist.shape)
         rows.append(
             {
@@ -375,7 +377,7 @@ def _nearest_grid_map(stations: pd.DataFrame, lats: np.ndarray, lons: np.ndarray
                 "request_lon": float(row.longitude),
                 "grid_lat": float(lats[i]),
                 "grid_lon": float(lons[j]),
-                "dist_deg": float(np.sqrt(dist[i, j])),
+                "dist_km": float(dist[i, j]),
             }
         )
     return pd.DataFrame(rows)
@@ -429,7 +431,7 @@ def extract_station_daily(
         "request_lon",
         "grid_lat",
         "grid_lon",
-        "dist_deg",
+        "dist_km",
         "wind_u",
         "wind_v",
         "wind_speed",
