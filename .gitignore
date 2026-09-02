@@ -120,3 +120,9 @@ data/models/
 data/external/met_eireann/normals_9120/*
 !data/external/met_eireann/normals_9120/Readme*.txt
 data/external/met_eireann/historical/
+# daily_mace_head_dly275.csv, monthly_classic_*.csv
+#
+# Climate Drivers — external Met Éireann (small CSV/JSON OK to commit; ignore bulky grids)
+# Already tracked under data/external/met_eireann/: Garry mace monthly, Agmet JSON/CSV,
+# Normals 9120: commit zips + Readmes; ignore expanded IE_*.txt (~25MB).
+data/external/met_eireann/normals_9120/IE_*.txt
