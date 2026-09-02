@@ -1,0 +1,35 @@
+{
+  "bbox_note": "Irish HAB station pixels (~51.5\u201355.3N, 10.6\u20136.0W)",
+  "oisst": {
+    "status": "ok",
+    "n_years": 25,
+    "year_min": 2002,
+    "year_max": 2026,
+    "slope_c_per_year": 0.029797199327166353,
+    "intercept_c": -46.15432785534196,
+    "c_per_decade": 0.2979719932716635,
+    "r2": 0.07267405535694738,
+    "june_mean_first5": 13.51858048780488,
+    "june_mean_last5": 14.332410793383795,
+    "delta_last5_minus_first5": 0.8138303055789162
+  },
+  "ostia": {
+    "status": "ok",
+    "n_years": 24,
+    "year_min": 2002,
+    "year_max": 2025,
+    "slope_c_per_year": 0.016543843360525452,
+    "intercept_c": -19.728355598607973,
+    "c_per_decade": 0.1654384336052545,
+    "r2": 0.03969530589804726,
+    "june_mean_first5": 13.484581034693909,
+    "june_mean_last5": 13.94387120156163,
+    "delta_last5_minus_first5": 0.45929016686772073
+  },
+  "paths": {
+    "figure_docs": "docs/climate_assets/irish_shelf_june_sst_trend.png",
+    "figure_processed": "data/processed/figures/irish_shelf_june_sst_trend.png",
+    "csv": "data/processed/irish_shelf_june_sst_series.csv"
+  },
+  "year_features": "data/processed/sst_warming_year_features.csv"
+}

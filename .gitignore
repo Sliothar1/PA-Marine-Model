@@ -80,3 +80,23 @@ data/models/
 !data/processed/connemara_farms_latest.csv
 !data/processed/connemara_farms_scores.html
 !data/processed/connemara_farms_metrics.json
+
+# Climate Drivers whitelist
+!data/processed/met_climate_drivers_ingest_summary.json
+!data/processed/climate_drivers_ablation_metrics.json
+!data/processed/climate_drivers_ablation_report.md
+!data/processed/sst_warming_context_metrics.json
+!data/processed/sst_warming_year_features.csv
+!data/processed/irish_shelf_june_sst_series.csv
+!data/processed/met_west_climate_week.csv
+!data/processed/belmullet_met_daily.csv
+!data/processed/belmullet_met_week.csv
+!data/processed/belmullet_met_monthly.csv
+!data/processed/valentia_met_daily.csv
+!data/processed/valentia_met_week.csv
+!data/processed/valentia_met_monthly.csv
+!data/processed/malin_head_met_daily.csv
+!data/processed/malin_head_met_week.csv
+!data/processed/malin_head_met_monthly.csv
+!data/processed/newport_met_daily.csv
+!data/processed/newport_met_week.csv

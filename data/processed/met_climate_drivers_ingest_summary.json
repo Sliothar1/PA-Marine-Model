@@ -1,0 +1,375 @@
+{
+  "stations": {
+    "2375": {
+      "name": "Belmullet",
+      "slug": "belmullet",
+      "lat": 54.228,
+      "lon": -10.007,
+      "height_m": 9,
+      "role": "primary_radiation_sunshine_west"
+    },
+    "2275": {
+      "name": "Valentia Observatory",
+      "slug": "valentia",
+      "lat": 51.938,
+      "lon": -10.241,
+      "height_m": 24,
+      "role": "sw_west_coast_long_wind_radiation"
+    },
+    "1575": {
+      "name": "Malin Head",
+      "slug": "malin_head",
+      "lat": 55.372,
+      "lon": -7.339,
+      "height_m": 20,
+      "role": "nw_long_wind_sunshine_radiation"
+    },
+    "1175": {
+      "name": "Newport",
+      "slug": "newport",
+      "lat": 53.924,
+      "lon": -9.573,
+      "height_m": 22,
+      "role": "mayo_connemara_adjacent_glorad"
+    },
+    "275": {
+      "name": "Mace Head",
+      "slug": "mace_head",
+      "lat": 53.326,
+      "lon": -9.901,
+      "height_m": 21,
+      "role": "connemara_already_ingested_refresh_ok"
+    }
+  },
+  "downloads": {
+    "2375_daily": {
+      "status": "ok",
+      "bytes": 2459369,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/belmullet_daily_dly2375.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/dly2375.csv"
+    },
+    "2375_hourly": {
+      "status": "ok",
+      "bytes": 53523133,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/belmullet_hourly_hly2375.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/hly2375.csv"
+    },
+    "2375_monthly": {
+      "status": "ok",
+      "bytes": 44711,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/belmullet_monthly_mly2375.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/mly2375.csv"
+    },
+    "2275_daily": {
+      "status": "ok",
+      "bytes": 2924455,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/valentia_daily_dly2275.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/dly2275.csv"
+    },
+    "2275_monthly": {
+      "status": "ok",
+      "bytes": 55720,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/valentia_monthly_mly2275.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/mly2275.csv"
+    },
+    "1575_daily": {
+      "status": "ok",
+      "bytes": 2497997,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/malin_head_daily_dly1575.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/dly1575.csv"
+    },
+    "1575_monthly": {
+      "status": "ok",
+      "bytes": 45383,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/malin_head_monthly_mly1575.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/mly1575.csv"
+    },
+    "1175_daily": {
+      "status": "ok",
+      "bytes": 724034,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/newport_daily_dly1175.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/dly1175.csv"
+    },
+    "275_daily": {
+      "status": "cached",
+      "bytes": 743442,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/mace_head_daily_dly275.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/dly275.csv"
+    },
+    "275_monthly": {
+      "status": "cached",
+      "bytes": 13920,
+      "path": "/workspace/pa-marine-model/data/raw/met_eireann/mace_head_monthly_mly275.csv",
+      "url": "https://clidata.met.ie/cli/climate_data/webdata/mly275.csv"
+    }
+  },
+  "daily_parsed": {
+    "2375": {
+      "status": "ok",
+      "rows": 25520,
+      "date_min": "1956-09-17",
+      "date_max": "2026-07-31",
+      "fields": [
+        "wdsp",
+        "hm",
+        "ddhm",
+        "hg",
+        "glorad",
+        "sun",
+        "maxtp",
+        "mintp",
+        "rain",
+        "soil",
+        "cbl",
+        "pe",
+        "evap"
+      ],
+      "n_glorad_nonnull": 9097,
+      "n_sun_nonnull": 9097,
+      "june_2023_glorad_mean": 2004.8,
+      "june_2023_sun_mean": 7.476666666666666,
+      "june_2023_wdsp_mean_kt": 9.303333333333333,
+      "parquet": "/workspace/pa-marine-model/data/processed/belmullet_met_daily.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/belmullet_met_daily.csv"
+    },
+    "2275": {
+      "status": "ok",
+      "rows": 30892,
+      "date_min": "1942-01-01",
+      "date_max": "2026-07-31",
+      "fields": [
+        "wdsp",
+        "hm",
+        "ddhm",
+        "hg",
+        "glorad",
+        "sun",
+        "maxtp",
+        "mintp",
+        "rain",
+        "soil",
+        "cbl",
+        "pe",
+        "evap"
+      ],
+      "n_glorad_nonnull": 9213,
+      "n_sun_nonnull": 9218,
+      "june_2023_glorad_mean": 1981.5666666666666,
+      "june_2023_sun_mean": 6.693333333333333,
+      "june_2023_wdsp_mean_kt": 7.176666666666667,
+      "parquet": "/workspace/pa-marine-model/data/processed/valentia_met_daily.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/valentia_met_daily.csv"
+    },
+    "1575": {
+      "status": "ok",
+      "rows": 26025,
+      "date_min": "1955-05-01",
+      "date_max": "2026-07-31",
+      "fields": [
+        "wdsp",
+        "hm",
+        "ddhm",
+        "hg",
+        "glorad",
+        "sun",
+        "maxtp",
+        "mintp",
+        "rain",
+        "soil",
+        "cbl",
+        "pe",
+        "evap"
+      ],
+      "n_glorad_nonnull": 9306,
+      "n_sun_nonnull": 7819,
+      "june_2023_glorad_mean": 2154.766666666667,
+      "june_2023_sun_mean": 8.393333333333334,
+      "june_2023_wdsp_mean_kt": 10.306666666666667,
+      "parquet": "/workspace/pa-marine-model/data/processed/malin_head_met_daily.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/malin_head_met_daily.csv"
+    },
+    "1175": {
+      "status": "ok",
+      "rows": 7824,
+      "date_min": "2005-02-22",
+      "date_max": "2026-07-31",
+      "fields": [
+        "wdsp",
+        "hm",
+        "ddhm",
+        "hg",
+        "glorad",
+        "maxtp",
+        "mintp",
+        "rain",
+        "soil",
+        "cbl",
+        "pe",
+        "evap"
+      ],
+      "n_glorad_nonnull": 7821,
+      "n_sun_nonnull": 0,
+      "june_2023_glorad_mean": 1949.1,
+      "june_2023_sun_mean": null,
+      "june_2023_wdsp_mean_kt": 6.953333333333333,
+      "parquet": "/workspace/pa-marine-model/data/processed/newport_met_daily.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/newport_met_daily.csv"
+    },
+    "275": {
+      "status": "ok",
+      "rows": 8336,
+      "date_min": "2003-08-14",
+      "date_max": "2026-07-31",
+      "fields": [
+        "wdsp",
+        "hm",
+        "ddhm",
+        "hg",
+        "glorad",
+        "maxtp",
+        "mintp",
+        "rain",
+        "soil",
+        "cbl",
+        "pe",
+        "evap"
+      ],
+      "n_glorad_nonnull": 8207,
+      "n_sun_nonnull": 0,
+      "june_2023_glorad_mean": 2106.9,
+      "june_2023_sun_mean": null,
+      "june_2023_wdsp_mean_kt": 11.093333333333335,
+      "parquet": "/workspace/pa-marine-model/data/processed/mace_head_met_daily.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/mace_head_met_daily.csv"
+    }
+  },
+  "monthly_parsed": {
+    "2375": {
+      "status": "ok",
+      "rows": 834,
+      "year_min": 1956,
+      "year_max": 2026,
+      "fields": [
+        "year",
+        "month",
+        "meant",
+        "maxtp",
+        "mintp",
+        "mnmax",
+        "mnmin",
+        "rain",
+        "gmin",
+        "wdsp",
+        "maxgt",
+        "sun"
+      ],
+      "parquet": "/workspace/pa-marine-model/data/processed/belmullet_met_monthly.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/belmullet_met_monthly.csv"
+    },
+    "2275": {
+      "status": "ok",
+      "rows": 1042,
+      "year_min": 1939,
+      "year_max": 2026,
+      "fields": [
+        "year",
+        "month",
+        "meant",
+        "maxtp",
+        "mintp",
+        "mnmax",
+        "mnmin",
+        "rain",
+        "gmin",
+        "wdsp",
+        "maxgt",
+        "sun"
+      ],
+      "parquet": "/workspace/pa-marine-model/data/processed/valentia_met_monthly.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/valentia_met_monthly.csv"
+    },
+    "1575": {
+      "status": "ok",
+      "rows": 855,
+      "year_min": 1955,
+      "year_max": 2026,
+      "fields": [
+        "year",
+        "month",
+        "meant",
+        "maxtp",
+        "mintp",
+        "mnmax",
+        "mnmin",
+        "rain",
+        "gmin",
+        "wdsp",
+        "maxgt",
+        "sun"
+      ],
+      "parquet": "/workspace/pa-marine-model/data/processed/malin_head_met_monthly.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/malin_head_met_monthly.csv"
+    },
+    "275": {
+      "status": "ok",
+      "rows": 268,
+      "year_min": 2003,
+      "year_max": 2026,
+      "fields": [
+        "year",
+        "month",
+        "meant",
+        "maxtp",
+        "mintp",
+        "mnmax",
+        "mnmin",
+        "rain",
+        "gmin",
+        "wdsp",
+        "maxgt",
+        "sun"
+      ],
+      "parquet": "/workspace/pa-marine-model/data/processed/mace_head_met_monthly.parquet",
+      "csv": "/workspace/pa-marine-model/data/processed/mace_head_met_monthly.csv"
+    }
+  },
+  "west_week_panel": {
+    "status": "ok",
+    "rows": 4414,
+    "columns": [
+      "iso_year",
+      "iso_week",
+      "met_mace_glorad",
+      "met_mace_sun",
+      "met_mace_wdsp",
+      "met_mace_rain",
+      "met_belmullet_glorad",
+      "met_belmullet_sun",
+      "met_belmullet_wdsp",
+      "met_belmullet_rain",
+      "met_newport_glorad",
+      "met_newport_sun",
+      "met_newport_wdsp",
+      "met_newport_rain",
+      "met_valentia_glorad",
+      "met_valentia_sun",
+      "met_valentia_wdsp",
+      "met_valentia_rain",
+      "met_malin_glorad",
+      "met_malin_sun",
+      "met_malin_wdsp",
+      "met_malin_rain",
+      "met_west_glorad",
+      "met_west_sun",
+      "met_west_wdsp",
+      "met_sun",
+      "met_glorad",
+      "met_wdsp"
+    ],
+    "parquet": "/workspace/pa-marine-model/data/processed/met_west_climate_week.parquet",
+    "csv": "/workspace/pa-marine-model/data/processed/met_west_climate_week.csv",
+    "year_min": 1942,
+    "year_max": 2026
+  },
+  "sources_json": "/workspace/pa-marine-model/data/raw/met_eireann/sources_climate_drivers.json"
+}
