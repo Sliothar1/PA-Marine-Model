@@ -101,16 +101,19 @@ Flat CSV + LTA companions sit beside each JSON. Ingest should **merge with these
 | MÉRA / TRANSLATE | Paper / demo story only | **No** |
 
 **Connemara extract (committed):** `data/processed/connemara_normals_9120_extract.csv`  
-Script: `scripts/extract_connemara_normals_9120.py` (WGS84→TM65 via EPSG:29903; nearest 1 km cell for Mace Head, Lehanagh Pool, Killary, Belmullet). Periods: June, `JJA`, `ANN` for RR + TMEAN/TMAX/TMIN.
+Script: `scripts/extract_connemara_normals_9120.py` (WGS84→TM65 via **EPSG:29902**; nearest 1 km cell for Mace Head, Lehanagh Pool, Killary, Belmullet; plus Connemara bbox mean/median over lat 53.20–53.55, lon −10.20–−9.40). Periods: June (`m6`), `JJA`, `ANN` for RR + TMEAN/TMAX/TMIN.
 
 | Site | June TMEAN | June RR | JJA TMEAN | ANN TMEAN |
 | --- | ---: | ---: | ---: | ---: |
-| Mace Head nearest cell | **13.7 °C** | **79.0 mm** | 14.6 °C | 10.6 °C |
-| Connemara bbox mean | 13.4 °C | 105.7 mm | 14.4 °C | 10.1 °C |
+| Mace Head nearest | **13.7 °C** | **79.0 mm** | 14.6 °C | 10.6 °C |
+| Lehanagh Pool nearest | 13.8 °C | 94.6 mm | 14.8 °C | 10.5 °C |
+| Killary nearest | 13.9 °C | 114.6 mm | 14.8 °C | 10.6 °C |
+| Belmullet nearest | 13.4 °C | 77.9 mm | 14.4 °C | 10.4 °C |
+| Connemara bbox mean (1303 cells) | 13.4 °C | 105.7 mm | 14.4 °C | 10.1 °C |
 
 **June 2023 vs normal (Mace):** Garry / Agmet monthly **meant = 17.0 °C**, rain **56.1 mm** → approx. **+3.3 °C** vs June TMEAN normal, **drier** than June RR normal (~79 mm). Comparable as monthly mean air temperature vs the same station/coastal cell — not an SST anomaly.
 
-Repo keeps **zips + Readmes +** `connemara_normals_9120_extract.csv`; expanded `IE_*.txt` (~25 MB) stay local/gitignored. Unzip locally to re-run the extract script.
+Large `*.txt` grids and `*.zip` archives under `normals_9120/` stay **gitignored** (~30 MB); **Readmes** + `connemara_normals_9120_extract.csv` are tracked. Re-drop / unzip grids locally from the Met catalogue to re-run the extract script.
 
 ### Island of Ireland long-term T + P (warming narrative)
 
