@@ -14,6 +14,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from pa_marine.sst import haversine_km
+
 
 def _require_cm():
     try:
@@ -75,7 +77,7 @@ def _nearest_ocean_pixel_map(stations: pd.DataFrame, mask_da: Any) -> pd.DataFra
     rows = []
     uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]]
     for row in uniq.itertuples(index=False):
-        dist = (lat_grid - float(row.latitude)) ** 2 + (lon_grid - float(row.longitude)) ** 2
+        dist = haversine_km(float(row.latitude), float(row.longitude), lat_grid, lon_grid)
         dist = np.where(ocean, dist, np.inf)
         if not np.isfinite(dist).any():
             print(f"IBI skip {row.location_id}: no ocean pixel in mask bbox")
@@ -88,7 +90,7 @@ def _nearest_ocean_pixel_map(stations: pd.DataFrame, mask_da: Any) -> pd.DataFra
                 "request_lon": float(row.longitude),
                 "grid_lat": float(lats[i]),
                 "grid_lon": float(lons[j]),
-                "dist_deg": float(np.sqrt(dist[i, j])),
+                "dist_km": float(dist[i, j]),
             }
         )
     return pd.DataFrame(rows)
@@ -167,7 +169,7 @@ def download_ibi_group_for_stations(
     station_pix = pixel_map.merge(pix, on=["grid_lat", "grid_lon"], how="inner")
     print(
         f"IBI[{group}]: {len(station_pix)} stations → {len(pix)} pixels "
-        f"(median dist {pixel_map['dist_deg'].median():.3f}°)",
+        f"(median dist {pixel_map['dist_km'].median():.1f} km)",
         flush=True,
     )
 

@@ -339,3 +339,101 @@ stratification needs a panel rebuilt with the patched `add_horizon_labels` to em
 ablations is measuring noise, and the honest headline is "seasonality and station identity
 carry the signal; SST/MHW add little" — which is still a publishable result, just a
 different one.
+
+---
+
+# Addendum — third patch (`sst` data layer)
+
+Reviewed the data layer, which the first two patches did not touch. Two findings, both
+affecting which ocean pixel each farm is scored against. 71/71 tests pass.
+
+## 8. Nearest-pixel selection uses Euclidean distance in degrees
+
+**Severity: medium-high.** `sst.py`, `ibi.py`, `era5.py`
+
+Four functions selected the nearest ocean pixel with
+`(lat_grid - lat)**2 + (lon_grid - lon)**2` — Euclidean distance in *degrees*, which
+treats one degree of longitude as costing the same as one degree of latitude. At Irish
+latitudes it does not: at 53.5°N a degree of longitude is **66.1 km** against **111.2 km**
+for latitude, a ratio of 0.595. So the metric over-penalises east-west displacement by
+**~1.68×**.
+
+Measured on the 11 real Connemara station coordinates, over every candidate pixel pair
+within the 1° search radius:
+
+| station | candidate pixels | pairs mis-ranked | worst mis-selection |
+| --- | ---: | ---: | ---: |
+| Killary Harbour Outer | 49 | 15.1% | 40.8 km |
+| Rosmuc | 50 | 14.0% | 41.6 km |
+| Lehannagh Pool | 50 | 14.9% | 40.7 km |
+| Mace Head | 51 | 15.2% | 39.6 km |
+| *(mean over all 11)* | | **14.4%** | |
+
+"Worst mis-selection" is the km penalty in the worst case where the old metric preferred
+pixel A while A was actually farther away than the pixel B it rejected — up to **41.6 km**.
+
+This only bites when the ocean mask is anisotropic, which is exactly the coastal case:
+in a fjord like Killary, ocean pixels exist in some directions and not others, so the
+ranking decides which water body a farm is scored against. The concrete failure mode is
+picking a pixel across a headland instead of the open Atlantic pixel in the same water.
+
+The `max_dist_deg=1.0` gate had the same defect: it admitted pixels **111 km** away
+north-south but only **66 km** east-west.
+
+**Fixed:** shared `haversine_km` helper; all four call sites converted. The gate is now
+`max_dist_km` (default 60 km); `max_dist_deg` is still accepted and converted. The pixel
+map column `dist_deg` becomes `dist_km`. Note the old column name was live in
+`sst.py`, `ibi.py` and `era5.py` print statements, so a partial rename would have
+crashed at runtime — all references were updated together.
+
+## 9. The Irish path has no ocean mask, and never says so
+
+**Severity: high, and it connects to findings 3 and 5.**
+
+There are two OISST paths, and only one of them masks land:
+
+- `download_oisst_for_stations_nearest_ocean` — has an ocean mask. Used **only** by
+  `train_scotland_dino.py`.
+- `_download_oisst_for_stations` — naive `snap_oisst` to whichever 0.25° pixel contains
+  the station, **no ocean mask**. This is what `compute_mhw.py` calls, so it is the path
+  behind the **Irish headline model**.
+
+The README caveat ("nearest-neighbour, no coastal mask") is therefore accurate for
+Ireland and outdated for Scotland. And the repo already documents a live instance —
+`data/processed/connemara_farms_stations.csv`, Rosmuc:
+
+> "HAB samples present, but OISST SST is null at this pixel (landmask / inshore).
+> Scores use week-of-year + lat/lon; SST features missing."
+
+Nothing in the pipeline counted how many of the 207 Irish stations are in that state.
+Land-snapped stations still carry HAB labels, so they contribute station-weeks whose
+SST and MHW features are entirely NaN — median-imputed for logistic regression, routed
+down the missing branch for LightGBM.
+
+**This is a coherent mechanism for the project's central findings.** Inshore Irish HAB
+sites are fjords, bays and harbours — precisely the geometry that snaps to land on a
+0.25° grid. For an unknown share of stations there is simply no SST to learn from, so:
+
+- week-of-year and lat/lon dominate feature importance (finding: the feature study),
+- MHW features look like noise (finding 1's ablation),
+- and skill is consistent with a station-plus-season model (finding 5).
+
+Findings 1, 2, 8 and 9 all degrade the SST/MHW features specifically, and all four point
+the same way. That is now four independent reasons the "MHW doesn't matter" conclusion
+needs re-testing before it is believed.
+
+**Fixed:** `sst_coverage_report()` prints per-station finite-SST fractions and warns
+loudly about stations with zero usable SST; it is now called on every SST frame the
+pipeline uses. And `compute_mhw.py --ocean-mask` routes Ireland through the masked
+nearest-ocean path that Scotland already uses.
+
+```bash
+# see how many Irish stations are land-snapped
+python scripts/compute_mhw.py --max-stations 5 --t0 2015-01-01 --t1 2024-12-31
+
+# then re-run with the ocean mask
+python scripts/compute_mhw.py --ocean-mask --t0 2003-01-01 --t1 2026-08-16
+```
+
+Run the diagnostic first — the station count it prints is the single most informative
+number available about why the SST features underperform.

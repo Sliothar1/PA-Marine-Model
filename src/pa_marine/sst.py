@@ -13,6 +13,31 @@ def snap_oisst(x: float, origin: float = 0.125, step: float = 0.25) -> float:
     return origin + round((x - origin) / step) * step
 
 
+def haversine_km(
+    lat1: "Any", lon1: "Any", lat2: "Any", lon2: "Any", earth_radius_km: float = 6371.0
+) -> "Any":
+    """Great-circle distance in km. Accepts scalars or numpy arrays.
+
+    Nearest-pixel selection previously used Euclidean distance in *degrees*, which
+    treats 1 deg of longitude as costing the same as 1 deg of latitude. At Irish and
+    Scottish latitudes 1 deg of longitude is only ~0.60 of 1 deg of latitude on the
+    ground (66 km vs 111 km at 53.5N), so that metric over-penalises east-west
+    displacement by ~1.7x. On the real Connemara station coordinates it mis-ranks
+    ~14% of candidate pixel pairs, and can select an ocean pixel up to ~42 km
+    farther away than one it rejected. That matters precisely where the ocean mask
+    is anisotropic - i.e. in fjords and bays like Killary, where the only ocean
+    pixels lie in one direction.
+    """
+    import numpy as np
+
+    p1 = np.radians(np.asarray(lat1, dtype=float))
+    p2 = np.radians(np.asarray(lat2, dtype=float))
+    dphi = p2 - p1
+    dlam = np.radians(np.asarray(lon2, dtype=float) - np.asarray(lon1, dtype=float))
+    a = np.sin(dphi / 2) ** 2 + np.cos(p1) * np.cos(p2) * np.sin(dlam / 2) ** 2
+    return 2.0 * earth_radius_km * np.arcsin(np.sqrt(np.clip(a, 0.0, 1.0)))
+
+
 def download_oisst_point(
     cfg: dict[str, Any],
     lat: float,
@@ -137,12 +162,18 @@ def map_stations_to_nearest_oisst_ocean(
     stations: pd.DataFrame,
     cube: pd.DataFrame,
     *,
-    max_dist_deg: float = 1.0,
+    max_dist_deg: float | None = None,
+    max_dist_km: float | None = None,
 ) -> pd.DataFrame:
     """Map each location_id to the nearest OISST ocean pixel present in `cube`.
 
     Coastal snaps often land on land (NaN SST); use any finite-SST pixel in the cube
     as the ocean mask (typically one day is enough once the cube is loaded).
+
+    Distance is great-circle km (see `haversine_km`). `max_dist_km` defaults to 60 km.
+    `max_dist_deg` is accepted for backward compatibility and converted at 111 km/deg,
+    but note the old degree gate was anisotropic: a threshold of 1.0 admitted pixels
+    111 km away north-south yet only 66 km east-west at Irish latitudes.
     """
     import numpy as np
 
@@ -161,21 +192,23 @@ def map_stations_to_nearest_oisst_ocean(
                 "longitude",
                 "grid_lat",
                 "grid_lon",
-                "dist_deg",
+                "dist_km",
             ]
         )
     lat_g = pix["grid_lat"].to_numpy(dtype=float)
     lon_g = pix["grid_lon"].to_numpy(dtype=float)
+    if max_dist_km is None:
+        max_dist_km = 111.195 * max_dist_deg if max_dist_deg is not None else 60.0
     rows = []
     for row in uniq.itertuples(index=False):
         lon360 = lon_to_oisst_360(float(row.longitude))
-        dist2 = (lat_g - float(row.latitude)) ** 2 + (lon_g - lon360) ** 2
-        j = int(np.argmin(dist2))
-        dist = float(np.sqrt(dist2[j]))
-        if dist > max_dist_deg:
+        dist_km = haversine_km(float(row.latitude), lon360, lat_g, lon_g)
+        j = int(np.argmin(dist_km))
+        dist = float(dist_km[j])
+        if dist > max_dist_km:
             print(
-                f"OISST skip {row.location_id}: nearest ocean pixel {dist:.3f}° "
-                f"> max_dist_deg={max_dist_deg}"
+                f"OISST skip {row.location_id}: nearest ocean pixel {dist:.1f} km "
+                f"> max_dist_km={max_dist_km:.1f}"
             )
             continue
         rows.append(
@@ -185,7 +218,7 @@ def map_stations_to_nearest_oisst_ocean(
                 "longitude": float(row.longitude),
                 "grid_lat": float(lat_g[j]),
                 "grid_lon": float(lon_g[j]),
-                "dist_deg": dist,
+                "dist_km": dist,
             }
         )
     return pd.DataFrame(rows)
@@ -198,7 +231,8 @@ def download_oisst_for_stations_nearest_ocean(
     t1: str,
     *,
     pad_deg: float = 0.5,
-    max_dist_deg: float = 1.0,
+    max_dist_deg: float | None = None,
+    max_dist_km: float | None = None,
     label: str = "stations",
 ) -> pd.DataFrame:
     """Download an OISST bbox covering stations, then extract nearest-ocean pixels.
@@ -234,20 +268,24 @@ def download_oisst_for_stations_nearest_ocean(
         return pd.DataFrame()
     best_day = cov.idxmax()
     day = cube.loc[cube["date"] == best_day]
-    pixel_map = map_stations_to_nearest_oisst_ocean(uniq, day, max_dist_deg=max_dist_deg)
+    pixel_map = map_stations_to_nearest_oisst_ocean(
+        uniq, day, max_dist_deg=max_dist_deg, max_dist_km=max_dist_km
+    )
     if pixel_map.empty:
         return pd.DataFrame()
     print(
         f"OISST {label}: {len(pixel_map)} stations → "
         f"{pixel_map.groupby(['grid_lat','grid_lon']).ngroups} ocean pixels "
-        f"(median dist {pixel_map['dist_deg'].median():.3f}°)"
+        f"(median dist {pixel_map['dist_km'].median():.1f} km)"
     )
     out = cube.merge(
-        pixel_map[["location_id", "latitude", "longitude", "grid_lat", "grid_lon", "dist_deg"]],
+        pixel_map[["location_id", "latitude", "longitude", "grid_lat", "grid_lon", "dist_km"]],
         on=["grid_lat", "grid_lon"],
         how="inner",
     )
     out = out.rename(columns={"latitude": "request_lat", "longitude": "request_lon"})
+    # No ocean mask on this path: report so land-snapped stations are not silent.
+    sst_coverage_report(out, label="OISST (naive 0.25deg snap, no ocean mask)")
     return out[
         [
             "date",
@@ -353,7 +391,8 @@ def _nearest_ocean_pixel_map(
     rows = []
     uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]]
     for row in uniq.itertuples(index=False):
-        dist = (lat_grid - float(row.latitude)) ** 2 + (lon_grid - float(row.longitude)) ** 2
+        # great-circle km, not Euclidean degrees: see haversine_km
+        dist = haversine_km(float(row.latitude), float(row.longitude), lat_grid, lon_grid)
         dist = np.where(ocean, dist, np.inf)
         if not np.isfinite(dist).any():
             print(f"OSTIA skip {row.location_id}: no ocean pixel in mask bbox")
@@ -366,7 +405,7 @@ def _nearest_ocean_pixel_map(
                 "request_lon": float(row.longitude),
                 "grid_lat": float(lats[i]),
                 "grid_lon": float(lons[j]),
-                "dist_deg": float(np.sqrt(dist[i, j])),
+                "dist_km": float(dist[i, j]),
             }
         )
     return pd.DataFrame(rows)
@@ -432,7 +471,7 @@ def download_ostia_for_stations(
     station_pix = pixel_map.merge(pix, on=["grid_lat", "grid_lon"], how="inner")
     print(
         f"OSTIA: {len(station_pix)} stations → {len(pix)} unique ocean pixels "
-        f"(median dist {pixel_map['dist_deg'].median():.3f}°)"
+        f"(median dist {pixel_map['dist_km'].median():.1f} km)"
     )
 
     y0 = pd.Timestamp(t0).year
@@ -531,3 +570,54 @@ def download_sst_for_stations(
         return download_ostia_for_stations(stations, cfg, t0, t1, max_stations)
     # default: NOAA OISST (existing implementation below was renamed — see wrapper)
     return _download_oisst_for_stations(stations, cfg, t0, t1, max_stations)
+
+
+def sst_coverage_report(sst: pd.DataFrame, label: str = "SST") -> pd.DataFrame:
+    """Per-station SST availability, with a loud warning for land-snapped stations.
+
+    The default Irish path (`_download_oisst_for_stations`) snaps each station to
+    whichever 0.25 deg OISST pixel contains it, with **no ocean mask**. Inshore Irish
+    HAB stations - fjords, bays, harbours - frequently snap onto a land pixel, whose
+    SST is NaN for the entire record. Nothing in the pipeline previously reported
+    this: those stations still carry HAB labels, so they contribute station-weeks
+    whose SST/MHW features are entirely missing and get median-imputed (logreg) or
+    routed down the NaN branch (LightGBM/HistGB).
+
+    That is a plausible partial explanation for the project's own findings that
+    week-of-year and lat/lon dominate feature importance while MHW features look
+    like noise: for an unknown share of stations there is simply no SST to learn
+    from. `data/processed/connemara_farms_stations.csv` already documents one such
+    case (Rosmuc). Use `--ocean-mask` on `compute_mhw.py` to snap to the nearest
+    ocean pixel instead.
+    """
+    import numpy as np
+
+    if sst.empty or "location_id" not in sst.columns:
+        print(f"{label}: empty frame, nothing to report")
+        return pd.DataFrame()
+    g = sst.groupby("location_id")["sst"].agg(
+        n_days="size",
+        n_finite=lambda x: int(np.isfinite(x.to_numpy(dtype=float)).sum()),
+    )
+    g["finite_frac"] = g["n_finite"] / g["n_days"]
+    g = g.sort_values("finite_frac")
+    dead = g.index[g["n_finite"] == 0].tolist()
+    thin = g.index[(g["n_finite"] > 0) & (g["finite_frac"] < 0.5)].tolist()
+    print(
+        f"{label} coverage: {len(g)} stations, "
+        f"median finite fraction {g['finite_frac'].median():.3f}"
+    )
+    if dead:
+        print(
+            f"  !! {len(dead)} station(s) have NO finite SST at all (land-snapped pixel): "
+            f"{dead[:12]}{' ...' if len(dead) > 12 else ''}"
+        )
+        print(
+            "     These still carry HAB labels, so their SST/MHW features are fully "
+            "missing/imputed. Re-run with an ocean mask."
+        )
+    if thin:
+        print(f"  !  {len(thin)} station(s) below 50% finite SST: {thin[:12]}")
+    if not dead and not thin:
+        print("  all stations have usable SST coverage")
+    return g.reset_index()

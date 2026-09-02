@@ -8,7 +8,11 @@ import pandas as pd
 
 from pa_marine.config import load_config
 from pa_marine.mhw import mhw_for_stations
-from pa_marine.sst import download_sst_for_stations
+from pa_marine.sst import (
+    download_oisst_for_stations_nearest_ocean,
+    download_sst_for_stations,
+    sst_coverage_report,
+)
 
 
 def main():
@@ -26,6 +30,15 @@ def main():
         default=None,
         help="SST provider override: ncdcOisst21Agg (default) or ostia",
     )
+    p.add_argument(
+        "--ocean-mask",
+        action="store_true",
+        help="Snap each station to the nearest OISST *ocean* pixel instead of the "
+        "pixel it falls in. The default snap has no land mask, so inshore stations "
+        "(fjords, bays) can land on land and get NaN SST for the whole record. "
+        "OISST provider only.",
+    )
+    p.add_argument("--max-dist-km", type=float, default=60.0, help="With --ocean-mask.")
     args = p.parse_args()
     cfg = load_config(args.config)
     panel_path = args.panel or cfg["paths"]["panel"]
@@ -34,7 +47,20 @@ def main():
     if args.sst_in:
         sst = pd.read_parquet(args.sst_in) if args.sst_in.endswith(".parquet") else pd.read_csv(args.sst_in)
     else:
-        sst = download_sst_for_stations(panel, cfg, args.t0, args.t1, args.max_stations, provider=provider)
+        if args.ocean_mask:
+            if provider in {"ostia", "copernicus_ostia", "cmems_ostia"}:
+                raise SystemExit("--ocean-mask applies to the OISST provider; OSTIA already masks")
+            stations = panel.drop_duplicates("location_id")[
+                ["location_id", "latitude", "longitude"]
+            ]
+            sst = download_oisst_for_stations_nearest_ocean(
+                stations, cfg, args.t0, args.t1,
+                max_dist_km=args.max_dist_km, label="ireland-ocean-mask",
+            )
+        else:
+            sst = download_sst_for_stations(
+                panel, cfg, args.t0, args.t1, args.max_stations, provider=provider
+            )
         if provider in {"ostia", "copernicus_ostia", "cmems_ostia"}:
             raw = args.sst_out or cfg["paths"].get("raw_sst_ostia", "data/raw/ostia_daily.parquet")
         else:
@@ -42,6 +68,7 @@ def main():
         Path(raw).parent.mkdir(parents=True, exist_ok=True)
         sst.to_parquet(raw, index=False)
         print(f"wrote {raw} n={len(sst)}")
+    sst_coverage_report(sst, label=f"SST in use ({provider})")
     mhw = mhw_for_stations(sst, cfg)
     if args.out:
         out = args.out
