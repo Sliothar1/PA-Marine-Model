@@ -54,7 +54,30 @@ def wgs84_to_tm65(lat: float, lon: float) -> tuple[float, float]:
     return float(e), float(n)
 
 
+def _ensure_unzipped() -> None:
+    """Expand local zips if IE_*.txt grids are missing (grids/zips stay gitignored)."""
+    import zipfile
+
+    needed = {
+        "IE_RR_9120_V2.txt": "IE_RR_9120_V2.zip",
+        "IE_TMEAN_9120_V2.txt": "IE_T_9120_V2.zip",
+        "IE_TMAX_9120_V2.txt": "IE_T_9120_V2.zip",
+        "IE_TMIN_9120_V2.txt": "IE_T_9120_V2.zip",
+    }
+    for txt, zname in needed.items():
+        if (NORMALS / txt).is_file():
+            continue
+        zpath = NORMALS / zname
+        if not zpath.is_file():
+            raise FileNotFoundError(
+                f"Missing {NORMALS / txt} and {zpath}. Drop Met normals under {NORMALS}"
+            )
+        with zipfile.ZipFile(zpath) as zf:
+            zf.extractall(NORMALS)
+
+
 def load_grid(name: str) -> pd.DataFrame:
+    _ensure_unzipped()
     path = NORMALS / name
     if not path.is_file():
         raise FileNotFoundError(f"Missing normals grid: {path}")
