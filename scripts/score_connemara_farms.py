@@ -45,9 +45,31 @@ IST = ZoneInfo("Europe/Dublin")
 
 # Plain-language risk bands for growers (calibrated probability).
 BANDS = (
-    (0.15, "Higher", "Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week."),
-    (0.07, "Moderate", "Some seasonal / SST-linked risk — watch Marine Institute bulletins."),
-    (0.0, "Lower", "Below typical seasonal risk for this week-of-year, or quiet conditions."),
+    (
+        0.15,
+        "Higher",
+        "Higher watch — elevated chance Dinophysis is at or above 100 cells/L in this or next week. Check MI bulletins before harvest plans.",
+    ),
+    (
+        0.07,
+        "Moderate",
+        "Moderate watch — some seasonal / SST-linked risk. Keep an eye on MI bulletins and recent cell counts.",
+    ),
+    (
+        0.0,
+        "Lower",
+        "Lower watch — below typical risk for this week-of-year, or quiet conditions. Still follow official notices.",
+    ),
+)
+
+# Sites shown first on the grower dashboard (Killary trio + local sentinels).
+PRIORITY_SITE_KEYS = (
+    "killary_inner",
+    "killary_middle",
+    "killary_outer",
+    "lehannagh_pool_nmp",
+    "mace_head_buoy",
+    "lehanagh_buoy",
 )
 
 
@@ -245,36 +267,231 @@ def build_html(
     metrics: dict,
     out_path: Path,
 ) -> None:
-    rows_html = []
-    for _, r in latest.iterrows():
+    """Grower-facing dashboard: latest week cards, priority sites, honest gaps."""
+
+    def _fmt_pct(v) -> str:
+        return f"{float(v):.1%}" if pd.notna(v) else "—"
+
+    def _fmt_cells(v) -> str:
+        if pd.isna(v):
+            return "no sample"
+        try:
+            return f"{int(v)}"
+        except (TypeError, ValueError):
+            return str(v)
+
+    def _band_class(band: str) -> str:
+        b = (band or "").strip()
+        return b if b in ("Higher", "Moderate", "Lower") else "Lower"
+
+    def _site_rank(site_key: str, grower_label: str) -> tuple:
+        try:
+            pri = PRIORITY_SITE_KEYS.index(site_key)
+        except ValueError:
+            pri = 100
+        # Keep Killary trio together, then other scored sites A–Z.
+        return (pri, str(grower_label or ""))
+
+    # --- Latest ISO week snapshot (most recent week_start across grower table) ---
+    latest_week_label = ""
+    latest_week_start = None
+    snapshot = latest.iloc[0:0].copy()
+    prior = latest.copy()
+    if len(latest) and "week_start" in latest.columns:
+        ws = pd.to_datetime(latest["week_start"], errors="coerce")
+        if ws.notna().any():
+            latest_week_start = ws.max()
+            mask = ws == latest_week_start
+            snapshot = latest.loc[mask].copy()
+            prior = latest.loc[~mask].copy()
+            if "week_label" in snapshot.columns and len(snapshot):
+                latest_week_label = str(snapshot["week_label"].iloc[0])
+            else:
+                latest_week_label = (
+                    f"{latest_week_start.isocalendar().year}-W"
+                    f"{latest_week_start.isocalendar().week:02d}"
+                )
+
+    # Priority scored sites for the latest week (Killary trio first, then others).
+    card_html = []
+    snap_by_key = {}
+    if len(snapshot):
+        for _, r in snapshot.iterrows():
+            snap_by_key[str(r.get("site_key", ""))] = r
+
+    def _card_from_row(r) -> str:
+        sk = str(r.get("site_key", ""))
+        band = _band_class(str(r.get("risk_band", "")))
         vs = r.get("risk_vs_clim")
-        vs_txt = f"{vs:+.1%}" if pd.notna(vs) else "—"
-        cells = r.get("count_dinophysis")
-        cells_txt = f"{int(cells)}" if pd.notna(cells) else "no sample"
-        dsp = r.get("dsp_closure_risk")
-        dsp_txt = f"{dsp:.1%}" if pd.notna(dsp) else "—"
-        rows_html.append(
-            "<tr>"
-            f"<td>{html.escape(str(r['grower_label']))}</td>"
-            f"<td>{html.escape(str(r.get('week_label', '')))}</td>"
-            f"<td><strong>{html.escape(str(r.get('risk_band', '')))}</strong> "
-            f"({r['risk_score']:.1%})</td>"
-            f"<td>{vs_txt} vs seasonal usual</td>"
-            f"<td>{cells_txt}</td>"
-            f"<td>{dsp_txt}</td>"
-            f"<td>{html.escape(str(r.get('risk_plain', ''))[:160])}</td>"
-            "</tr>"
+        vs_txt = f"{vs:+.1%} vs seasonal usual" if pd.notna(vs) else "vs seasonal usual —"
+        gap_note = ""
+        if str(r.get("status", "")) == "active_oisst_gap":
+            gap_note = (
+                '<div class="card-gap">⚠ SST gap at this site — score uses '
+                "season + location only (no OISST).</div>"
+            )
+        is_priority = sk in PRIORITY_SITE_KEYS[:3]
+        pri_badge = (
+            '<span class="badge-pri">Priority site</span>' if is_priority else ""
+        )
+        return (
+            f'<article class="card band-{html.escape(band)}">'
+            f'<div class="card-top">'
+            f'<h3>{html.escape(str(r.get("grower_label", "")))}{pri_badge}</h3>'
+            f'<span class="band-pill {html.escape(band)}">{html.escape(band)} watch</span>'
+            f"</div>"
+            f'<p class="prob">Model chance: <strong>{_fmt_pct(r.get("risk_score"))}</strong></p>'
+            f'<p class="vs">{html.escape(vs_txt)}</p>'
+            f'<p class="cells">Recent Dinophysis: <strong>{_fmt_cells(r.get("count_dinophysis"))}</strong> cells/L</p>'
+            f'<p class="plain">{html.escape(str(r.get("risk_plain", ""))[:220])}</p>'
+            f"{gap_note}"
+            f"</article>"
         )
 
-    gap_rows = stations[stations["status"].isin(["active_oisst_gap", "sparse_historical", "buoy_only"])]
+    def _placeholder_card(sk: str) -> str:
+        lab_row = stations[stations["site_key"] == sk]
+        lab = (
+            str(lab_row["grower_label"].iloc[0])
+            if len(lab_row)
+            else sk.replace("_", " ").title()
+        )
+        return (
+            f'<article class="card band-none">'
+            f'<div class="card-top">'
+            f'<h3>{html.escape(lab)}<span class="badge-pri">Priority site</span></h3>'
+            f'<span class="band-pill none">No sample this week</span>'
+            f"</div>"
+            f'<p class="plain">No MI phytoplankton sample in the latest scored week '
+            f"({html.escape(latest_week_label)}). Check recent weeks below and official bulletins.</p>"
+            f"</article>"
+        )
+
+    # Always emit Killary Inner → Middle → Outer first.
+    for sk in ("killary_inner", "killary_middle", "killary_outer"):
+        if sk in snap_by_key:
+            card_html.append(_card_from_row(snap_by_key[sk]))
+        else:
+            card_html.append(_placeholder_card(sk))
+
+    # Then other sites present in the latest week (A–Z by grower label).
+    other = [
+        snap_by_key[k]
+        for k in snap_by_key
+        if k not in ("killary_inner", "killary_middle", "killary_outer")
+    ]
+    other.sort(key=lambda r: str(r.get("grower_label", "")))
+    for r in other:
+        card_html.append(_card_from_row(r))
+
+    # Full latest-week table (all sites that have that week)
+    snap_rows = []
+    if len(snapshot):
+        snap = snapshot.copy()
+        snap["_rank"] = [
+            _site_rank(str(r.get("site_key", "")), str(r.get("grower_label", "")))
+            for _, r in snap.iterrows()
+        ]
+        snap = snap.sort_values("_rank")
+        for _, r in snap.iterrows():
+            band = _band_class(str(r.get("risk_band", "")))
+            vs = r.get("risk_vs_clim")
+            vs_txt = f"{vs:+.1%}" if pd.notna(vs) else "—"
+            dsp = r.get("dsp_closure_risk")
+            dsp_txt = _fmt_pct(dsp) if pd.notna(dsp) else "—"
+            gap = "SST gap" if str(r.get("status", "")) == "active_oisst_gap" else ""
+            snap_rows.append(
+                "<tr>"
+                f"<td>{html.escape(str(r.get('grower_label', '')))}"
+                f"{' <span class=\"tag-gap\">' + gap + '</span>' if gap else ''}</td>"
+                f"<td>{html.escape(str(r.get('week_label', '')))}</td>"
+                f'<td class="{html.escape(band)}"><strong>{html.escape(band)}</strong> '
+                f"({_fmt_pct(r.get('risk_score'))})</td>"
+                f"<td>{vs_txt}</td>"
+                f"<td>{_fmt_cells(r.get('count_dinophysis'))}</td>"
+                f"<td>{dsp_txt}</td>"
+                f"<td>{html.escape(str(r.get('risk_plain', ''))[:160])}</td>"
+                "</tr>"
+            )
+
+    # Prior weeks (history)
+    hist_rows = []
+    if len(prior):
+        hist = prior.copy()
+        hist["_rank"] = [
+            (
+                -pd.Timestamp(r["week_start"]).toordinal()
+                if pd.notna(r.get("week_start"))
+                else 0,
+            )
+            + _site_rank(str(r.get("site_key", "")), str(r.get("grower_label", "")))
+            for _, r in hist.iterrows()
+        ]
+        hist = hist.sort_values(["week_start", "_rank"], ascending=[False, True])
+        for _, r in hist.iterrows():
+            band = _band_class(str(r.get("risk_band", "")))
+            vs = r.get("risk_vs_clim")
+            vs_txt = f"{vs:+.1%}" if pd.notna(vs) else "—"
+            dsp = r.get("dsp_closure_risk")
+            dsp_txt = _fmt_pct(dsp) if pd.notna(dsp) else "—"
+            hist_rows.append(
+                "<tr>"
+                f"<td>{html.escape(str(r.get('grower_label', '')))}</td>"
+                f"<td>{html.escape(str(r.get('week_label', '')))}</td>"
+                f'<td class="{html.escape(band)}"><strong>{html.escape(band)}</strong> '
+                f"({_fmt_pct(r.get('risk_score'))})</td>"
+                f"<td>{vs_txt}</td>"
+                f"<td>{_fmt_cells(r.get('count_dinophysis'))}</td>"
+                f"<td>{dsp_txt}</td>"
+                "</tr>"
+            )
+
+    # Sentinel / prominence panel (Mace Head, Lehanagh buoy + sparse NMP)
+    sentinel_keys = ("mace_head_buoy", "lehanagh_buoy", "lehannagh_pool_nmp")
+    sentinel_html = []
+    for sk in sentinel_keys:
+        row = stations[stations["site_key"] == sk]
+        if row.empty:
+            continue
+        r = row.iloc[0]
+        status = str(r.get("status", ""))
+        if status == "buoy_only":
+            status_txt = "Buoy only — hydrography context, not HAB-scored"
+        elif status == "sparse_historical":
+            status_txt = "Sparse / historical NMP only — not in latest grower table"
+        else:
+            status_txt = status
+        sentinel_html.append(
+            f"<li><strong>{html.escape(str(r.grower_label))}</strong> — "
+            f"{html.escape(status_txt)}. "
+            f"{html.escape(str(r.notes)[:260])}</li>"
+        )
+
+    gap_rows = stations[
+        stations["status"].isin(["active_oisst_gap", "sparse_historical", "buoy_only"])
+    ]
     gaps = "".join(
         f"<li><strong>{html.escape(str(r.grower_label))}</strong> "
-        f"({html.escape(str(r.status))}): {html.escape(str(r.notes)[:220])}</li>"
+        f"({html.escape(str(r.status))}): {html.escape(str(r.notes)[:260])}</li>"
         for _, r in gap_rows.iterrows()
     )
 
     nat = metrics.get("national_test_calibrated") or {}
     sub = metrics.get("connemara_test_calibrated") or {}
+    week_disp = latest_week_label or meta.get("latest_week_span", "n/a")
+    week_date = (
+        str(pd.Timestamp(latest_week_start).date()) if latest_week_start is not None else ""
+    )
+
+    band_legend = """
+  <div class="bands" aria-label="Risk band legend">
+    <div class="band-item Higher"><strong>Higher</strong> ≥ 15%<br/>
+      <span>Elevated chance of Dinophysis ≥ 100 cells/L in this or next week. Check MI bulletins before harvest plans.</span></div>
+    <div class="band-item Moderate"><strong>Moderate</strong> 7–15%<br/>
+      <span>Some seasonal / SST-linked risk. Watch bulletins and recent cell counts.</span></div>
+    <div class="band-item Lower"><strong>Lower</strong> &lt; 7%<br/>
+      <span>Below typical risk for this week-of-year, or quiet conditions. Still follow official notices.</span></div>
+  </div>
+"""
 
     body = f"""<!DOCTYPE html>
 <html lang="en">
@@ -283,78 +500,220 @@ def build_html(
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Connemara Farms — weekly HAB risk</title>
 <style>
-  body {{ font-family: system-ui, Segoe UI, sans-serif; margin: 1.5rem; max-width: 1100px; color: #1a1a1a; }}
-  h1 {{ font-size: 1.45rem; }}
-  .note {{ background: #f4f7fb; border-left: 4px solid #2b6cb0; padding: 0.75rem 1rem; margin: 1rem 0; }}
-  .warn {{ background: #fff8e6; border-left: 4px solid #c05621; padding: 0.75rem 1rem; }}
-  table {{ border-collapse: collapse; width: 100%; font-size: 0.95rem; }}
-  th, td {{ border: 1px solid #d0d7de; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }}
-  th {{ background: #eef2f7; }}
-  .Higher {{ color: #9b2c2c; }}
-  .Moderate {{ color: #c05621; }}
-  .Lower {{ color: #276749; }}
-  footer {{ margin-top: 1.5rem; font-size: 0.85rem; color: #555; }}
+  :root {{
+    --ink: #1a1a1a; --muted: #555; --line: #d0d7de;
+    --bg: #f7f9fc; --card: #fff; --pri: #2b6cb0;
+    --higher: #9b2c2c; --moderate: #c05621; --lower: #276749;
+  }}
+  * {{ box-sizing: border-box; }}
+  body {{
+    font-family: system-ui, Segoe UI, sans-serif; margin: 0; color: var(--ink);
+    background: var(--bg); line-height: 1.45;
+  }}
+  .wrap {{ max-width: 1100px; margin: 0 auto; padding: 1.25rem 1.25rem 2.5rem; }}
+  h1 {{ font-size: 1.5rem; margin: 0 0 0.35rem; }}
+  h2 {{ font-size: 1.15rem; margin: 1.6rem 0 0.6rem; }}
+  h3 {{ font-size: 1.05rem; margin: 0; }}
+  .sub {{ color: var(--muted); margin: 0 0 1rem; }}
+  .note, .warn, .sentinel {{
+    background: #fff; border-left: 4px solid var(--pri);
+    padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 6px 6px 0;
+  }}
+  .warn {{ border-left-color: var(--moderate); background: #fff8e6; }}
+  .sentinel {{ border-left-color: #553c9a; background: #f6f3fb; }}
+  .bands {{
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.6rem; margin: 1rem 0;
+  }}
+  .band-item {{
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 0.65rem 0.75rem; font-size: 0.9rem;
+  }}
+  .band-item.Higher {{ border-top: 4px solid var(--higher); }}
+  .band-item.Moderate {{ border-top: 4px solid var(--moderate); }}
+  .band-item.Lower {{ border-top: 4px solid var(--lower); }}
+  .band-item span {{ color: var(--muted); font-size: 0.82rem; }}
+  .latest-banner {{
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    color: #fff; border-radius: 10px; padding: 1rem 1.15rem; margin: 1rem 0 1.1rem;
+  }}
+  .latest-banner strong {{ font-size: 1.2rem; }}
+  .latest-banner p {{ margin: 0.35rem 0 0; opacity: 0.95; font-size: 0.95rem; }}
+  .cards {{
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem; margin: 0.75rem 0 1.25rem;
+  }}
+  .card {{
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 0.85rem 0.95rem; border-top: 5px solid #a0aec0;
+  }}
+  .card.band-Higher {{ border-top-color: var(--higher); }}
+  .card.band-Moderate {{ border-top-color: var(--moderate); }}
+  .card.band-Lower {{ border-top-color: var(--lower); }}
+  .card.band-none {{ border-top-color: #a0aec0; opacity: 0.92; }}
+  .card-top {{ display: flex; justify-content: space-between; gap: 0.5rem; align-items: flex-start; }}
+  .band-pill {{
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.02em; padding: 0.2rem 0.45rem; border-radius: 999px;
+    white-space: nowrap; background: #edf2f7; color: #2d3748;
+  }}
+  .band-pill.Higher {{ background: #fff5f5; color: var(--higher); }}
+  .band-pill.Moderate {{ background: #fffaf0; color: var(--moderate); }}
+  .band-pill.Lower {{ background: #f0fff4; color: var(--lower); }}
+  .band-pill.none {{ background: #edf2f7; color: #4a5568; }}
+  .badge-pri {{
+    display: inline-block; margin-left: 0.4rem; font-size: 0.68rem;
+    background: #ebf8ff; color: #2b6cb0; padding: 0.1rem 0.35rem;
+    border-radius: 4px; vertical-align: middle; font-weight: 600;
+  }}
+  .card .prob, .card .vs, .card .cells, .card .plain {{ margin: 0.35rem 0 0; font-size: 0.9rem; }}
+  .card-gap {{
+    margin-top: 0.5rem; font-size: 0.82rem; color: var(--moderate);
+    background: #fffaf0; padding: 0.35rem 0.45rem; border-radius: 4px;
+  }}
+  table {{ border-collapse: collapse; width: 100%; font-size: 0.92rem; background: #fff; }}
+  th, td {{ border: 1px solid var(--line); padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }}
+  th {{ background: #eef2f7; position: sticky; top: 0; }}
+  .Higher {{ color: var(--higher); }}
+  .Moderate {{ color: var(--moderate); }}
+  .Lower {{ color: var(--lower); }}
+  .tag-gap {{
+    font-size: 0.72rem; background: #fffaf0; color: var(--moderate);
+    padding: 0.05rem 0.3rem; border-radius: 3px; margin-left: 0.25rem;
+  }}
+  .scroll {{ overflow-x: auto; margin: 0.5rem 0 1rem; border-radius: 6px; }}
+  footer {{ margin-top: 1.75rem; font-size: 0.85rem; color: var(--muted); }}
+  code {{ font-size: 0.88em; }}
+  ul.compact {{ margin: 0.4rem 0; padding-left: 1.2rem; }}
+  ul.compact li {{ margin: 0.25rem 0; }}
+  @media (max-width: 640px) {{
+    .wrap {{ padding: 0.85rem; }}
+    h1 {{ font-size: 1.25rem; }}
+  }}
 </style>
 </head>
 <body>
+<div class="wrap">
   <h1>Connemara Farms — weekly Dinophysis risk</h1>
-  <p>Simple view for shellfish growers. Scores are <strong>research nowcasts</strong>
-  from sea-surface temperature patterns (NOAA OISST) plus season and location —
-  <em>not</em> an official Marine Institute warning.</p>
-  <div class="note">
-    <strong>How to read the score:</strong> probability that Dinophysis will be at or
-    above 100 cells per litre in the current or next monitoring week (0–2 week
-    nowcast). Compare to the “seasonal usual” for that week of year.
-    Always follow official HAB / biotoxin notices before harvesting.
-  </div>
-  <p>Generated: <strong>{html.escape(meta.get('generated', ''))}</strong>.
-  Model: national Irish <code>strong</code> OISST LightGBM (calibrated), applied to Connemara sites.
-  Latest weeks shown: <strong>{html.escape(str(meta.get('latest_week_span', '')))}</strong>.</p>
+  <p class="sub">Grower / co-op dashboard. Research nowcasts from sea-surface temperature
+  (NOAA OISST) plus season and location — <em>not</em> an official Marine Institute warning.
+  Always follow official HAB / biotoxin notices before harvesting.</p>
 
-  <h2>Latest site scores</h2>
+  <div class="note">
+    <strong>How to read a score:</strong> calibrated probability that Dinophysis will be
+    at or above <strong>100 cells per litre</strong> in the current or next monitoring week
+    (0–2 week nowcast). Compare to the “seasonal usual” for that week of year.
+    Bands are communication aids for growers — not regulatory cut-offs.
+  </div>
+
+  <h2>Risk bands (plain English)</h2>
+  {band_legend}
+
+  <div class="latest-banner">
+    <div>Latest scored week</div>
+    <strong>{html.escape(str(week_disp))}</strong>
+    {" · week starting " + html.escape(week_date) if week_date else ""}
+    <p>Generated {html.escape(meta.get("generated", ""))}. National Irish
+    <code>strong</code> OISST model applied to Connemara NMP sites.
+    Showing last sampled weeks per active site
+    ({html.escape(str(meta.get("latest_week_span", "")))}).</p>
+  </div>
+
+  <h2>This week at a glance</h2>
+  <p class="sub">Latest sampled week only. <strong>Killary Inner / Middle / Outer</strong> are listed
+  first (priority for fjord co-ops). Missing Killary samples show a “no sample” card.
+  Mace Head &amp; Lehanagh are called out in the sentinel panel below (not HAB-scored).</p>
+  <div class="cards">
+    {''.join(card_html) if card_html else '<p>No scored weeks in the grower window.</p>'}
+  </div>
+
+  <h2>This week — all sampled sites</h2>
+  <div class="scroll">
   <table>
     <thead>
       <tr>
         <th>Site</th>
         <th>Week</th>
-        <th>Risk</th>
+        <th>Risk band</th>
         <th>vs seasonal usual</th>
-        <th>Recent Dinophysis cells L⁻¹</th>
+        <th>Dinophysis cells/L</th>
         <th>Closure-risk proxy</th>
-        <th>Plain language</th>
+        <th>What it means</th>
       </tr>
     </thead>
     <tbody>
-      {''.join(rows_html) if rows_html else '<tr><td colspan="7">No scored weeks in window.</td></tr>'}
+      {''.join(snap_rows) if snap_rows else '<tr><td colspan="7">No sites sampled in the latest week.</td></tr>'}
     </tbody>
   </table>
+  </div>
+
+  <div class="sentinel">
+    <strong>Mace Head &amp; Lehanagh (prominence / context)</strong>
+    <p style="margin:0.4rem 0 0.2rem">These local sentinels matter for Connemara growers but are
+    <em>not</em> Dinophysis exceedance scores. Use them as hydrography / site-continuity context
+    alongside MI bulletins — see <code>data/processed/local_sites_report.md</code>.</p>
+    <ul class="compact">{''.join(sentinel_html)}</ul>
+  </div>
+
+  <h2>Recent weeks (same sites)</h2>
+  <p class="sub">Earlier sampled weeks in the grower table (not the latest week above).</p>
+  <div class="scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Site</th>
+        <th>Week</th>
+        <th>Risk band</th>
+        <th>vs seasonal usual</th>
+        <th>Dinophysis cells/L</th>
+        <th>Closure-risk proxy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {''.join(hist_rows) if hist_rows else '<tr><td colspan="6">No earlier weeks in the current grower window.</td></tr>'}
+    </tbody>
+  </table>
+  </div>
 
   <h2>Skill (honest)</h2>
-  <ul>
+  <ul class="compact">
     <li>National test (2022+) calibrated PR-AUC:
       <strong>{nat.get('pr_auc', '—')}</strong>
       vs seasonal clim <strong>{nat.get('pr_auc_clim', '—')}</strong>
       (PR skill {nat.get('pr_auc_skill', '—')}).</li>
     <li>Connemara-site test subset:
       <strong>{sub.get('pr_auc', sub.get('note', '—'))}</strong>
-      (n={sub.get('n', '—')}, prevalence={sub.get('prevalence', '—')}).</li>
+      (n={sub.get('n', '—')}, prevalence={sub.get('prevalence', '—')}).
+      Local positives are rare — treat scores as seasonal + SST context, not a crystal ball.</li>
   </ul>
 
   <div class="warn">
-    <strong>Gaps / caveats</strong>
-    <ul>{gaps}</ul>
-    <p>Closure-risk proxy uses the national area-closed model (all toxins + admin rules),
-    only where toxin/status join exists. Rosmuc lacks OISST SST at the station pixel.</p>
+    <strong>Data gaps &amp; caveats (read these)</strong>
+    <ul class="compact">{gaps}</ul>
+    <ul class="compact">
+      <li><strong>Rosmuc OISST nulls:</strong> HAB labels exist, but satellite SST is missing at the
+        station pixel — scores there lean on week-of-year and location only.</li>
+      <li><strong>Lehanagh NMP:</strong> sparse / historical-only (ends ~2020); excluded from the
+        latest grower table. The nearby Lehanagh buoy is separate and buoy-only.</li>
+      <li><strong>Mace Head / Lehanagh buoys:</strong> buoy-only hydrography — no Dinophysis labels,
+        not scored for HAB exceedance.</li>
+      <li><strong>Closure-risk proxy:</strong> national area-closed model (all toxins + admin rules),
+        only where toxin/status join exists; often “—” when toxin ingest lags phyto.</li>
+      <li><strong>Irregular sampling:</strong> a missing week is “not sampled”, not a true negative.</li>
+    </ul>
   </div>
 
   <footer>
-    PA-Marine-Model · Connemara Farms product idea 2 · regenerate with
-    <code>python scripts/score_connemara_farms.py</code>
+    PA-Marine-Model · Connemara Farms product idea 2 ·
+    Grower guide: <code>CONNEMARA_GROWER_README.md</code> ·
+    Regenerate with <code>python3 scripts/score_connemara_farms.py</code>
   </footer>
+</div>
 </body>
 </html>
 """
     out_path.write_text(body)
+
 
 
 def main() -> None:

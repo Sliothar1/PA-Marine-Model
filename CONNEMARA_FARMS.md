@@ -6,6 +6,8 @@ pipeline. Research nowcast — **not** an official Marine Institute warning.
 
 Generated / regenerated: run the one-liner under [How to regenerate](#how-to-regenerate).
 
+**Grower / co-op one-pager:** [`CONNEMARA_GROWER_README.md`](CONNEMARA_GROWER_README.md) (how to read bands, what to do with MI bulletins, limitations).
+
 ## Station set
 
 Config: [`configs/connemara_farms_stations.yaml`](configs/connemara_farms_stations.yaml)  
@@ -81,12 +83,12 @@ rows often show "—" for closure risk even when Dinophysis scores are present.
 | --- | --- |
 | `data/processed/connemara_farms_scores.csv` | All scored station-weeks (risk, clim, cells, optional closure proxy) |
 | `data/processed/connemara_farms_latest.csv` | Grower table: last 4 **sampled** weeks per active site |
-| `data/processed/connemara_farms_scores.html` | Plain-language HTML for growers |
+| `data/processed/connemara_farms_scores.html` | Grower-facing HTML dashboard (latest week + bands) |
+| `CONNEMARA_GROWER_README.md` | One-page co-op guide to reading scores |
 | `data/processed/connemara_farms_stations.csv` | Flattened station config |
 | `data/processed/connemara_farms_metrics.json` | Model choice, national + subset metrics, coverage |
 
-Risk bands (calibrated probability): **Higher** ≥ 0.15 · **Moderate** ≥ 0.07 · else **Lower**.
-Bands are heuristic communication aids, not regulatory cut-offs.
+Risk bands (calibrated probability): **Higher** ≥ 0.15 · **Moderate** ≥ 0.07 · else **Lower** (plain English: Higher / Moderate / Lower **watch**). Bands are heuristic communication aids, not regulatory cut-offs — see the grower README.
 
 ## Gaps / blockers
 

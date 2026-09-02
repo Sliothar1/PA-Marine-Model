@@ -5,73 +5,223 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Connemara Farms — weekly HAB risk</title>
 <style>
-  body { font-family: system-ui, Segoe UI, sans-serif; margin: 1.5rem; max-width: 1100px; color: #1a1a1a; }
-  h1 { font-size: 1.45rem; }
-  .note { background: #f4f7fb; border-left: 4px solid #2b6cb0; padding: 0.75rem 1rem; margin: 1rem 0; }
-  .warn { background: #fff8e6; border-left: 4px solid #c05621; padding: 0.75rem 1rem; }
-  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
-  th, td { border: 1px solid #d0d7de; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
-  th { background: #eef2f7; }
-  .Higher { color: #9b2c2c; }
-  .Moderate { color: #c05621; }
-  .Lower { color: #276749; }
-  footer { margin-top: 1.5rem; font-size: 0.85rem; color: #555; }
+  :root {
+    --ink: #1a1a1a; --muted: #555; --line: #d0d7de;
+    --bg: #f7f9fc; --card: #fff; --pri: #2b6cb0;
+    --higher: #9b2c2c; --moderate: #c05621; --lower: #276749;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, Segoe UI, sans-serif; margin: 0; color: var(--ink);
+    background: var(--bg); line-height: 1.45;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 1.25rem 1.25rem 2.5rem; }
+  h1 { font-size: 1.5rem; margin: 0 0 0.35rem; }
+  h2 { font-size: 1.15rem; margin: 1.6rem 0 0.6rem; }
+  h3 { font-size: 1.05rem; margin: 0; }
+  .sub { color: var(--muted); margin: 0 0 1rem; }
+  .note, .warn, .sentinel {
+    background: #fff; border-left: 4px solid var(--pri);
+    padding: 0.75rem 1rem; margin: 1rem 0; border-radius: 0 6px 6px 0;
+  }
+  .warn { border-left-color: var(--moderate); background: #fff8e6; }
+  .sentinel { border-left-color: #553c9a; background: #f6f3fb; }
+  .bands {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.6rem; margin: 1rem 0;
+  }
+  .band-item {
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    padding: 0.65rem 0.75rem; font-size: 0.9rem;
+  }
+  .band-item.Higher { border-top: 4px solid var(--higher); }
+  .band-item.Moderate { border-top: 4px solid var(--moderate); }
+  .band-item.Lower { border-top: 4px solid var(--lower); }
+  .band-item span { color: var(--muted); font-size: 0.82rem; }
+  .latest-banner {
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    color: #fff; border-radius: 10px; padding: 1rem 1.15rem; margin: 1rem 0 1.1rem;
+  }
+  .latest-banner strong { font-size: 1.2rem; }
+  .latest-banner p { margin: 0.35rem 0 0; opacity: 0.95; font-size: 0.95rem; }
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem; margin: 0.75rem 0 1.25rem;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 0.85rem 0.95rem; border-top: 5px solid #a0aec0;
+  }
+  .card.band-Higher { border-top-color: var(--higher); }
+  .card.band-Moderate { border-top-color: var(--moderate); }
+  .card.band-Lower { border-top-color: var(--lower); }
+  .card.band-none { border-top-color: #a0aec0; opacity: 0.92; }
+  .card-top { display: flex; justify-content: space-between; gap: 0.5rem; align-items: flex-start; }
+  .band-pill {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.02em; padding: 0.2rem 0.45rem; border-radius: 999px;
+    white-space: nowrap; background: #edf2f7; color: #2d3748;
+  }
+  .band-pill.Higher { background: #fff5f5; color: var(--higher); }
+  .band-pill.Moderate { background: #fffaf0; color: var(--moderate); }
+  .band-pill.Lower { background: #f0fff4; color: var(--lower); }
+  .band-pill.none { background: #edf2f7; color: #4a5568; }
+  .badge-pri {
+    display: inline-block; margin-left: 0.4rem; font-size: 0.68rem;
+    background: #ebf8ff; color: #2b6cb0; padding: 0.1rem 0.35rem;
+    border-radius: 4px; vertical-align: middle; font-weight: 600;
+  }
+  .card .prob, .card .vs, .card .cells, .card .plain { margin: 0.35rem 0 0; font-size: 0.9rem; }
+  .card-gap {
+    margin-top: 0.5rem; font-size: 0.82rem; color: var(--moderate);
+    background: #fffaf0; padding: 0.35rem 0.45rem; border-radius: 4px;
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 0.92rem; background: #fff; }
+  th, td { border: 1px solid var(--line); padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+  th { background: #eef2f7; position: sticky; top: 0; }
+  .Higher { color: var(--higher); }
+  .Moderate { color: var(--moderate); }
+  .Lower { color: var(--lower); }
+  .tag-gap {
+    font-size: 0.72rem; background: #fffaf0; color: var(--moderate);
+    padding: 0.05rem 0.3rem; border-radius: 3px; margin-left: 0.25rem;
+  }
+  .scroll { overflow-x: auto; margin: 0.5rem 0 1rem; border-radius: 6px; }
+  footer { margin-top: 1.75rem; font-size: 0.85rem; color: var(--muted); }
+  code { font-size: 0.88em; }
+  ul.compact { margin: 0.4rem 0; padding-left: 1.2rem; }
+  ul.compact li { margin: 0.25rem 0; }
+  @media (max-width: 640px) {
+    .wrap { padding: 0.85rem; }
+    h1 { font-size: 1.25rem; }
+  }
 </style>
 </head>
 <body>
+<div class="wrap">
   <h1>Connemara Farms — weekly Dinophysis risk</h1>
-  <p>Simple view for shellfish growers. Scores are <strong>research nowcasts</strong>
-  from sea-surface temperature patterns (NOAA OISST) plus season and location —
-  <em>not</em> an official Marine Institute warning.</p>
-  <div class="note">
-    <strong>How to read the score:</strong> probability that Dinophysis will be at or
-    above 100 cells per litre in the current or next monitoring week (0–2 week
-    nowcast). Compare to the “seasonal usual” for that week of year.
-    Always follow official HAB / biotoxin notices before harvesting.
-  </div>
-  <p>Generated: <strong>2026-09-01 21:56 IST</strong>.
-  Model: national Irish <code>strong</code> OISST LightGBM (calibrated), applied to Connemara sites.
-  Latest weeks shown: <strong>2026-01-12 → 2026-08-24</strong>.</p>
+  <p class="sub">Grower / co-op dashboard. Research nowcasts from sea-surface temperature
+  (NOAA OISST) plus season and location — <em>not</em> an official Marine Institute warning.
+  Always follow official HAB / biotoxin notices before harvesting.</p>
 
-  <h2>Latest site scores</h2>
+  <div class="note">
+    <strong>How to read a score:</strong> calibrated probability that Dinophysis will be
+    at or above <strong>100 cells per litre</strong> in the current or next monitoring week
+    (0–2 week nowcast). Compare to the “seasonal usual” for that week of year.
+    Bands are communication aids for growers — not regulatory cut-offs.
+  </div>
+
+  <h2>Risk bands (plain English)</h2>
+  
+  <div class="bands" aria-label="Risk band legend">
+    <div class="band-item Higher"><strong>Higher</strong> ≥ 15%<br/>
+      <span>Elevated chance of Dinophysis ≥ 100 cells/L in this or next week. Check MI bulletins before harvest plans.</span></div>
+    <div class="band-item Moderate"><strong>Moderate</strong> 7–15%<br/>
+      <span>Some seasonal / SST-linked risk. Watch bulletins and recent cell counts.</span></div>
+    <div class="band-item Lower"><strong>Lower</strong> &lt; 7%<br/>
+      <span>Below typical risk for this week-of-year, or quiet conditions. Still follow official notices.</span></div>
+  </div>
+
+
+  <div class="latest-banner">
+    <div>Latest scored week</div>
+    <strong>2026-W35</strong>
+     · week starting 2026-08-24
+    <p>Generated 2026-09-02 11:38 IST. National Irish
+    <code>strong</code> OISST model applied to Connemara NMP sites.
+    Showing last sampled weeks per active site
+    (2026-01-12 → 2026-08-24).</p>
+  </div>
+
+  <h2>This week at a glance</h2>
+  <p class="sub">Latest sampled week only. <strong>Killary Inner / Middle / Outer</strong> are listed
+  first (priority for fjord co-ops). Missing Killary samples show a “no sample” card.
+  Mace Head &amp; Lehanagh are called out in the sentinel panel below (not HAB-scored).</p>
+  <div class="cards">
+    <article class="card band-none"><div class="card-top"><h3>Killary Inner<span class="badge-pri">Priority site</span></h3><span class="band-pill none">No sample this week</span></div><p class="plain">No MI phytoplankton sample in the latest scored week (2026-W35). Check recent weeks below and official bulletins.</p></article><article class="card band-none"><div class="card-top"><h3>Killary Middle<span class="badge-pri">Priority site</span></h3><span class="band-pill none">No sample this week</span></div><p class="plain">No MI phytoplankton sample in the latest scored week (2026-W35). Check recent weeks below and official bulletins.</p></article><article class="card band-Moderate"><div class="card-top"><h3>Killary Outer<span class="badge-pri">Priority site</span></h3><span class="band-pill Moderate">Moderate watch</span></div><p class="prob">Model chance: <strong>14.9%</strong></p><p class="vs">-6.5% vs seasonal usual</p><p class="cells">Recent Dinophysis: <strong>0</strong> cells/L</p><p class="plain">Moderate watch — some seasonal / SST-linked risk. Keep an eye on MI bulletins and recent cell counts.</p></article><article class="card band-Higher"><div class="card-top"><h3>Clifden</h3><span class="band-pill Higher">Higher watch</span></div><p class="prob">Model chance: <strong>19.2%</strong></p><p class="vs">-2.2% vs seasonal usual</p><p class="cells">Recent Dinophysis: <strong>40</strong> cells/L</p><p class="plain">Higher watch — elevated chance Dinophysis is at or above 100 cells/L in this or next week. Check MI bulletins before harvest plans.</p></article><article class="card band-Higher"><div class="card-top"><h3>Gubbaros (nearby)</h3><span class="band-pill Higher">Higher watch</span></div><p class="prob">Model chance: <strong>19.2%</strong></p><p class="vs">-2.2% vs seasonal usual</p><p class="cells">Recent Dinophysis: <strong>0</strong> cells/L</p><p class="plain">Higher watch — elevated chance Dinophysis is at or above 100 cells/L in this or next week. Check MI bulletins before harvest plans.</p></article><article class="card band-Higher"><div class="card-top"><h3>Mannin</h3><span class="band-pill Higher">Higher watch</span></div><p class="prob">Model chance: <strong>26.9%</strong></p><p class="vs">+5.5% vs seasonal usual</p><p class="cells">Recent Dinophysis: <strong>0</strong> cells/L</p><p class="plain">Higher watch — elevated chance Dinophysis is at or above 100 cells/L in this or next week. Check MI bulletins before harvest plans.</p></article>
+  </div>
+
+  <h2>This week — all sampled sites</h2>
+  <div class="scroll">
   <table>
     <thead>
       <tr>
         <th>Site</th>
         <th>Week</th>
-        <th>Risk</th>
+        <th>Risk band</th>
         <th>vs seasonal usual</th>
-        <th>Recent Dinophysis cells L⁻¹</th>
+        <th>Dinophysis cells/L</th>
         <th>Closure-risk proxy</th>
-        <th>Plain language</th>
+        <th>What it means</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td>Clifden</td><td>2026-W35</td><td><strong>Higher</strong> (19.2%)</td><td>-2.2% vs seasonal usual</td><td>40</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W35</td><td><strong>Higher</strong> (19.2%)</td><td>-2.2% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Killary Outer</td><td>2026-W35</td><td><strong>Moderate</strong> (14.9%)</td><td>-6.5% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Mannin</td><td>2026-W35</td><td><strong>Higher</strong> (26.9%)</td><td>+5.5% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Ballynakill</td><td>2026-W34</td><td><strong>Moderate</strong> (14.9%)</td><td>-7.0% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Clifden</td><td>2026-W34</td><td><strong>Higher</strong> (25.0%)</td><td>+3.1% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W34</td><td><strong>Higher</strong> (26.9%)</td><td>+5.0% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Killary Middle</td><td>2026-W34</td><td><strong>Moderate</strong> (14.9%)</td><td>-7.0% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Mannin</td><td>2026-W34</td><td><strong>Higher</strong> (26.9%)</td><td>+5.0% vs seasonal usual</td><td>40</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Rosmuc</td><td>2026-W34</td><td><strong>Lower</strong> (5.1%)</td><td>-16.8% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Ballynakill</td><td>2026-W33</td><td><strong>Moderate</strong> (10.2%)</td><td>-14.6% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Clifden</td><td>2026-W33</td><td><strong>Higher</strong> (26.9%)</td><td>+2.2% vs seasonal usual</td><td>80</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W33</td><td><strong>Moderate</strong> (14.9%)</td><td>-9.8% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Outer</td><td>2026-W33</td><td><strong>Moderate</strong> (14.9%)</td><td>-9.8% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Ballynakill</td><td>2026-W32</td><td><strong>Lower</strong> (6.7%)</td><td>-18.1% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Clifden</td><td>2026-W32</td><td><strong>Higher</strong> (36.4%)</td><td>+11.5% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W32</td><td><strong>Moderate</strong> (10.2%)</td><td>-14.7% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Outer</td><td>2026-W32</td><td><strong>Moderate</strong> (10.2%)</td><td>-14.7% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Mannin</td><td>2026-W32</td><td><strong>Higher</strong> (26.9%)</td><td>+2.1% vs seasonal usual</td><td>80</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Rosmuc</td><td>2026-W32</td><td><strong>Lower</strong> (6.7%)</td><td>-18.1% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Ballynakill</td><td>2026-W31</td><td><strong>Lower</strong> (6.7%)</td><td>-23.1% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Killary Outer</td><td>2026-W31</td><td><strong>Moderate</strong> (10.2%)</td><td>-19.7% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Inner</td><td>2026-W30</td><td><strong>Moderate</strong> (14.9%)</td><td>-18.7% vs seasonal usual</td><td>40</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Middle</td><td>2026-W30</td><td><strong>Higher</strong> (16.1%)</td><td>-17.4% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Mannin</td><td>2026-W30</td><td><strong>Higher</strong> (38.6%)</td><td>+5.0% vs seasonal usual</td><td>0</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Killary Middle</td><td>2026-W29</td><td><strong>Moderate</strong> (14.9%)</td><td>-18.0% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Inner</td><td>2026-W28</td><td><strong>Moderate</strong> (10.2%)</td><td>-23.3% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Middle</td><td>2026-W28</td><td><strong>Moderate</strong> (14.9%)</td><td>-18.6% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Killary Inner</td><td>2026-W27</td><td><strong>Higher</strong> (26.9%)</td><td>-9.7% vs seasonal usual</td><td>40</td><td>—</td><td>Elevated chance of Dinophysis above the monitoring threshold in the next ~2 weeks relative to a quiet week.</td></tr><tr><td>Rosmuc</td><td>2026-W24</td><td><strong>Moderate</strong> (10.2%)</td><td>-24.4% vs seasonal usual</td><td>0</td><td>—</td><td>Some seasonal / SST-linked risk — watch Marine Institute bulletins.</td></tr><tr><td>Rosmuc</td><td>2026-W23</td><td><strong>Lower</strong> (6.7%)</td><td>-22.6% vs seasonal usual</td><td>0</td><td>—</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr><tr><td>Killary Inner</td><td>2026-W03</td><td><strong>Lower</strong> (0.0%)</td><td>+0.0% vs seasonal usual</td><td>0</td><td>5.3%</td><td>Below typical seasonal risk for this week-of-year, or quiet conditions.</td></tr>
+      <tr><td>Killary Outer</td><td>2026-W35</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-6.5%</td><td>0</td><td>—</td><td>Moderate watch — some seasonal / SST-linked risk. Keep an eye on MI bulletins and recent cell counts.</td></tr><tr><td>Clifden</td><td>2026-W35</td><td class="Higher"><strong>Higher</strong> (19.2%)</td><td>-2.2%</td><td>40</td><td>—</td><td>Higher watch — elevated chance Dinophysis is at or above 100 cells/L in this or next week. Check MI bulletins before harvest plans.</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W35</td><td class="Higher"><strong>Higher</strong> (19.2%)</td><td>-2.2%</td><td>0</td><td>—</td><td>Higher watch — elevated chance Dinophysis is at or above 100 cells/L in this or next week. Check MI bulletins before harvest plans.</td></tr><tr><td>Mannin</td><td>2026-W35</td><td class="Higher"><strong>Higher</strong> (26.9%)</td><td>+5.5%</td><td>0</td><td>—</td><td>Higher watch — elevated chance Dinophysis is at or above 100 cells/L in this or next week. Check MI bulletins before harvest plans.</td></tr>
     </tbody>
   </table>
+  </div>
+
+  <div class="sentinel">
+    <strong>Mace Head &amp; Lehanagh (prominence / context)</strong>
+    <p style="margin:0.4rem 0 0.2rem">These local sentinels matter for Connemara growers but are
+    <em>not</em> Dinophysis exceedance scores. Use them as hydrography / site-continuity context
+    alongside MI bulletins — see <code>data/processed/local_sites_report.md</code>.</p>
+    <ul class="compact"><li><strong>Mace Head buoy</strong> — Buoy only — hydrography context, not HAB-scored. Sentinel hydrography (T/S/DO/nitrate); no Dinophysis labels. Context only — see data/processed/local_sites_report.md. Not scored for HAB exceedance.</li><li><strong>Lehanagh buoy</strong> — Buoy only — hydrography context, not HAB-scored. NRT from May 2024; no published QC delayed-mode set. Context only — not scored for HAB exceedance.</li><li><strong>Lehanagh (NMP)</strong> — Sparse / historical NMP only — not in latest grower table. Only 25 station-weeks (2009–2020); no recent HAB samples. Kept in set for site continuity; not used for grower &quot;latest week&quot; tables unless data reappears. Nearby Lehanagh Pool sentinel buoy is separate.</li></ul>
+  </div>
+
+  <h2>Recent weeks (same sites)</h2>
+  <p class="sub">Earlier sampled weeks in the grower table (not the latest week above).</p>
+  <div class="scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Site</th>
+        <th>Week</th>
+        <th>Risk band</th>
+        <th>vs seasonal usual</th>
+        <th>Dinophysis cells/L</th>
+        <th>Closure-risk proxy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Killary Middle</td><td>2026-W34</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-7.0%</td><td>0</td><td>—</td></tr><tr><td>Ballynakill</td><td>2026-W34</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-7.0%</td><td>0</td><td>—</td></tr><tr><td>Clifden</td><td>2026-W34</td><td class="Higher"><strong>Higher</strong> (25.0%)</td><td>+3.1%</td><td>0</td><td>—</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W34</td><td class="Higher"><strong>Higher</strong> (26.9%)</td><td>+5.0%</td><td>0</td><td>—</td></tr><tr><td>Mannin</td><td>2026-W34</td><td class="Higher"><strong>Higher</strong> (26.9%)</td><td>+5.0%</td><td>40</td><td>—</td></tr><tr><td>Rosmuc</td><td>2026-W34</td><td class="Lower"><strong>Lower</strong> (5.1%)</td><td>-16.8%</td><td>0</td><td>—</td></tr><tr><td>Killary Outer</td><td>2026-W33</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-9.8%</td><td>0</td><td>—</td></tr><tr><td>Ballynakill</td><td>2026-W33</td><td class="Moderate"><strong>Moderate</strong> (10.2%)</td><td>-14.6%</td><td>0</td><td>—</td></tr><tr><td>Clifden</td><td>2026-W33</td><td class="Higher"><strong>Higher</strong> (26.9%)</td><td>+2.2%</td><td>80</td><td>—</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W33</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-9.8%</td><td>0</td><td>—</td></tr><tr><td>Killary Outer</td><td>2026-W32</td><td class="Moderate"><strong>Moderate</strong> (10.2%)</td><td>-14.7%</td><td>0</td><td>—</td></tr><tr><td>Ballynakill</td><td>2026-W32</td><td class="Lower"><strong>Lower</strong> (6.7%)</td><td>-18.1%</td><td>0</td><td>—</td></tr><tr><td>Clifden</td><td>2026-W32</td><td class="Higher"><strong>Higher</strong> (36.4%)</td><td>+11.5%</td><td>0</td><td>—</td></tr><tr><td>Gubbaros (nearby)</td><td>2026-W32</td><td class="Moderate"><strong>Moderate</strong> (10.2%)</td><td>-14.7%</td><td>0</td><td>—</td></tr><tr><td>Mannin</td><td>2026-W32</td><td class="Higher"><strong>Higher</strong> (26.9%)</td><td>+2.1%</td><td>80</td><td>—</td></tr><tr><td>Rosmuc</td><td>2026-W32</td><td class="Lower"><strong>Lower</strong> (6.7%)</td><td>-18.1%</td><td>0</td><td>—</td></tr><tr><td>Killary Outer</td><td>2026-W31</td><td class="Moderate"><strong>Moderate</strong> (10.2%)</td><td>-19.7%</td><td>0</td><td>—</td></tr><tr><td>Ballynakill</td><td>2026-W31</td><td class="Lower"><strong>Lower</strong> (6.7%)</td><td>-23.1%</td><td>0</td><td>—</td></tr><tr><td>Killary Inner</td><td>2026-W30</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-18.7%</td><td>40</td><td>—</td></tr><tr><td>Killary Middle</td><td>2026-W30</td><td class="Higher"><strong>Higher</strong> (16.1%)</td><td>-17.4%</td><td>0</td><td>—</td></tr><tr><td>Mannin</td><td>2026-W30</td><td class="Higher"><strong>Higher</strong> (38.6%)</td><td>+5.0%</td><td>0</td><td>—</td></tr><tr><td>Killary Middle</td><td>2026-W29</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-18.0%</td><td>0</td><td>—</td></tr><tr><td>Killary Inner</td><td>2026-W28</td><td class="Moderate"><strong>Moderate</strong> (10.2%)</td><td>-23.3%</td><td>0</td><td>—</td></tr><tr><td>Killary Middle</td><td>2026-W28</td><td class="Moderate"><strong>Moderate</strong> (14.9%)</td><td>-18.6%</td><td>0</td><td>—</td></tr><tr><td>Killary Inner</td><td>2026-W27</td><td class="Higher"><strong>Higher</strong> (26.9%)</td><td>-9.7%</td><td>40</td><td>—</td></tr><tr><td>Rosmuc</td><td>2026-W24</td><td class="Moderate"><strong>Moderate</strong> (10.2%)</td><td>-24.4%</td><td>0</td><td>—</td></tr><tr><td>Rosmuc</td><td>2026-W23</td><td class="Lower"><strong>Lower</strong> (6.7%)</td><td>-22.6%</td><td>0</td><td>—</td></tr><tr><td>Killary Inner</td><td>2026-W03</td><td class="Lower"><strong>Lower</strong> (0.0%)</td><td>+0.0%</td><td>0</td><td>5.3%</td></tr>
+    </tbody>
+  </table>
+  </div>
 
   <h2>Skill (honest)</h2>
-  <ul>
+  <ul class="compact">
     <li>National test (2022+) calibrated PR-AUC:
       <strong>0.293267</strong>
       vs seasonal clim <strong>0.18314</strong>
       (PR skill 0.134817).</li>
     <li>Connemara-site test subset:
       <strong>0.068432</strong>
-      (n=1558, prevalence=0.028883).</li>
+      (n=1558, prevalence=0.028883).
+      Local positives are rare — treat scores as seasonal + SST context, not a crystal ball.</li>
   </ul>
 
   <div class="warn">
-    <strong>Gaps / caveats</strong>
-    <ul><li><strong>Rosmuc</strong> (active_oisst_gap): HAB samples present, but OISST SST is null at this pixel (landmask / inshore). Scores use week-of-year + lat/lon; SST features missing.</li><li><strong>Lehanagh (NMP)</strong> (sparse_historical): Only 25 station-weeks (2009–2020); no recent HAB samples. Kept in set for site continuity; not used for grower &quot;latest week&quot; tables unless data reappears. Nearby Lehanagh Pool sentinel buoy is separate.</li><li><strong>Mace Head buoy</strong> (buoy_only): Sentinel hydrography (T/S/DO/nitrate); no Dinophysis labels. Context only — see data/processed/local_sites_report.md. Not scored for HAB exceedance.</li><li><strong>Lehanagh buoy</strong> (buoy_only): NRT from May 2024; no published QC delayed-mode set. Context only — not scored for HAB exceedance.</li></ul>
-    <p>Closure-risk proxy uses the national area-closed model (all toxins + admin rules),
-    only where toxin/status join exists. Rosmuc lacks OISST SST at the station pixel.</p>
+    <strong>Data gaps &amp; caveats (read these)</strong>
+    <ul class="compact"><li><strong>Rosmuc</strong> (active_oisst_gap): HAB samples present, but OISST SST is null at this pixel (landmask / inshore). Scores use week-of-year + lat/lon; SST features missing.</li><li><strong>Lehanagh (NMP)</strong> (sparse_historical): Only 25 station-weeks (2009–2020); no recent HAB samples. Kept in set for site continuity; not used for grower &quot;latest week&quot; tables unless data reappears. Nearby Lehanagh Pool sentinel buoy is separate.</li><li><strong>Mace Head buoy</strong> (buoy_only): Sentinel hydrography (T/S/DO/nitrate); no Dinophysis labels. Context only — see data/processed/local_sites_report.md. Not scored for HAB exceedance.</li><li><strong>Lehanagh buoy</strong> (buoy_only): NRT from May 2024; no published QC delayed-mode set. Context only — not scored for HAB exceedance.</li></ul>
+    <ul class="compact">
+      <li><strong>Rosmuc OISST nulls:</strong> HAB labels exist, but satellite SST is missing at the
+        station pixel — scores there lean on week-of-year and location only.</li>
+      <li><strong>Lehanagh NMP:</strong> sparse / historical-only (ends ~2020); excluded from the
+        latest grower table. The nearby Lehanagh buoy is separate and buoy-only.</li>
+      <li><strong>Mace Head / Lehanagh buoys:</strong> buoy-only hydrography — no Dinophysis labels,
+        not scored for HAB exceedance.</li>
+      <li><strong>Closure-risk proxy:</strong> national area-closed model (all toxins + admin rules),
+        only where toxin/status join exists; often “—” when toxin ingest lags phyto.</li>
+      <li><strong>Irregular sampling:</strong> a missing week is “not sampled”, not a true negative.</li>
+    </ul>
   </div>
 
   <footer>
-    PA-Marine-Model · Connemara Farms product idea 2 · regenerate with
-    <code>python scripts/score_connemara_farms.py</code>
+    PA-Marine-Model · Connemara Farms product idea 2 ·
+    Grower guide: <code>CONNEMARA_GROWER_README.md</code> ·
+    Regenerate with <code>python3 scripts/score_connemara_farms.py</code>
   </footer>
+</div>
 </body>
 </html>

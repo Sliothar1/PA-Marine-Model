@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-01 21:56 IST",
+  "generated": "2026-09-02 11:38 IST",
   "model_choice": "national_apply_strong_oisst",
   "model_choice_rationale": "Apply the national Irish Dinophysis strong-OISST model rather than retraining on Connemara alone: local positives are too sparse for a stable site-level fit, and the national protocol already has documented test skill (PR-AUC \u2248 0.293 vs clim \u2248 0.183).",
   "model": {
