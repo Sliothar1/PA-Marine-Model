@@ -33,3 +33,11 @@
 - Use as **context**: warmer June shelf waters shift seasonal baselines; the strong Dinophysis model already uses SST + lags + rolls.
 - A simple year / June-climatology-anomaly feature is a **warming proxy**, not a substitute for local synoptic forcing (wind, radiation).
 - Do not claim MHW→bloom causation from this trend alone.
+
+## Related air-temperature context
+
+Island of Ireland long-term **air** temperature series (1900–2024) is ingested separately
+(`data/processed/island_of_ireland_temperature_annual.csv`; see `docs/CLIMATE_DRIVERS.md`).
+That national land series (~+0.09 °C/decade) is complementary narrative, not a substitute for
+shelf SST at HAB stations.
+

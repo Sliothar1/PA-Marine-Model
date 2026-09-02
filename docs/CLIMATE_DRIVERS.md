@@ -1,125 +1,192 @@
-# Climate drivers — Met Éireann, rivers, SST warming
+# Climate drivers package (Met Éireann + Irish-shelf SST)
 
-**Agent:** Climate Drivers · **Date:** 2026-09-02 (Europe/Dublin)  
-**Repo:** `pa-marine-model` / [Sliothar1/PA-Marine-Model](https://github.com/Sliothar1/PA-Marine-Model)  
-**Goal:** Explanatory power beyond the strong 9-feature Dinophysis OISST model (`STRONG_OISST`).
+**Generated:** 2026-09-02 (Europe/Dublin).  
+**Purpose:** Open climate context for Dinophysis / HAB explanation (Connemara + Irish shelf).  
+**Scripts:** `scripts/ingest_met_climate_drivers.py`, `scripts/build_sst_warming_context.py`, `scripts/climate_drivers_ablation.py`, `scripts/extract_connemara_normals_9120.py`.
 
-## What was added
+Catalogue landing: [Available Data](https://www.met.ie/climate/available-data).
 
-### 1. Met Éireann west-coast open CSVs (clidata)
+---
 
-Script: `scripts/ingest_met_climate_drivers.py`  
-Pattern: `https://clidata.met.ie/cli/climate_data/webdata/{dly|hly|mly}{STN}.csv` (same as Mace Head `275`).  
-Station IDs **verified by HTTP GET** (not invented).
+## 1. What we added (ingested)
 
-| Station | ID | Role | Products | Daily range | Key fields | Raw / processed |
-| --- | ---: | --- | --- | --- | --- | --- |
-| **Belmullet** | **2375** | Primary radiation + sunshine (NW Mayo / west) | dly, hly, mly | 1956-09-17 → 2026-07-31 | `glorad`, `sun`, `wdsp`, rain, temps | `data/raw/met_eireann/belmullet_*` → `belmullet_met_daily.*`, `_week.*`, `_monthly.*` |
-| Valentia Observatory | 2275 | SW west-coast long wind + rad/sun | dly, mly | 1942-01-01 → 2026-07-31 | `glorad`, `sun`, `wdsp` | `valentia_*` |
-| Malin Head | 1575 | NW long wind + rad/sun | dly, mly | 1955-05-01 → 2026-07-31 | `glorad`, `sun`, `wdsp` | `malin_head_*` |
-| Newport | 1175 | Mayo / Clew Bay adjacent `glorad` | dly | 2005-02-22 → 2026-07-31 | `glorad`, `wdsp` (no `sun`) | `newport_*` |
-| Mace Head (refresh) | 275 | Connemara (already in scout P0) | dly, mly | 2003-08-14 → 2026-07-31 | `glorad`, `wdsp` (no `sun`) | `mace_head_*` |
+### West-coast synoptic stations (clidata free CSV)
 
-**Regional week panel:** `data/processed/met_west_climate_week.parquet` (+ `.csv`)  
-Broadcast columns for HAB joins: `met_glorad` (Mace→Belmullet fill), `met_sun` (Belmullet), `met_wdsp`, plus per-station and `met_west_*` composites.
+Pattern (no API key): `https://clidata.met.ie/cli/climate_data/webdata/{dly|hly|mly}{STN}.csv`
 
-**June 2023 Belmullet check:** mean `glorad` ≈ 2005 J/cm², mean `sun` ≈ 7.48 h, mean `wdsp` ≈ 9.3 kt (vs Mace Head June 2023 glorad ≈ 2107, wind ≈ 11.1 kt).
+| ID | Station | Role | Products | Key fields | Date range (daily) | Raw path prefix |
+| ---: | --- | --- | --- | --- | --- | --- |
+| **2375** | Belmullet | **Primary radiation / sunshine (west)** | daily, hourly, monthly | `glorad`, `sun`, `wdsp`, rain, temps | 1956-09-17 → 2026-07-31 | `data/raw/met_eireann/belmullet_*` |
+| **275** | Mace Head | Connemara local | daily, monthly (+ scout hourly) | `glorad`, `wdsp`, rain, temps (**no sun**) | 2003-08-14 → 2026-07-31 | `data/raw/met_eireann/mace_head_*` |
+| **1175** | Newport | Mayo / Connemara-adjacent glorad | daily, monthly | `glorad`, `wdsp` (**no sun**) | 2005-02-22 → 2026-07-31 | `data/raw/met_eireann/newport_*` |
+| **2275** | Valentia Observatory | SW long wind + radiation | daily, monthly | `glorad`, `sun`, `wdsp` | 1942-01-01 → 2026-07-31 | `data/raw/met_eireann/valentia_*` |
+| **1575** | Malin Head | NW long wind + sun/radiation | daily, monthly | `glorad`, `sun`, `wdsp` | 1955-05-01 → 2026-07-31 | `data/raw/met_eireann/malin_head_*` |
 
-**Sources JSON:** `data/raw/met_eireann/sources_climate_drivers.json`  
-**Ingest summary:** `data/processed/met_climate_drivers_ingest_summary.json`
+Processed daily / week / monthly: `data/processed/{slug}_met_{daily|week|monthly}.{csv,parquet}`.
 
-data.gov.ie packages for Belmullet point at the same clidata CSVs (`belmullet-daily-data`, `belmullet-monthly-data`).
+**Week-scale HAB join panel:** `data/processed/met_west_climate_week.{csv,parquet}`  
+Prefer columns `met_glorad` (Mace→Belmullet fill), `met_sun` (**Belmullet**), `met_wdsp`, plus station-prefixed and `met_west_*` composites.
 
-### 2. Irish-shelf June SST warming context
+**June 2023 radiation snapshot (daily means):** Belmullet glorad ≈ 2005 J/cm², sun ≈ 7.5 h; Mace Head glorad ≈ 2107 (sun blank).
 
-Script: `scripts/build_sst_warming_context.py`
+data.gov.ie mirrors (Belmullet):
 
-| Artefact | Path |
+- Daily: https://data.gov.ie/dataset/belmullet-daily-data  
+- Hourly: https://data.gov.ie/dataset/belmullet-hourly-data  
+- Monthly Agmet: https://data.gov.ie/dataset/monthly-weather-belmullet  
+
+### Garry monthly drop (Mace Head)
+
+- **Path:** `data/external/met_eireann/mace_head_monthly.csv`  
+- Station: 53.326, −9.901, 21 m; **268 months** Nov 2003–Jul 2026.  
+- Columns: `year,month,meant,maxtp,mintp,mnmax,mnmin,rain,gmin,wdsp,maxgt,sun`.  
+- **`sun` is 100% blank** — do **not** expect sunshine from this file.  
+- rain / meant / wdsp mostly complete. **June 2023 `meant` = 17.0 °C** (heatwave narrative).  
+- Folded to: `data/processed/mace_head_garry_monthly.{csv,parquet}` + lag features `data/processed/mace_head_garry_monthly_lag_features.csv` (`meant`/`rain`/`wdsp` lag1m + meant roll3m).  
+- Same blank-sun story on open clidata `mly275.csv`.
+
+### Recent Agmet monthly solar (prodapi — ~3 years)
+
+Open JSON (no credentials):
+
+- Belmullet: https://prodapi.met.ie/monthly-data/Belmullet  
+- Mace Head: https://prodapi.met.ie/monthly-data/mace-head  
+- Valentia: https://prodapi.met.ie/monthly-data/Valentia  
+- Malin Head: https://prodapi.met.ie/monthly-data/Malin-Head  
+
+Includes **`solar_radiation`** (total global solar, J/cm²), rainfall, mean temperature, soil T, PE, evaporation. Coverage typically **2023–2026** only.  
+Processed: `data/processed/{slug}_agmet_monthly.{csv,parquet}`; raw JSON under `data/raw/met_eireann/*_agmet_monthly.json`.
+
+**Sibling Agmet JSON already on disk (prefer merge — do not re-download):**
+
+| Station | External path |
 | --- | --- |
-| Figure | `docs/climate_assets/irish_shelf_june_sst_trend.png` (copy: `data/processed/figures/…`) |
-| Series CSV | `data/processed/irish_shelf_june_sst_series.csv` |
-| Metrics JSON | `data/processed/sst_warming_context_metrics.json` |
-| Year features (ablation) | `data/processed/sst_warming_year_features.csv` |
-| Short markdown | `docs/SST_WARMING_CONTEXT.md` |
+| Mace Head | `data/external/met_eireann/monthly_agmet_mace_head.json` (~6.5 KB) |
+| Belmullet | `data/external/met_eireann/monthly_agmet_belmullet.json` (~7.5 KB) |
+| Newport | `data/external/met_eireann/monthly_agmet_newport.json` (~7.5 KB) |
+| Malin Head | `data/external/met_eireann/monthly_agmet_malin_head.json` (~7.5 KB) |
 
-**Headline (OISST station-mean June, 2002–2026):**  
-**+0.30 °C/decade** (R² ≈ 0.07). First-5 Junes ≈ 13.52 °C → last-5 ≈ 14.33 °C (Δ ≈ +0.81 °C).  
-OSTIA cross-check: **+0.17 °C/decade** (2002–2025). Soft trend — useful narrative context, not a strong standalone predictor.
+Flat CSV + LTA companions sit beside each JSON. Ingest should **merge with these files** when present rather than hitting prodapi again.
 
-### 3. Ablation vs strong Dinophysis baseline
+**Also in `data/external/met_eireann/`:** `daily_mace_head_dly275.csv` (~743 KB), `monthly_classic_mace_head_mly275.csv`, `monthly_classic_malin_head_mly1575.csv` (~45 KB). See **1991–2020 normals** section below for `normals_9120/` (grids gitignored; Connemara extract committed).
 
-Script: `scripts/climate_drivers_ablation.py`  
-Outputs: `data/processed/climate_drivers_ablation_metrics.json`, `climate_drivers_ablation_report.md`
+**Long radiation/sunshine for HAB weeks → use Belmullet daily `glorad`/`sun` (clidata), not Agmet alone.**
 
-Target: `y_dinophysis_nowcast`. Headline metric: **LightGBM test calibrated PR-AUC**.
 
-| config | n_feat | val cal PR-AUC | test cal PR-AUC | Δ test vs strong |
+### 1991–2020 1 km climatological NORMALS (Garry drop)
+
+**These are long-term climatological averages, not observations and not HAB week ML features.**
+
+| | |
+| --- | --- |
+| **What** | Ireland-wide **1×1 km** monthly / seasonal / annual **normals** for 1991–2020 |
+| **On disk** | `data/external/met_eireann/normals_9120/` |
+| **Grids** | `IE_RR_9120_V2.txt` (+ zip); `IE_TMEAN` / `TMAX` / `TMIN_9120_V2.txt` (+ `IE_T_9120_V2.zip`) |
+| **Readmes** | `Readme_9120.txt` (rainfall, Climatological Note **22**), `ReadmeTemp_9120.txt` (temps, Note **23**) |
+| **Coords** | Irish Grid **TM65** east/north; columns monthly `m1`–`m12` + `ANN` + `DJF`/`MAM`/`JJA`/`SON` |
+| **Units** | Rainfall mm; temperatures °C (to 0.1 °C) |
+| **Catalogue** | [Available data](https://www.met.ie/climate/available-data) |
+
+**Use for:** Connemara **anomaly maps** and paper climate context (compare a month/season to the 1991–2020 normal).
+
+**Do NOT use for:** Dinophysis / HAB **week ML feature joins**. Normals have **no time axis** — they are static climatology. Week-scale Met joins stay on **clidata daily/hourly** (Mace Head `275`, Belmullet `2375`, etc.).
+
+**Vs other Met products in this package:**
+
+| Product | Role | HAB week ML? |
+| --- | --- | --- |
+| **1991–2020 1 km normals** | Climatology baseline for anomalies / maps | **No** |
+| Garry `mace_head_monthly.csv` + Agmet monthlies | Monthly **actuals** (meant, rain, Agmet solar) | No (month scale; Agmet ~3 yr) |
+| clidata **daily/hourly** Mace + Belmullet | Synoptic actuals → week panel | **Yes** (already ingested) |
+| MÉRA / TRANSLATE | Paper / demo story only | **No** |
+
+**Connemara extract (committed):** `data/processed/connemara_normals_9120_extract.csv`  
+Script: `scripts/extract_connemara_normals_9120.py` (WGS84→TM65 via EPSG:29903; nearest 1 km cell for Mace Head, Lehanagh Pool, Killary, Belmullet). Periods: June, `JJA`, `ANN` for RR + TMEAN/TMAX/TMIN.
+
+| Site | June TMEAN | June RR | JJA TMEAN | ANN TMEAN |
 | --- | ---: | ---: | ---: | ---: |
-| `strong` | 9 | 0.543 | **0.295** | 0 |
-| `strong_met_rad` | 15 | 0.549 | 0.253 | −0.042 |
-| `strong_river_Q` | 12 | 0.553 | 0.249 | −0.046 |
-| `strong_warming` | 12 | 0.561 | 0.294 | −0.001 |
-| `strong_met_river` | 18 | 0.551 | 0.240 | −0.055 |
-| `strong_climate_all` | 21 | 0.574 | 0.285 | −0.010 |
+| Mace Head nearest cell | **13.7 °C** | **79.0 mm** | 14.6 °C | 10.6 °C |
+| Connemara bbox mean | 13.4 °C | 105.7 mm | 14.4 °C | 10.1 °C |
 
-Reference file baseline (`metrics_dino_strong.json` LightGBM test cal): **0.293**.
+**June 2023 vs normal (Mace):** Garry / Agmet monthly **meant = 17.0 °C**, rain **56.1 mm** → approx. **+3.3 °C** vs June TMEAN normal, **drier** than June RR normal (~79 mm). Comparable as monthly mean air temperature vs the same station/coastal cell — not an SST anomaly.
 
-**Verdict (honest):** Met radiation/sunshine, Corrib/Owenboliskey Q, and year-level warming proxies **do not lift** national Irish Dinophysis test PR-AUC vs the strong 9-feature model. Val often improves (overfit risk); test drops or ties. Same story as ERA5 wind. Still valuable for **Connemara narrative / case studies** (June 2023 high solar + weak winds) and for local farm scoring context — not for replacing `strong` nationally.
+Repo keeps **zips + Readmes +** `connemara_normals_9120_extract.csv`; expanded `IE_*.txt` (~25 MB) stay local/gitignored. Unzip locally to re-run the extract script.
 
-Coverage: Met week ~96–99% non-null on panel weeks; river Q ~76–89%; warming year features 100%. Spatial caveat: Met is west-coast point/composite broadcast nationally; Q is Galway Bay regional.
+### Island of Ireland long-term T + P (warming narrative)
 
-Closure-risk ablation was **not** re-run (optional; Dinophysis national result already negative — not worth DSP rework).
+| Product | URL | Local |
+| --- | --- | --- |
+| **Temperature** provisional annual series (1900–2024) | https://www.met.ie/cms/assets/uploads/2025/01/longseries_2024.csv | `data/raw/met_eireann_longterm/island_of_ireland_temperature_longseries_2024.csv` → `data/processed/island_of_ireland_temperature_annual.csv` |
+| Temperature page | https://www.met.ie/climate/what-we-measure/temperature | — |
+| **IIP network** (1850–2010, 25 stations + national) | https://www.met.ie/cms/assets/uploads/2018/01/Long-Term-IIP-network-1.zip | `data/raw/met_eireann_longterm/Long-Term-IIP-network-1.zip` → `data/processed/iip_national_1850_2010_monthly.csv` |
+| **IIP composite** 1711–2016 | https://www.met.ie/cms/assets/uploads/2018/01/Long-Term-IIP-1711-2016.zip | → `data/processed/iip_composite_1711_2016.csv` |
+| Long-term data sets hub | https://www.met.ie/climate/available-data/long-term-data-sets | — |
+| IIP handle / paper archive | http://hdl.handle.net/20.500.14765/76134 | — |
 
-## Rivers (already on disk)
+Island of Ireland **air** temperature OLS ≈ **+0.089 °C/decade** (1900–2024; R²≈0.38; clim 1961–1990 ≈ 9.55 °C). Separate from shelf **SST** trend below.
 
-See `data/processed/rivers_hab_join_note.md`. Primary Q week file: `rivers_week_primary_Q.csv` (31075 Owenboliskey, 30061 Corrib Wolfe Tone, 30031 Cong).
+### Irish-shelf June SST warming (OISST / OSTIA)
 
-## Manual Met Éireann leftovers for Garry
+See **`docs/SST_WARMING_CONTEXT.md`**.
 
-Open clidata covered the main synoptic need. Items that may still need **manual export / browser** (login or non-CSV):
+- OISST June station-mean: **≈ +0.30 °C/decade** (2002–2026, R²≈0.07).  
+- OSTIA cross-check: **≈ +0.17 °C/decade** (2002–2025).  
+- Figure: `docs/climate_assets/irish_shelf_june_sst_trend.png` (also `data/processed/figures/`).  
+- Series / metrics: `data/processed/irish_shelf_june_sst_series.csv`, `sst_warming_context_metrics.json`, year features `sst_warming_year_features.csv`.
 
-1. **Monthly / annual Climate Statements (narrative PDFs)** — met.ie climate-change / climate-statements pages are JS/CMS-heavy; PDF URL patterns 404’d from this box. Useful for paper prose (e.g. “June 2023 was …”). Export from [met.ie climate pages](https://www.met.ie/climate/) or press archive when needed.
-2. **Shannon Airport (`dly518`)** — long wind + `sun`, **no `glorad`** in open daily CSV. Optional if a mid-west wind series is wanted.
-3. **Knock Airport (`dly4935`)** — `sun` + wind, no `glorad`.
-4. **Roundstone (`dly1725`)** — Connemara-local but **rain-only**; open CSV already available if precip narrative needed.
-5. **Homogenised long series / special radiation networks** — anything behind Met Éireann request forms or non-clidata portals.
-6. **Hourly Belmullet** is already downloaded (`belmullet_hourly_hly2375.csv`, ~52 MB, gitignored under `data/raw/`); re-download via the ingest script if wiped.
+### Ablation vs strong 9-feature Dinophysis baseline
 
-Prefer **clidata / data.gov.ie** over anything needing credentials.
+- Baseline: `STRONG_OISST` in `src/pa_marine/features.py`; reference `data/processed/metrics_dino_strong.json`.  
+- Extras: Met radiation/sun/wdsp (+lags), Connemara river Q (`rivers_week_primary_Q.csv`), June SST warming proxies.  
+- **Honest verdict: no national lift.** Best LightGBM test calibrated PR-AUC remains **strong** (~0.295); Met / river / warming configs are flat or worse on test (val can look better — treat as overfitting / spatial mismatch).  
+- Report: `data/processed/climate_drivers_ablation_report.md`  
+- Metrics: `data/processed/climate_drivers_ablation_metrics.json`
 
-## How to re-run
+---
+
+## 2. MÉRA + TRANSLATE (paper / demo story only)
+
+**Not ingested** into the HAB feature store (no new credentials; full archives are heavy GRIB / projection stacks).
+
+| Resource | URL | Note |
+| --- | --- | --- |
+| MÉRA landing | https://www.met.ie/climate/available-data/mera | Systematic Irish climate reanalysis |
+| MÉRA data list | https://www.met.ie/climate/mera-data-list/ | Parameter catalogue |
+| MÉRA sample GRIBs | https://www.met.ie/downloads/MERA_PRODYEAR_2015_06_*.grb | Tiny samples only |
+| MÉRA parameter PDF | https://www.met.ie/cms/assets/uploads/2017/10/MERA-available-parameters.pdf | |
+| MÉRA download guide PDF | https://www.met.ie/cms/assets/uploads/2017/10/meraDataForDownload.pdf | Access workflow — do not invent credentials |
+| TRANSLATE science | https://www.met.ie/science/translate | Standardised future climate projections for Ireland |
+| TRANSLATE portal | https://www.met.ie/translate2 | Decision-maker climate services |
+
+Use for narrative (“Ireland’s reanalysis / standardised projections exist”) — not for week-scale Dinophysis joins in this package.
+
+---
+
+## 3. What Garry might still export manually (if blocked / incomplete)
+
+Open clidata + Agmet cover most operational needs. **Already on disk for HAB week joins:** clidata daily (and Belmullet hourly) for **Mace Head + Belmullet** — use those, not the 1991–2020 normals grids. Manual / browser export still useful when:
+
+1. **Mace Head sunshine** — blank on Garry monthly + open `mly275`. Prefer **Belmullet daily `sun`/`glorad`** (`dly2375`) or Belmullet monthly `sun` (`mly2375`, 701 non-null months). Optional: Met Climate Statement PDFs for narrative months.  
+2. **Climate Statements** (monthly/annual narrative PDFs) — https://www.met.ie/climate/climate-change and monthly data hub https://www.met.ie/climate/available-data/monthly-data — not open bulk CSV.  
+3. **Local Connemara precip** — Roundstone `dly1725` is open but rain-only.  
+4. **Airport sun without glorad** — Shannon `dly518`, Knock `dly4935` (documented candidates; not required for west panel).  
+5. **Full MÉRA fields / TRANSLATE grids** — follow Met Éireann access workflow on pages above (no credentials in-repo).  
+6. **Updated Island of Ireland Temperature CSV** — re-download from temperature page when Met publishes post-2024 provisional updates.
+
+Ingest provenance JSON: `data/raw/met_eireann/sources_climate_drivers.json`  
+Ingest summary: `data/processed/met_climate_drivers_ingest_summary.json`
+
+---
+
+## 4. How to re-run
 
 ```bash
-source .venv/bin/activate
-python scripts/ingest_met_climate_drivers.py
-python scripts/build_sst_warming_context.py
-python scripts/climate_drivers_ablation.py
+cd /workspace/pa-marine-model
+.venv/bin/python scripts/ingest_met_climate_drivers.py
+.venv/bin/python scripts/build_sst_warming_context.py
+.venv/bin/python scripts/climate_drivers_ablation.py
+# optional — needs local normals_9120/*.txt grids
+.venv/bin/python scripts/extract_connemara_normals_9120.py
 ```
 
-Do not use Cloud Agents for this track. Large raw CSVs/parquets stay gitignored; commit scripts, docs, and whitelisted metrics/reports only.
-
-## data.gov.ie Monthly Agmet + external mirror (2026-09-02, while Garry away)
-
-Pulled **without login** into `data/external/met_eireann/`. Agmet endpoints are JSON from `prodapi.met.ie` (data.gov.ie “Monthly weather …” packages); tidy CSVs derived locally. Classic long monthly/daily CSVs from open `clidata.met.ie` (no form required).
-
-### Files landed
-
-| File | Source | Coverage | Solar / radiation |
-| --- | --- | --- | --- |
-| `monthly_agmet_mace_head.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Mace Head](https://data.gov.ie/dataset/monthly-weather-mace-head) → `https://prodapi.met.ie/monthly-data/Mace%20Head` | 2023-01 → 2026-08 (`up_to` 31-08-2026); LTA sidecar | **Yes** — `solar_radiation` / `global_solar_radiation` (monthly total **J/cm²**; matches sum of daily `glorad`) |
-| `monthly_agmet_newport.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Newport](https://data.gov.ie/dataset/monthly-weather-newport) → `…/Newport%20Furnace` | 2023-01 → 2026-08 | **Yes** (same field) |
-| `monthly_agmet_belmullet.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Belmullet](https://data.gov.ie/dataset/monthly-weather-belmullet) → `…/Belmullet` | 2023-01 → 2026-08 | **Yes** |
-| `monthly_agmet_malin_head.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Malin head](https://data.gov.ie/dataset/monthly-weather-malin-head) → `…/Malin%20Head` | 2023-01 → 2026-08 | **Yes** |
-| `daily_mace_head_dly275.csv` | Open clidata `dly275` ([Mace Head Daily Data](https://data.gov.ie/dataset/mace-head-daily-data)) | **2003-08-14 → 2026-07-31** (8336 days) | **Yes** — `glorad` Global Radiation (J/cm²); ~98.5% filled |
-| `monthly_classic_mace_head_mly275.csv` (+ pre-existing `mace_head_monthly.csv` same series) | clidata `mly275` | 2003-11 → 2026-07 | **No usable sun** — `sun` column blank for all months (classic monthly) |
-| `monthly_classic_malin_head_mly1575.csv` | clidata `mly1575` / [Malin head Monthly Data](https://data.gov.ie/dataset/malin-head-monthly-data) | 1955-05 → 2026-07 | Sunshine hours `sun` (not global radiation); some blanks in recent months |
-
-Agmet also includes rain, mean temp, soil 10 cm (empty at Mace Head in this extract), PE, evaporation, degree-days below 15.5 °C. Metadata on data.gov.ie: “Current plus previous 3 years” — matches the short Agmet window; **use daily `glorad` / classic long CSVs for multi-decade solar**.
-
-### Historical Data page vs scriptable downloads
-
-- UI: https://www.met.ie/climate/available-data/historical-data embeds a human iframe (`clidata.met.ie/cli/climate_data/showdata.php`) — form/map picker.
-- **Scriptable without the form:** direct open CSVs `https://clidata.met.ie/cli/climate_data/webdata/{dly\|hly\|mly}{STN}.csv` (Mace Head daily = `dly275.csv`). Daily Mace Head **was pulled** this way; no Garry login needed.
-- Blocker for form-only extras: none for this pull. Remaining manual items stay under “Manual Met Éireann leftovers” above (Climate Statement PDFs, etc.).
-
-**Attribution:** Copyright Met Éireann · Source www.met.ie · CC BY 4.0.
+Large raw CSVs / parquets / `normals_9120` grids stay gitignored; small metrics/markdown/figures / Connemara normals extract / normals Readmes are whitelisted in `.gitignore`.
