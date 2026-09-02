@@ -53,4 +53,4 @@ Climate extras **do not beat** strong nationally (best delta=+0.0000 at strong).
 | `strong_climate_all` | 21 | 0.5744 | 0.2852 | -0.0101 |
 
 Full JSON: `data/processed/climate_drivers_ablation_metrics.json`.
-Elapsed: 3.8 s.
+Elapsed: 4.4 s.

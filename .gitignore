@@ -81,7 +81,7 @@ data/models/
 !data/processed/connemara_farms_scores.html
 !data/processed/connemara_farms_metrics.json
 
-# Climate Drivers whitelist
+# Climate Drivers whitelist (small metrics/md/csv; large dailies stay ignored via data/processed/*)
 !data/processed/met_climate_drivers_ingest_summary.json
 !data/processed/climate_drivers_ablation_metrics.json
 !data/processed/climate_drivers_ablation_report.md
@@ -89,14 +89,34 @@ data/models/
 !data/processed/sst_warming_year_features.csv
 !data/processed/irish_shelf_june_sst_series.csv
 !data/processed/met_west_climate_week.csv
-!data/processed/belmullet_met_daily.csv
+!data/processed/island_of_ireland_temperature_annual.csv
+!data/processed/iip_composite_1711_2016.csv
+!data/processed/iip_national_1850_2010_monthly.csv
+!data/processed/iip_IOI_1711_SERIES.csv
+!data/processed/mace_head_garry_monthly.csv
+!data/processed/mace_head_garry_monthly_lag_features.csv
 !data/processed/belmullet_met_week.csv
 !data/processed/belmullet_met_monthly.csv
-!data/processed/valentia_met_daily.csv
+!data/processed/belmullet_agmet_monthly.csv
+!data/processed/mace_head_met_week.csv
+!data/processed/mace_head_met_monthly.csv
+!data/processed/mace_head_agmet_monthly.csv
+!data/processed/newport_met_week.csv
+!data/processed/newport_met_monthly.csv
 !data/processed/valentia_met_week.csv
 !data/processed/valentia_met_monthly.csv
-!data/processed/malin_head_met_daily.csv
+!data/processed/valentia_agmet_monthly.csv
 !data/processed/malin_head_met_week.csv
 !data/processed/malin_head_met_monthly.csv
+!data/processed/malin_head_agmet_monthly.csv
+!data/processed/belmullet_met_daily.csv
+!data/processed/valentia_met_daily.csv
+!data/processed/malin_head_met_daily.csv
 !data/processed/newport_met_daily.csv
-!data/processed/newport_met_week.csv
+!data/processed/connemara_normals_9120_extract.csv
+
+# Climate Drivers — external Met Éireann (small CSV/JSON may be committed; ignore bulky grids)
+# Tracked: Garry mace monthly, Agmet JSON/CSV, daily_mace_head_dly275.csv, monthly_classic_*.csv
+data/external/met_eireann/normals_9120/*
+!data/external/met_eireann/normals_9120/Readme*.txt
+data/external/met_eireann/historical/
