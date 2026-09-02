@@ -117,8 +117,9 @@ data/models/
 # Climate Drivers — external Met Éireann drops
 # Small CSV/JSON under data/external/met_eireann/ may be committed (Garry mace monthly,
 # Agmet JSON/CSV, classic monthly, daily Mace).
-# 1991–2020 1 km normals: ignore large grids + zips; keep Readmes + processed extract
-data/external/met_eireann/normals_9120/*
-!data/external/met_eireann/normals_9120/Readme*.txt
-data/external/met_eireann/historical/
+# Normals 9120: commit zips + Readmes; ignore expanded IE_*.txt (~25MB).
+data/external/met_eireann/normals_9120/IE_*.txt
+# Historical CSVs stay box-local (gitignored); whitelist sources.json only.
+data/external/met_eireann/historical/*
+!data/external/met_eireann/historical/sources.json
 !data/processed/connemara_normals_9120_extract.csv

@@ -1,0 +1,41 @@
+{
+  "note": "Garry Historical Data drops \u2014 box-local (gitignored CSVs). Prefer Belmullet daily as west-coast radiation/sunshine truth.",
+  "catalogue": "https://www.met.ie/climate/available-data",
+  "files": {
+    "belmullet_daily_dly2375.csv": {
+      "station": "Belmullet",
+      "station_no": 2375,
+      "product": "daily",
+      "range": "1956-09-17 \u2192 2026-07-31",
+      "fields_highlight": [
+        "glorad",
+        "sun",
+        "wdsp",
+        "rain",
+        "temps"
+      ],
+      "role": "west_coast_radiation_sunshine_truth",
+      "md5_identical_to": "data/raw/met_eireann/belmullet_daily_dly2375.csv",
+      "week_panel": "Already folded into data/processed/met_west_climate_week.csv (met_sun / met_glorad from Belmullet)"
+    },
+    "mace_head_hourly_hly275.csv": {
+      "station": "Mace Head",
+      "station_no": 275,
+      "product": "hourly",
+      "range": "2003-08 \u2192 2026-08 (~201k rows)",
+      "fields_highlight": [
+        "rain",
+        "temp",
+        "wdsp",
+        "wddir",
+        "msl"
+      ],
+      "no_fields": [
+        "sun",
+        "glorad"
+      ],
+      "role": "subdaily_wind_pressure_case_studies_e.g_june_2023",
+      "also_at": "data/raw/met_eireann/mace_head_hourly_hly275.csv"
+    }
+  }
+}

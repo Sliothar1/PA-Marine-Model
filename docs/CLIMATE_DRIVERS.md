@@ -45,6 +45,18 @@ data.gov.ie mirrors (Belmullet):
 - Folded to: `data/processed/mace_head_garry_monthly.{csv,parquet}` + lag features `data/processed/mace_head_garry_monthly_lag_features.csv` (`meant`/`rain`/`wdsp` lag1m + meant roll3m).  
 - Same blank-sun story on open clidata `mly275.csv`.
 
+
+### Historical Data gold (Garry drop — box-local)
+
+CSVs live under `data/external/met_eireann/historical/` (**gitignored**; keep on the shared box). Manifest: `historical/sources.json` (committed).
+
+| File | Use |
+| --- | --- |
+| `belmullet_daily_dly2375.csv` | **Prefer as west-coast radiation/sunshine truth** (`glorad` + `sun`). Range 1956-09-17→2026-07-31; sun/glorad essentially complete from ~2000 onward. **MD5-identical** to `data/raw/met_eireann/belmullet_daily_dly2375.csv` (clidata ingest) — `met_west_climate_week` already uses Belmullet for `met_sun` / glorad fill. No re-download needed. |
+| `mace_head_hourly_hly275.csv` | Mace Head **hourly** Aug 2003→Aug 2026 (~201k rows): rain / temp / `wdsp` / `wddir` / `msl`. **No sun/glorad.** Use for **sub-daily wind/pressure case studies** (e.g. June 2023), not week-panel radiation. Also at `data/raw/met_eireann/mace_head_hourly_hly275.csv`. |
+
+National Dinophysis ablation was **not** re-run for this drop (Belmullet already in the week panel; hourly is case-study scale).
+
 ### Recent Agmet monthly solar (prodapi — ~3 years)
 
 Open JSON (no credentials):
@@ -68,7 +80,7 @@ Processed: `data/processed/{slug}_agmet_monthly.{csv,parquet}`; raw JSON under `
 
 Flat CSV + LTA companions sit beside each JSON. Ingest should **merge with these files** when present rather than hitting prodapi again.
 
-**Also in `data/external/met_eireann/`:** `daily_mace_head_dly275.csv` (~743 KB), `monthly_classic_mace_head_mly275.csv`, `monthly_classic_malin_head_mly1575.csv` (~45 KB). See **1991–2020 normals** section below for `normals_9120/` (grids gitignored; Connemara extract committed).
+**Also in `data/external/met_eireann/`:** `daily_mace_head_dly275.csv` (~743 KB), `monthly_classic_mace_head_mly275.csv`, `monthly_classic_malin_head_mly1575.csv` (~45 KB). See **1991–2020 normals** section below for `normals_9120/` (IE_*.txt gitignored; **zips + Readmes + extract** committed).
 
 **Long radiation/sunshine for HAB weeks → use Belmullet daily `glorad`/`sun` (clidata), not Agmet alone.**
 
