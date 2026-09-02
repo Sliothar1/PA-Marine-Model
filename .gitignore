@@ -123,3 +123,16 @@ data/external/met_eireann/normals_9120/IE_*.txt
 data/external/met_eireann/historical/*
 !data/external/met_eireann/historical/sources.json
 !data/processed/connemara_normals_9120_extract.csv
+
+# Macro climate indices (NAO/EA/AMO) — small processed + docs; large raw ignored
+data/external/climate_indices/raw/
+!data/external/climate_indices/sources.json
+!data/external/climate_indices/processed/
+!data/external/climate_indices/processed/*.csv
+data/external/climate_indices/processed/nao_daily.csv
+data/external/climate_indices/processed/*.parquet
+!data/processed/climate_indices_week.csv
+!data/processed/climate_indices_monthly.csv
+!data/processed/climate_indices_ingest_summary.json
+!data/processed/macro_climate_ablation_metrics.json
+!data/processed/macro_climate_ablation_report.md

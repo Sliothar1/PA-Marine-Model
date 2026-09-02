@@ -1,0 +1,68 @@
+{
+  "ranges": {
+    "nao_monthly": [
+      "1950-01-01",
+      "2026-07-01",
+      919
+    ],
+    "nao_daily": [
+      "1950-01-01",
+      "2026-08-30",
+      28001
+    ],
+    "ea_monthly": [
+      "1950-01-01",
+      "2026-07-01",
+      919
+    ],
+    "amo_monthly": [
+      "1854-01-01",
+      "2026-07-01",
+      2071
+    ],
+    "week_helper": [
+      "1949-W52",
+      "2026-W35",
+      4001
+    ]
+  },
+  "outputs": {
+    "nao_monthly": "data/external/climate_indices/processed/nao_monthly.csv",
+    "nao_daily": "data/external/climate_indices/processed/nao_daily.csv",
+    "ea_monthly": "data/external/climate_indices/processed/ea_monthly.csv",
+    "amo_monthly": "data/external/climate_indices/processed/amo_monthly.csv",
+    "monthly_bundle": "data/external/climate_indices/processed/climate_indices_monthly.csv",
+    "week_helper": "data/external/climate_indices/processed/climate_indices_week.csv",
+    "week_helper_proc": "data/processed/climate_indices_week.csv",
+    "monthly_proc": "data/processed/climate_indices_monthly.csv"
+  },
+  "columns_week": [
+    "iso_year",
+    "iso_week",
+    "week_start",
+    "year",
+    "month",
+    "nao",
+    "ea",
+    "amo",
+    "nao_lag1m",
+    "nao_lag2m",
+    "nao_lag3m",
+    "nao_roll3m",
+    "ea_lag1m",
+    "ea_lag2m",
+    "ea_lag3m",
+    "ea_roll3m",
+    "amo_lag1m",
+    "amo_lag2m",
+    "amo_lag3m",
+    "amo_roll3m",
+    "nao_daily_mean",
+    "nao_daily_min",
+    "nao_daily_max",
+    "nao_daily_n",
+    "nao_daily_mean_lag1w",
+    "nao_daily_mean_roll4w"
+  ],
+  "generated_utc": "2026-09-02T11:49:03.398807+00:00"
+}

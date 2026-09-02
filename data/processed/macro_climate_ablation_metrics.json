@@ -1,0 +1,612 @@
+{
+  "_meta": {
+    "target": "y_dinophysis_nowcast",
+    "coverage": {
+      "nao": 0.9959565184683669,
+      "nao_lag1m": 0.9959565184683669,
+      "nao_lag2m": 0.9959565184683669,
+      "nao_daily_mean": 1.0,
+      "nao_daily_mean_lag1w": 1.0,
+      "ea": 0.9959565184683669,
+      "ea_lag1m": 0.9959565184683669,
+      "ea_lag2m": 0.9959565184683669,
+      "amo": 0.9959565184683669,
+      "amo_lag1m": 0.9959565184683669,
+      "amo_lag3m": 0.9959565184683669,
+      "amo_roll3m": 0.9959565184683669
+    },
+    "elapsed_s": 3.1
+  },
+  "runs": {
+    "strong": {
+      "label": "strong",
+      "n_features": 9,
+      "features": [
+        "latitude",
+        "longitude",
+        "sst",
+        "sst_lag0d",
+        "sst_lag21d",
+        "sst_roll30d",
+        "sst_roll7d",
+        "woy_cos",
+        "woy_sin"
+      ],
+      "n_train": 29683,
+      "n_val": 9189,
+      "n_test": 14270,
+      "lightgbm_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.554455186319384,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.37655577603416174,
+        "brier": 0.0987601916085533,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.21723610492820877
+      },
+      "lightgbm_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.5427833011398608,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.36022348088779194,
+        "brier": 0.06422593840602604,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.20840442057283914,
+        "calibration_method": "isotonic"
+      },
+      "lightgbm_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.3097342448512786,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.15497645401832105,
+        "brier": 0.11531510891760136,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -1.204690390865526
+      },
+      "lightgbm_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.2952993265675829,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.13730522269464598,
+        "brier": 0.05218436118958604,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": 0.002295876506991923,
+        "calibration_method": "isotonic"
+      },
+      "logreg_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.4123947859250243,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.17777277293174903,
+        "brier": 0.144482247402013,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.7807681940915618
+      },
+      "logreg_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.4032721032567766,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.16500753890375444,
+        "brier": 0.07458390009876646,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.08074078666819406,
+        "calibration_method": "isotonic"
+      },
+      "logreg_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.2390684439787907,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.06846735924215155,
+        "brier": 0.1721302601630511,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -2.2909298193511654
+      },
+      "logreg_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.22922569324862024,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.05641786082479144,
+        "brier": 0.05255326391141043,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.0047571132842376684,
+        "calibration_method": "isotonic"
+      }
+    },
+    "strong_nao_ea": {
+      "label": "strong_nao_ea",
+      "n_features": 17,
+      "features": [
+        "latitude",
+        "longitude",
+        "sst",
+        "sst_lag0d",
+        "sst_lag21d",
+        "sst_roll30d",
+        "sst_roll7d",
+        "woy_cos",
+        "woy_sin",
+        "nao",
+        "nao_lag1m",
+        "nao_lag2m",
+        "nao_daily_mean",
+        "nao_daily_mean_lag1w",
+        "ea",
+        "ea_lag1m",
+        "ea_lag2m"
+      ],
+      "n_train": 29683,
+      "n_val": 9189,
+      "n_test": 14270,
+      "lightgbm_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.5615693347836583,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.3865104980560562,
+        "brier": 0.07860462994788193,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.03118460962163161
+      },
+      "lightgbm_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.5510858184601678,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.3718410697560403,
+        "brier": 0.06407937521861287,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.21021083670536123,
+        "calibration_method": "isotonic"
+      },
+      "lightgbm_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.3053818162369005,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.14964820959373495,
+        "brier": 0.08215527724457497,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.5707130834818208
+      },
+      "lightgbm_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.29048982781868954,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.13141743287330582,
+        "brier": 0.05153669722999029,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": 0.014678456046078758,
+        "calibration_method": "isotonic"
+      },
+      "logreg_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.42168885759206604,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.1907778290339065,
+        "brier": 0.14381336613277262,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.7725241190490924
+      },
+      "logreg_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.41309255395969535,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.1787491493534382,
+        "brier": 0.07444708416668375,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.08242706622626317,
+        "calibration_method": "isotonic"
+      },
+      "logreg_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.2445310200555066,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.07515464652550606,
+        "brier": 0.156644361650198,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -1.994857500938823
+      },
+      "logreg_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.22832234194915255,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.055311977891081526,
+        "brier": 0.04871932520031731,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": 0.06854332336152924,
+        "calibration_method": "isotonic"
+      }
+    },
+    "strong_amo": {
+      "label": "strong_amo",
+      "n_features": 13,
+      "features": [
+        "latitude",
+        "longitude",
+        "sst",
+        "sst_lag0d",
+        "sst_lag21d",
+        "sst_roll30d",
+        "sst_roll7d",
+        "woy_cos",
+        "woy_sin",
+        "amo",
+        "amo_lag1m",
+        "amo_lag3m",
+        "amo_roll3m"
+      ],
+      "n_train": 29683,
+      "n_val": 9189,
+      "n_test": 14270,
+      "lightgbm_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.5466564455127625,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.36564311414067113,
+        "brier": 0.08446499922769846,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.04104543529240634
+      },
+      "lightgbm_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.5381289022161988,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.3537106497743094,
+        "brier": 0.06573592975546252,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.18979352119398285,
+        "calibration_method": "isotonic"
+      },
+      "lightgbm_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.2685657678115099,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.1045779919892793,
+        "brier": 0.08021293409728314,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.533577747854139
+      },
+      "lightgbm_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.25722587625635795,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.09069569332169203,
+        "brier": 0.052163303176017674,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": 0.0026984811665258235,
+        "calibration_method": "isotonic"
+      },
+      "logreg_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.4255475845587587,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.19617728822494143,
+        "brier": 0.14299022868094774,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.7623788104043785
+      },
+      "logreg_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.4091511283707605,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.17323397121161824,
+        "brier": 0.07384313299027327,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.08987086686665224,
+        "calibration_method": "isotonic"
+      },
+      "logreg_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.22979092834452855,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.057109821799959354,
+        "brier": 0.17781953206887918,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -2.399702062811153
+      },
+      "logreg_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.21827549967364412,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.04301263054226282,
+        "brier": 0.05922901019120483,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.13238959625258606,
+        "calibration_method": "isotonic"
+      }
+    },
+    "strong_nao_ea_amo": {
+      "label": "strong_nao_ea_amo",
+      "n_features": 21,
+      "features": [
+        "latitude",
+        "longitude",
+        "sst",
+        "sst_lag0d",
+        "sst_lag21d",
+        "sst_roll30d",
+        "sst_roll7d",
+        "woy_cos",
+        "woy_sin",
+        "nao",
+        "nao_lag1m",
+        "nao_lag2m",
+        "nao_daily_mean",
+        "nao_daily_mean_lag1w",
+        "ea",
+        "ea_lag1m",
+        "ea_lag2m",
+        "amo",
+        "amo_lag1m",
+        "amo_lag3m",
+        "amo_roll3m"
+      ],
+      "n_train": 29683,
+      "n_val": 9189,
+      "n_test": 14270,
+      "lightgbm_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.5589284887601389,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.38281520153549886,
+        "brier": 0.07729240926186273,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.04735795204473292
+      },
+      "lightgbm_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.5487298477804649,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.36854439506251196,
+        "brier": 0.0645672775243798,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.20419735807005057,
+        "calibration_method": "isotonic"
+      },
+      "lightgbm_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.2829745648691211,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.12221724570009049,
+        "brier": 0.07220709910061207,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.3805155198972825
+      },
+      "lightgbm_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.2710567203248896,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.10762741680867302,
+        "brier": 0.04984142302601682,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": 0.0470901216332239,
+        "calibration_method": "isotonic"
+      },
+      "logreg_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.4181856329494076,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.18587581895173813,
+        "brier": 0.14443762200070598,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.7802181784548659
+      },
+      "logreg_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.4069479292074422,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": 0.17015106742631733,
+        "brier": 0.07409802252602964,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": 0.08672931012564478,
+        "calibration_method": "isotonic"
+      },
+      "logreg_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.22482672114407617,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.05103263784548338,
+        "brier": 0.1745831731600415,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -2.3378266550291174
+      },
+      "logreg_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.21116148722008227,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": 0.03430365434747614,
+        "brier": 0.05683512349485697,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.08662127460073576,
+        "calibration_method": "isotonic"
+      }
+    },
+    "nao_ea_only": {
+      "label": "nao_ea_only",
+      "n_features": 8,
+      "features": [
+        "nao",
+        "nao_lag1m",
+        "nao_lag2m",
+        "nao_daily_mean",
+        "nao_daily_mean_lag1w",
+        "ea",
+        "ea_lag1m",
+        "ea_lag2m"
+      ],
+      "n_train": 29683,
+      "n_val": 9189,
+      "n_test": 14270,
+      "lightgbm_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.15413555171236776,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": -0.1836055282219027,
+        "brier": 0.1276110847702625,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.5728282543952143
+      },
+      "lightgbm_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.17470737837778064,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": -0.15481967746756803,
+        "brier": 0.0906451234452197,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.11721651402344979,
+        "calibration_method": "isotonic"
+      },
+      "lightgbm_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.05732052982921382,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": -0.15402849216562883,
+        "brier": 0.10172120191061498,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.9447907434217744
+      },
+      "lightgbm_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.05576754514536861,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": -0.1559296564847473,
+        "brier": 0.05572135237821325,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.06532726983816306,
+        "calibration_method": "isotonic"
+      },
+      "logreg_val_raw": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.2576513283414407,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": -0.03875744325463925,
+        "brier": 0.24476572722695292,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -2.0167790845380775
+      },
+      "logreg_val_cal": {
+        "n": 9189,
+        "prevalence": 0.10730220916312982,
+        "pr_auc": 0.2544682326502635,
+        "pr_auc_clim": 0.28534935996932137,
+        "pr_auc_skill": -0.0432115016614722,
+        "brier": 0.08478199741365508,
+        "brier_clim": 0.08113478659456792,
+        "brier_skill": -0.04495249167674942,
+        "calibration_method": "isotonic"
+      },
+      "logreg_test_raw": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.05487935070755108,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": -0.15701698438384623,
+        "brier": 0.2303574809780768,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -3.4041663711149193
+      },
+      "logreg_test_cal": {
+        "n": 14270,
+        "prevalence": 0.05178696566222845,
+        "pr_auc": 0.05685749799141866,
+        "pr_auc_clim": 0.18314021138094166,
+        "pr_auc_skill": -0.15459533588133914,
+        "brier": 0.056630038696137905,
+        "brier_clim": 0.05230444573776661,
+        "brier_skill": -0.08270029243896548,
+        "calibration_method": "isotonic"
+      }
+    }
+  },
+  "headline_table": [
+    {
+      "label": "strong",
+      "n_features": 9,
+      "lgbm_val_cal_pr_auc": 0.5427833011398608,
+      "lgbm_test_cal_pr_auc": 0.2952993265675829,
+      "lgbm_test_raw_pr_auc": 0.3097342448512786,
+      "lgbm_test_cal_brier": 0.05218436118958604,
+      "delta_test_cal_vs_strong": 0.0
+    },
+    {
+      "label": "strong_nao_ea",
+      "n_features": 17,
+      "lgbm_val_cal_pr_auc": 0.5510858184601678,
+      "lgbm_test_cal_pr_auc": 0.29048982781868954,
+      "lgbm_test_raw_pr_auc": 0.3053818162369005,
+      "lgbm_test_cal_brier": 0.05153669722999029,
+      "delta_test_cal_vs_strong": -0.004809498748893359
+    },
+    {
+      "label": "strong_amo",
+      "n_features": 13,
+      "lgbm_val_cal_pr_auc": 0.5381289022161988,
+      "lgbm_test_cal_pr_auc": 0.25722587625635795,
+      "lgbm_test_raw_pr_auc": 0.2685657678115099,
+      "lgbm_test_cal_brier": 0.052163303176017674,
+      "delta_test_cal_vs_strong": -0.03807345031122494
+    },
+    {
+      "label": "strong_nao_ea_amo",
+      "n_features": 21,
+      "lgbm_val_cal_pr_auc": 0.5487298477804649,
+      "lgbm_test_cal_pr_auc": 0.2710567203248896,
+      "lgbm_test_raw_pr_auc": 0.2829745648691211,
+      "lgbm_test_cal_brier": 0.04984142302601682,
+      "delta_test_cal_vs_strong": -0.02424260624269331
+    },
+    {
+      "label": "nao_ea_only",
+      "n_features": 8,
+      "lgbm_val_cal_pr_auc": 0.17470737837778064,
+      "lgbm_test_cal_pr_auc": 0.05576754514536861,
+      "lgbm_test_raw_pr_auc": 0.05732052982921382,
+      "lgbm_test_cal_brier": 0.05572135237821325,
+      "delta_test_cal_vs_strong": -0.2395317814222143
+    }
+  ],
+  "verdict": {
+    "text": "NAO/EA/AMO lags **do not beat** strong nationally (best delta=+0.0000 at strong). Use for explanatory / Cork narrative, not as a national feature upgrade.",
+    "lift": false,
+    "best_label": "strong",
+    "delta": 0.0
+  },
+  "baseline_reference": {
+    "metrics_dino_strong_lightgbm_test_calibrated_pr_auc": 0.29326665676644725,
+    "this_run_strong_lightgbm_test_cal_pr_auc": 0.2952993265675829
+  }
+}

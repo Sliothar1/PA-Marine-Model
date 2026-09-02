@@ -205,3 +205,13 @@ cd /workspace/pa-marine-model
 ```
 
 Large raw CSVs / parquets / `normals_9120` grids stay gitignored; small metrics/markdown/figures / Connemara normals extract / normals Readmes are whitelisted in `.gitignore`.
+
+---
+
+## 5. Macro teleconnections (NAO / EA / AMO)
+
+Open CPC / NCEI indices for explanatory / Cork narrative live in **[`MACRO_CLIMATE.md`](MACRO_CLIMATE.md)**.
+
+- Ingest: `scripts/ingest_climate_indices.py` → `data/external/climate_indices/`
+- Week join: `data/processed/climate_indices_week.csv` (`iso_year`, `iso_week`)
+- Ablation: `scripts/macro_climate_ablation.py` — **no national PR-AUC lift** vs `STRONG_OISST`
