@@ -52,3 +52,80 @@ def summarise(y_true, y_prob, y_clim) -> dict:
         "brier_clim": c_br,
         "brier_skill": skill_vs_clim(m_br, c_br, False),
     }
+
+
+def _cluster_index(groups: np.ndarray) -> list[np.ndarray]:
+    """Row indices per cluster, computed once (sort-based, not one scan per cluster)."""
+    order = np.argsort(groups, kind="stable")
+    sorted_g = np.asarray(groups)[order]
+    starts = np.flatnonzero(np.r_[True, sorted_g[1:] != sorted_g[:-1]])
+    return np.split(order, starts[1:])
+
+
+def _resample_clusters(members: list[np.ndarray], rng: np.random.Generator) -> np.ndarray:
+    """Draw clusters with replacement and return the concatenated row indices."""
+    pick = rng.integers(0, len(members), size=len(members))
+    return np.concatenate([members[k] for k in pick])
+
+
+def bootstrap_summary(
+    y_true,
+    y_prob,
+    y_clim,
+    groups=None,
+    n_boot: int = 1000,
+    alpha: float = 0.05,
+    seed: int = 42,
+) -> dict:
+    """`summarise` plus percentile bootstrap CIs and P(skill > 0).
+
+    Station-weeks are not independent: rows from one station share a location, a local
+    SST series and a sampling regime, and neighbouring stations co-bloom. An i.i.d.
+    row bootstrap therefore reports intervals that are far too tight. Pass
+    `groups=location_id` to resample whole stations (cluster bootstrap), which is the
+    right unit of independence here.
+
+    `pr_auc_skill_gt0` is the bootstrap fraction of replicates in which the model beat
+    the week-of-year climatology. Treat a headline PR skill whose CI spans 0 as "not
+    distinguishable from seasonality", regardless of the point estimate.
+    """
+    y_true = np.asarray(y_true)
+    y_prob = np.asarray(y_prob, dtype=float)
+    y_clim = np.asarray(y_clim, dtype=float)
+    point = summarise(y_true, y_prob, y_clim)
+
+    n = len(y_true)
+    clustered = groups is not None
+    groups = np.arange(n) if groups is None else np.asarray(groups)
+    rng = np.random.default_rng(seed)
+    keys = ("pr_auc", "pr_auc_clim", "pr_auc_skill", "brier", "brier_clim", "brier_skill")
+    draws: dict[str, list[float]] = {k: [] for k in keys}
+    members = _cluster_index(groups)
+
+    for _ in range(n_boot):
+        idx = _resample_clusters(members, rng)
+        yt = y_true[idx]
+        if yt.min() == yt.max():
+            continue  # degenerate replicate: PR-AUC undefined
+        rep = summarise(yt, y_prob[idx], y_clim[idx])
+        for k in keys:
+            draws[k].append(rep[k])
+
+    lo_q, hi_q = 100 * alpha / 2, 100 * (1 - alpha / 2)
+    out = dict(point)
+    out["n_boot"] = n_boot
+    out["n_boot_used"] = len(draws["pr_auc"])
+    out["bootstrap_unit"] = "cluster" if clustered else "row"
+    out["n_clusters"] = len(members)
+    for k in keys:
+        v = np.asarray([x for x in draws[k] if np.isfinite(x)], dtype=float)
+        if v.size < 20:
+            out[f"{k}_ci_low"] = float("nan")
+            out[f"{k}_ci_high"] = float("nan")
+            continue
+        out[f"{k}_ci_low"] = float(np.percentile(v, lo_q))
+        out[f"{k}_ci_high"] = float(np.percentile(v, hi_q))
+    for k in ("pr_auc_skill", "brier_skill"):
+        v = np.asarray([x for x in draws[k] if np.isfinite(x)], dtype=float)
+        out[f"{k}_gt0"] = float(np.mean(v > 0)) if v.size else float("nan")
+    return out

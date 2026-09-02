@@ -101,24 +101,45 @@ def add_binary_labels(panel: pd.DataFrame, thresholds: dict[str, float]) -> pd.D
     return out
 
 
-def add_horizon_labels(panel: pd.DataFrame, tax_ids: list[str], nowcast=(0, 14), ahead=(7, 14)) -> pd.DataFrame:
-    """For each station, rolling-or of y in future windows measured in days from week_start."""
+def add_horizon_labels(
+    panel: pd.DataFrame,
+    tax_ids: list[str],
+    nowcast=(0, 14),
+    ahead=(7, 14),
+    add_coverage: bool = True,
+) -> pd.DataFrame:
+    """For each station, rolling-or of y in future windows measured in days from week_start.
+
+    Also emits `n_obs_<tax>_<horizon>`: how many *sampled* station-weeks fell inside the
+    label window. This matters because HAB sampling is irregular, so the label is an OR
+    over however many samples happen to exist in the window. A station-week whose window
+    contains three samples has three chances to be positive; one with a single sample has
+    one. Sampling effort is itself seasonal and station-specific, so it correlates with
+    the week-of-year and lat/lon features that dominate the model - part of the apparent
+    skill may be the model learning *when people sample* rather than when blooms occur.
+    Use these columns to restrict to fully-observed windows or to stratify metrics by
+    coverage before quoting a skill number.
+
+    Vectorised via searchsorted over each station's sorted week starts: O(k log k) per
+    station instead of the previous O(k^2) pairwise date-difference scan.
+    """
     out = panel.sort_values(["location_id", "week_start"]).copy()
+    windows = {"nowcast": nowcast, "ahead7": ahead}
     pieces = []
     for _, g in out.groupby("location_id", sort=False):
         g = g.copy()
-        ws = pd.to_datetime(g["week_start"], utc=True).dt.tz_localize(None)
-        ws_d = ws.dt.normalize().to_numpy()
-        for tax in tax_ids:
-            y = g[f"y_{tax}"].to_numpy()
-            n = len(g)
-            now = np.zeros(n, dtype=int)
-            a7 = np.zeros(n, dtype=int)
-            for i in range(n):
-                d = ((ws_d - ws_d[i]) / np.timedelta64(1, "D")).astype(int)
-                now[i] = int(np.any(y[(d >= nowcast[0]) & (d <= nowcast[1])]))
-                a7[i] = int(np.any(y[(d >= ahead[0]) & (d <= ahead[1])]))
-            g[f"y_{tax}_nowcast"] = now
-            g[f"y_{tax}_ahead7"] = a7
+        ws = pd.to_datetime(g["week_start"], utc=True).dt.tz_localize(None).dt.normalize()
+        # integer days since epoch, ascending (groupby preserves the outer sort)
+        d = (ws.to_numpy().astype("datetime64[D]") - np.datetime64("1970-01-01")).astype(np.int64)
+        for name, (lo, hi) in windows.items():
+            left = np.searchsorted(d, d + lo, side="left")
+            right = np.searchsorted(d, d + hi, side="right")
+            n_obs = (right - left).astype(int)
+            for tax in tax_ids:
+                y = g[f"y_{tax}"].to_numpy()
+                cs = np.concatenate([[0], np.cumsum(y)])
+                g[f"y_{tax}_{name}"] = ((cs[right] - cs[left]) > 0).astype(int)
+                if add_coverage:
+                    g[f"n_obs_{tax}_{name}"] = n_obs
         pieces.append(g)
     return pd.concat(pieces, ignore_index=True)

@@ -72,6 +72,15 @@ mhw:
   max_gap_days: 2
   percentile: 90
   climatology_doy_window: 11
+  # Event assembly order. "hobday" = duration filter then join across gaps
+  # (Hobday et al. 2016 / Oliver reference impl). "legacy" = pre-fix v1 order,
+  # which joined gaps first and over-detected MHW days by ~55% on red-noise SST.
+  event_order: hobday
+  # Fixed climatology reference period [y0, y1], inclusive. Fitting the seasonal
+  # mean/90th-percentile on the FULL local series (null) leaks evaluation-period
+  # SST into the threshold AND lets the warming trend inflate it, damping MHW
+  # frequency in the test years. Set to the training split to remove both.
+  climatology_baseline: [2003, 2018]
 
 features:
   lags_days: [0, 7, 14, 21]
