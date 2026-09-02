@@ -97,3 +97,29 @@ python scripts/climate_drivers_ablation.py
 ```
 
 Do not use Cloud Agents for this track. Large raw CSVs/parquets stay gitignored; commit scripts, docs, and whitelisted metrics/reports only.
+
+## data.gov.ie Monthly Agmet + external mirror (2026-09-02, while Garry away)
+
+Pulled **without login** into `data/external/met_eireann/`. Agmet endpoints are JSON from `prodapi.met.ie` (data.gov.ie “Monthly weather …” packages); tidy CSVs derived locally. Classic long monthly/daily CSVs from open `clidata.met.ie` (no form required).
+
+### Files landed
+
+| File | Source | Coverage | Solar / radiation |
+| --- | --- | --- | --- |
+| `monthly_agmet_mace_head.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Mace Head](https://data.gov.ie/dataset/monthly-weather-mace-head) → `https://prodapi.met.ie/monthly-data/Mace%20Head` | 2023-01 → 2026-08 (`up_to` 31-08-2026); LTA sidecar | **Yes** — `solar_radiation` / `global_solar_radiation` (monthly total **J/cm²**; matches sum of daily `glorad`) |
+| `monthly_agmet_newport.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Newport](https://data.gov.ie/dataset/monthly-weather-newport) → `…/Newport%20Furnace` | 2023-01 → 2026-08 | **Yes** (same field) |
+| `monthly_agmet_belmullet.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Belmullet](https://data.gov.ie/dataset/monthly-weather-belmullet) → `…/Belmullet` | 2023-01 → 2026-08 | **Yes** |
+| `monthly_agmet_malin_head.json` + `.csv` (+ `_LTA.csv`) | [Monthly weather Malin head](https://data.gov.ie/dataset/monthly-weather-malin-head) → `…/Malin%20Head` | 2023-01 → 2026-08 | **Yes** |
+| `daily_mace_head_dly275.csv` | Open clidata `dly275` ([Mace Head Daily Data](https://data.gov.ie/dataset/mace-head-daily-data)) | **2003-08-14 → 2026-07-31** (8336 days) | **Yes** — `glorad` Global Radiation (J/cm²); ~98.5% filled |
+| `monthly_classic_mace_head_mly275.csv` (+ pre-existing `mace_head_monthly.csv` same series) | clidata `mly275` | 2003-11 → 2026-07 | **No usable sun** — `sun` column blank for all months (classic monthly) |
+| `monthly_classic_malin_head_mly1575.csv` | clidata `mly1575` / [Malin head Monthly Data](https://data.gov.ie/dataset/malin-head-monthly-data) | 1955-05 → 2026-07 | Sunshine hours `sun` (not global radiation); some blanks in recent months |
+
+Agmet also includes rain, mean temp, soil 10 cm (empty at Mace Head in this extract), PE, evaporation, degree-days below 15.5 °C. Metadata on data.gov.ie: “Current plus previous 3 years” — matches the short Agmet window; **use daily `glorad` / classic long CSVs for multi-decade solar**.
+
+### Historical Data page vs scriptable downloads
+
+- UI: https://www.met.ie/climate/available-data/historical-data embeds a human iframe (`clidata.met.ie/cli/climate_data/showdata.php`) — form/map picker.
+- **Scriptable without the form:** direct open CSVs `https://clidata.met.ie/cli/climate_data/webdata/{dly\|hly\|mly}{STN}.csv` (Mace Head daily = `dly275.csv`). Daily Mace Head **was pulled** this way; no Garry login needed.
+- Blocker for form-only extras: none for this pull. Remaining manual items stay under “Manual Met Éireann leftovers” above (Climate Statement PDFs, etc.).
+
+**Attribution:** Copyright Met Éireann · Source www.met.ie · CC BY 4.0.

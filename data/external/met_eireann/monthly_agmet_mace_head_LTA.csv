@@ -1,0 +1,13 @@
+station,year,month,rain_mm,meant_c,soil_10cm_c,global_solar_radiation,pe_mm,evap_mm,degree_days_below_15_5
+mace-head,LTA,1,111.7,6.7,,,,,
+mace-head,LTA,2,89.4,6.6,,,,,
+mace-head,LTA,3,81.9,7.5,,,,,
+mace-head,LTA,4,66.5,9.2,,,,,
+mace-head,LTA,5,65.2,11.6,,,,,
+mace-head,LTA,6,73.2,13.7,,,,,
+mace-head,LTA,7,79.5,15.0,,,,,
+mace-head,LTA,8,88.5,15.2,,,,,
+mace-head,LTA,9,87.8,13.9,,,,,
+mace-head,LTA,10,106.0,11.4,,,,,
+mace-head,LTA,11,116.2,9.0,,,,,
+mace-head,LTA,12,116.1,7.3,,,,,

@@ -1,0 +1,13 @@
+station,year,month,rain_mm,meant_c,soil_10cm_c,global_solar_radiation,pe_mm,evap_mm,degree_days_below_15_5
+belmullet,LTA,1,134.3,6.6,5.4,6332,17.1,23.6,
+belmullet,LTA,2,109.9,6.7,5.5,12272,22.7,33.4,
+belmullet,LTA,3,90.6,7.6,6.6,25651,34.7,53.6,
+belmullet,LTA,4,74.0,9.2,9.1,41507,53.4,84.0,
+belmullet,LTA,5,70.8,11.4,12.4,55512,71.5,112.0,
+belmullet,LTA,6,73.0,13.4,15.1,54813,77.3,119.1,
+belmullet,LTA,7,85.9,14.8,16.3,50235,72.5,109.2,
+belmullet,LTA,8,100.5,15.0,15.9,43104,63.5,94.2,
+belmullet,LTA,9,102.6,13.7,13.8,29438,46.2,67.4,
+belmullet,LTA,10,131.2,11.2,10.7,17188,29.2,41.0,
+belmullet,LTA,11,137.0,8.7,8.0,7535,18.9,24.8,
+belmullet,LTA,12,131.0,7.0,6.0,4602,16.2,21.2,

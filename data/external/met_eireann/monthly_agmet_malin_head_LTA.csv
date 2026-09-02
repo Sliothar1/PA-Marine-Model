@@ -1,0 +1,13 @@
+station,year,month,rain_mm,meant_c,soil_10cm_c,global_solar_radiation,pe_mm,evap_mm,degree_days_below_15_5
+malin-head,LTA,1,118.9,6.0,5.0,5348,20.3,28.0,
+malin-head,LTA,2,95.2,6.1,4.9,11353,25.1,37.0,
+malin-head,LTA,3,80.7,6.9,5.9,23962,35.0,55.4,
+malin-head,LTA,4,63.4,8.4,8.2,39803,51.9,83.8,
+malin-head,LTA,5,65.0,10.5,11.4,54542,68.9,110.7,
+malin-head,LTA,6,73.8,12.7,14.0,53010,73.6,115.1,
+malin-head,LTA,7,86.0,14.4,15.2,49652,71.5,108.7,
+malin-head,LTA,8,97.8,14.6,14.8,41113,62.1,93.1,
+malin-head,LTA,9,94.8,13.3,12.8,27544,47.0,68.9,
+malin-head,LTA,10,110.3,10.9,10.1,15324,32.4,45.1,
+malin-head,LTA,11,121.6,8.3,7.5,6734,23.0,30.3,
+malin-head,LTA,12,130.5,6.6,5.7,3964,20.1,26.3,

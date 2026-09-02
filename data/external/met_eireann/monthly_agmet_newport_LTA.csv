@@ -1,0 +1,13 @@
+station,year,month,rain_mm,meant_c,soil_10cm_c,global_solar_radiation,pe_mm,evap_mm,degree_days_below_15_5
+Newport Furnace,LTA,1,166.4,6.3,,,,,
+Newport Furnace,LTA,2,146.6,6.4,,,,,
+Newport Furnace,LTA,3,129.0,7.5,,,,,
+Newport Furnace,LTA,4,98.0,9.5,,,,,
+Newport Furnace,LTA,5,99.2,12.0,,,,,
+Newport Furnace,LTA,6,93.5,14.2,,,,,
+Newport Furnace,LTA,7,111.6,15.5,,,,,
+Newport Furnace,LTA,8,133.0,15.5,,,,,
+Newport Furnace,LTA,9,131.8,13.8,,,,,
+Newport Furnace,LTA,10,153.9,11.1,,,,,
+Newport Furnace,LTA,11,180.9,8.5,,,,,
+Newport Furnace,LTA,12,190.7,6.7,,,,,
