@@ -437,3 +437,92 @@ python scripts/compute_mhw.py --ocean-mask --t0 2003-01-01 --t1 2026-08-16
 
 Run the diagnostic first — the station count it prints is the single most informative
 number available about why the SST features underperform.
+
+---
+
+# Addendum — fourth patch (splits, grouped CV, baseline variance)
+
+83/83 tests pass. Adds one leakage fix and two evaluation capabilities.
+
+## 10. The label window leaks across split boundaries
+
+**Severity: medium (small volume, but it is train-on-future).** `splits.py`
+
+`y_<tax>_nowcast` covers `[week_start, week_start + 14d]`, which spans three ISO weeks.
+So a train row dated 2018-12-24 has a label that ORs in observations from January 2019 —
+the validation period. Demonstrated directly: place a single exceedance on 2019-01-07,
+and a train-split row reports `y_dino_nowcast == 1` while no train-period positive exists.
+
+The last ~2 weeks of every split leak forward, at both the train/val and val/test edges.
+Volume is roughly 2 boundary weeks × 207 stations × 2 boundaries ≈ 800 rows out of 53,172
+— small, but it is genuine contamination and the standard fix is to purge rather than to
+argue about magnitude.
+
+**Fixed:** `purge_boundary_rows()` relabels affected rows `"drop"`. Wired into
+`build_panel.py`, on by default, reversible with `--no-purge`, and it prints the count it
+removed. The horizon is read from `cfg["labels"]["horizons"]["nowcast_days"]` rather than
+hard-coded.
+
+## 11. Generalisation to unseen stations was never tested
+
+**Severity: medium-high.** `diagnostics.py`
+
+The fixed temporal split asks: can we forecast next fortnight at a station we already
+monitor? It does not ask: can we forecast at a station we have never sampled? That second
+question is the one a new farm site actually poses, and it is where a model leaning on
+`latitude`/`longitude` should be expected to struggle.
+
+**Added:** `grouped_cv_metrics(..., group_col="location_id")` for leave-one-station-out
+(spatial transfer) and `group_col="iso_year"` for leave-one-year-out. The baseline is
+refitted per fold on that fold's training groups only, so a held-out station gets no
+station effect — the honest situation for an unmonitored site. Exposed as
+`run_diagnostics.py --mode grouped_cv --cv-group location_id`.
+
+Validated on synthetic panels: median LOSO PR skill −0.005 with no dynamical signal
+versus +0.594 with real signal, and 100% of folds positive in the latter case.
+
+## 12. Correction to my own claim in item 11
+
+Worth recording, because I initially got this wrong. I first asserted that
+`frac_folds_positive ≈ 0.5` would indicate no transferable signal. Testing it, the
+no-signal panel returned **93%** of folds positive at a median skill of 0.066.
+
+Diagnosing it: not spatial inference from lat/lon — shuffling the coordinates changed
+nothing. The cause is **estimator variance**. The model represents seasonality with a
+smooth `woy_sin`/`woy_cos` Fourier basis, while the baseline estimates 52 independent
+week-of-year bins. The model therefore beats the baseline by being smoother, with no
+forecasting skill whatsoever. With station effects removed entirely the figure was still
+71%.
+
+This is a live concern for the headline metric too, not just for LOSO: the pooled
+`metrics.json` climatology is the same bin-wise estimator.
+
+**Added:** a `week_smooth` baseline (circular moving average over ±2 weeks), also used for
+the seasonal term inside `station_week`. That roughly halved the no-signal LOSO skill
+(0.066 → 0.034) but did not eliminate it.
+
+**So the LOSO null is not zero, and I have not established what it is for the real
+panel.** The docstring and the generated report now say this explicitly rather than
+implying a zero reference. The right procedure is to run `--mode grouped_cv` on permuted
+labels and compare against the observed value. I did not build that combined run because
+LOSO × permutations is expensive; the two modes exist separately and can be composed.
+
+I would rather hand over a tool with a documented limitation than one with a tidy claim
+that does not hold.
+
+## Smaller items from the earlier list — still not fixed
+
+Deliberately left alone: they are real but cosmetic next to the above, and each touches a
+file another agent may be editing.
+
+- `features.join_week_panel` selects columns with `c.endswith("d")`, which matches
+  `location_id`. Harmless because `feature_columns` skips it, but it is the same
+  naïve-suffix bug the README says was fixed one function away.
+- `evaluate.py` discards the return of `fit_predict(...)`, so it predicts over the whole
+  training set for nothing.
+- `evaluate.py` masks with `notna()` after `.astype(int)`, which cannot produce NaN —
+  every such mask is a no-op implying a missing-label guard that is not there.
+- `requirements.txt` omits `pyproj`, so anyone following it instead of the README gets 6
+  test failures.
+- Leap-year `dayofyear` shifts the DOY climatology by one day after 28 Feb. I checked
+  this and it is genuinely negligible at an 11-day window — not worth changing.

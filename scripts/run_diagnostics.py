@@ -33,7 +33,9 @@ from pa_marine.diagnostics import (
     baseline_probs,
     control_groups,
     coverage_strata_metrics,
+    grouped_cv_metrics,
     permute_within_groups,
+    summarise_grouped_cv,
 )
 from pa_marine.features import select_feature_mode
 from pa_marine.metrics import bootstrap_summary, summarise
@@ -50,11 +52,14 @@ def _fit_and_score(df, feats, target, est_name, calibration="auto", y_override=N
     """Fit on train, calibrate on val, return (test frame, calibrated test probs)."""
     y = df[target].astype(int).to_numpy() if y_override is None else np.asarray(y_override)
     # build the working frame in one shot; assign() on a wide joined panel refragments it
-    d = pd.concat([df[feats + ["split", target]].reset_index(drop=True),
-                   pd.Series(y, name="_y")], axis=1)
-    for c in ("location_id", "iso_week"):
-        if c in df.columns and c not in d.columns:
-            d[c] = df[c].to_numpy()
+    # carry the columns downstream consumers need: cluster/baseline keys and the
+    # n_obs_* sampling-coverage columns used by the coverage report.
+    keep = list(dict.fromkeys(
+        feats + ["split", target, "location_id", "iso_week"]
+        + [c for c in df.columns if c.startswith("n_obs_")]
+    ))
+    keep = [c for c in keep if c in df.columns]
+    d = pd.concat([df[keep].reset_index(drop=True), pd.Series(y, name="_y")], axis=1)
     tr, va, te = (d[d["split"] == s] for s in ("train", "val", "test"))
     for name, part in (("train", tr), ("test", te)):
         if part.empty:
@@ -133,6 +138,23 @@ def run_coverage(df, feats, target, est_name, baseline, n_boot, cluster):
     return {"column": col, "strata": tab.to_dict(orient="records")}
 
 
+def run_grouped_cv(df, feats, target, est_name, baseline, group_col, n_folds, seed):
+    def fp(Xtr, ytr, Xte):
+        est = make_estimators()[est_name]
+        est.fit(Xtr, ytr)
+        return _probs(est, Xte)
+
+    tab = grouped_cv_metrics(
+        df, feats, target, fp, group_col=group_col,
+        baseline=baseline, n_folds=n_folds, seed=seed,
+    )
+    return {
+        "group_col": group_col,
+        "summary": summarise_grouped_cv(tab, group_col),
+        "folds": tab.to_dict(orient="records"),
+    }
+
+
 def _fmt(v, nd=3):
     return "n/a" if v is None or (isinstance(v, float) and not np.isfinite(v)) else f"{v:.{nd}f}"
 
@@ -193,6 +215,33 @@ def report(res, args) -> str:
             )
             L += ["", f"Real PR skill {_fmt(real)} vs permuted p95 {_fmt(p95)}: {verdict}."]
 
+    if "grouped_cv" in res:
+        g = res["grouped_cv"]
+        s = g["summary"]
+        L += [
+            "",
+            f"## Generalisation to unseen `{g['group_col']}`",
+            "",
+            "The fixed temporal split asks whether we can forecast at a station we "
+            "already monitor. Holding out whole stations asks whether we can forecast "
+            "at one we have never sampled - the question a new farm site poses. The "
+            "model receives lat/lon, so in-sample station identity may be carrying the "
+            "skill.",
+            "",
+            f"- folds scored: **{s.get('n_folds_scored')}** of {s.get('n_folds_total')}",
+            f"- median PR skill: **{_fmt(s.get('pr_auc_skill_median'))}** "
+            f"(IQR {_fmt(s.get('pr_auc_skill_q25'))} to {_fmt(s.get('pr_auc_skill_q75'))})",
+            f"- folds with positive skill: **{_fmt(s.get('frac_folds_positive'), 2)}**",
+            "",
+            "**The null here is not zero.** A held-out group has no station effect, "
+            "so the baseline degenerates to week-of-year, and the model's smooth "
+            "Fourier seasonality beats 52 independent week bins on estimator "
+            "variance alone. On synthetic panels with no dynamical signal this "
+            "still produced 86-93% of folds positive at a median skill of 0.03-0.07. "
+            "Treat these numbers as comparable only against a permuted-label run of "
+            "the same configuration, not against zero.",
+        ]
+
     if "coverage" in res:
         L += ["", "## 3. Skill by label-window sampling coverage", ""]
         if "skipped" in res["coverage"]:
@@ -231,8 +280,15 @@ def main():
     p.add_argument("--permutation-repeats", type=int, default=20)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument(
-        "--mode", default="all", choices=["all", "baselines", "permutation", "coverage"]
+        "--mode", default="all",
+        choices=["all", "baselines", "permutation", "coverage", "grouped_cv"],
     )
+    p.add_argument(
+        "--cv-group", default="location_id",
+        help="Group to hold out: location_id (leave-one-station-out, spatial "
+        "transfer) or iso_year (leave-one-year-out, temporal transfer).",
+    )
+    p.add_argument("--cv-folds", type=int, default=None, help="Cap folds (default: all groups).")
     p.add_argument("--out-json", default="data/processed/diagnostics.json")
     p.add_argument("--out-md", default="data/processed/diagnostics_report.md")
     args = p.parse_args()
@@ -269,6 +325,11 @@ def main():
         res["permutation"] = run_permutation(
             df, feats, args.target, est_name, args.baseline,
             args.permutation_repeats, args.seed,
+        )
+    if args.mode in ("all", "grouped_cv"):
+        res["grouped_cv"] = run_grouped_cv(
+            df, feats, args.target, est_name, args.baseline,
+            args.cv_group, args.cv_folds, args.seed,
         )
     if args.mode in ("all", "coverage"):
         res["coverage"] = run_coverage(
