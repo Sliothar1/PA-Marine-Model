@@ -1,7 +1,7 @@
 # Will this heatwave matter for HABs?
 
 **Window:** 2023-06-01 → 2023-06-30  
-**Generated:** 2026-09-01 21:55 IST  
+**Generated:** 2026-09-02 11:41 IST  
 **Product:** MHW event brief (`scripts/mhw_hab_brief.py`)  
 **Audience:** aquaculture operators, processors, and agency / local-authority desk officers.
 

@@ -779,7 +779,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--latest",
         action="store_true",
-        help="Use the last N days of available CRW Irish-bbox data (default 30)",
+        help=(
+            "Use the last N days of available CRW Irish-bbox data (default 30). "
+            "Coverage ends at the last day in crw_mhw_ireland_daily_summary — "
+            "extend with scripts/ingest_scout_p0.py (NOAA STAR). "
+            "June 2023 remains the flagship demo window (default without --latest)."
+        ),
     )
     p.add_argument("--latest-days", type=int, default=30, help="Length for --latest (default 30)")
     p.add_argument(
@@ -791,9 +796,36 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     crw = _load_crw()
-    start, end = _resolve_window(args, crw)
-    # Clip to CRW availability with a warning
     crw_min, crw_max = pd.Timestamp(crw["date"].min()), pd.Timestamp(crw["date"].max())
+    print(
+        f"CRW Irish-bbox coverage: {crw_min.date()} → {crw_max.date()} "
+        f"({len(crw)} days in summary)",
+        flush=True,
+    )
+    start, end = _resolve_window(args, crw)
+    if args.latest:
+        print(
+            f"--latest window: {start.date()} → {end.date()} "
+            f"(ends at last available CRW day, not calendar today)",
+            flush=True,
+        )
+        lag_days = (pd.Timestamp.now(tz=None).normalize() - crw_max.normalize()).days
+        if lag_days > 14:
+            nxt = (crw_max + pd.Timedelta(days=1)).date()
+            print(
+                f"Note: CRW summary lags calendar by ~{lag_days} days. "
+                "Extend NOAA STAR downloads:",
+                file=sys.stderr,
+            )
+            print(
+                "  python scripts/ingest_scout_p0.py --skip-smartbay --skip-met --skip-conn "
+                f"--crw-start {nxt} --crw-end auto",
+                file=sys.stderr,
+            )
+            print(
+                "Flagship demo remains June 2023: python scripts/mhw_hab_brief.py",
+                file=sys.stderr,
+            )
     if end < crw_min or start > crw_max:
         print(
             f"Warning: requested window {start.date()}–{end.date()} outside CRW coverage "

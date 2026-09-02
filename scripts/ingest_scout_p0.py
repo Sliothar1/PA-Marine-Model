@@ -183,79 +183,141 @@ def _download_crw_file(d: date, tmp_dir: Path) -> tuple[date, str, Path | None]:
         return d, f"err:{type(e).__name__}:{e}", None
 
 
+def _crw_ireland_path(d: date) -> Path:
+    return RAW / "crw_mhw" / f"ireland_{d.strftime('%Y%m%d')}.parquet"
+
+
+def _rebuild_crw_summary(ireland_paths: list[Path]) -> tuple[int, pd.Timestamp | None, pd.Timestamp | None]:
+    """Stack Irish-bbox day files → daily summary CSV/parquet (+ optional pixel stack)."""
+    if not ireland_paths:
+        return 0, None, None
+    rows = []
+    for i, pth in enumerate(sorted(ireland_paths), 1):
+        df = pd.read_parquet(pth, columns=["time", "heatwave_category"])
+        ocean = df[df["heatwave_category"].between(0, 5)]
+        if ocean.empty:
+            continue
+        t = pd.Timestamp(ocean["time"].iloc[0])
+        is_mhw = ocean["heatwave_category"] >= 1
+        rows.append(
+            {
+                "time": t,
+                "n_ocean": int(len(ocean)),
+                "n_mhw": int(is_mhw.sum()),
+                "mean_cat": float(ocean["heatwave_category"].mean()),
+                "max_cat": float(ocean["heatwave_category"].max()),
+                "frac_mhw": float(is_mhw.mean()),
+            }
+        )
+        if i % 200 == 0 or i == len(ireland_paths):
+            print(f"  CRW summary rebuild {i}/{len(ireland_paths)}", flush=True)
+    if not rows:
+        return 0, None, None
+    g = pd.DataFrame(rows).sort_values("time").drop_duplicates("time", keep="last")
+    g.to_parquet(PROC / "crw_mhw_ireland_daily_summary.parquet", index=False)
+    g.to_csv(PROC / "crw_mhw_ireland_daily_summary.csv", index=False)
+    if len(ireland_paths) <= 1600:
+        stacked = pd.concat([pd.read_parquet(p) for p in sorted(ireland_paths)], ignore_index=True)
+        stacked.to_parquet(PROC / "crw_mhw_ireland_daily.parquet", index=False)
+    tmin = pd.Timestamp(g["time"].min())
+    tmax = pd.Timestamp(g["time"].max())
+    return len(g), tmin, tmax
+
+
 def ingest_crw_mhw(start: date, end: date, workers: int = 8) -> dict:
+    """Download NOAA STAR CRW category NetCDF, subset Irish bbox, refresh summary.
+
+    Skips days that already have ``ireland_YYYYMMDD.parquet``. Rebuilds the
+    daily summary from *all* Ireland day files so incremental extensions keep
+    prior coverage (e.g. 2022–2024 when extending into 2025+).
+    """
     tmp_dir = RAW / "crw_mhw" / "global_tmp"
     tmp_dir.mkdir(parents=True, exist_ok=True)
     days = list(daterange(start, end))
     results = []
-    ok_paths: list[Path] = []
+    skipped = 0
+    need: list[date] = []
+    for d in days:
+        out = _crw_ireland_path(d)
+        if out.exists() and out.stat().st_size > 500:
+            results.append({"date": d.isoformat(), "status": "skip_existing", "path": str(out)})
+            skipped += 1
+        else:
+            need.append(d)
+    print(
+        f"  CRW range {start}→{end}: {len(days)} days, "
+        f"skip_existing={skipped}, to_download={len(need)}",
+        flush=True,
+    )
 
     downloaded: list[tuple[date, Path]] = []
-    with cf.ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(_download_crw_file, d, tmp_dir): d for d in days}
-        for i, fut in enumerate(cf.as_completed(futs), 1):
-            d, status, path = fut.result()
-            if path is not None:
-                downloaded.append((d, path))
-            else:
-                results.append({"date": d.isoformat(), "status": status, "path": None})
-            if i % 50 == 0 or i == len(futs):
-                print(f"  CRW download {i}/{len(futs)} files={len(downloaded)}", flush=True)
+    if need:
+        with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+            futs = {ex.submit(_download_crw_file, d, tmp_dir): d for d in need}
+            for i, fut in enumerate(cf.as_completed(futs), 1):
+                d, status, path = fut.result()
+                if path is not None:
+                    downloaded.append((d, path))
+                else:
+                    results.append({"date": d.isoformat(), "status": status, "path": None})
+                if i % 50 == 0 or i == len(futs):
+                    print(f"  CRW download {i}/{len(futs)} files={len(downloaded)}", flush=True)
 
     downloaded.sort(key=lambda x: x[0])
+    new_ok = 0
     for i, (d, tmp) in enumerate(downloaded, 1):
         try:
             df = _subset_crw_nc(tmp)
-            out = RAW / "crw_mhw" / f"ireland_{d.strftime('%Y%m%d')}.parquet"
+            out = _crw_ireland_path(d)
             df.to_parquet(out, index=False)
             tmp.unlink(missing_ok=True)
-            ok_paths.append(out)
+            new_ok += 1
             results.append({"date": d.isoformat(), "status": "ok", "path": str(out)})
         except Exception as e:
             results.append({"date": d.isoformat(), "status": f"subset_err:{type(e).__name__}:{e}", "path": None})
             tmp.unlink(missing_ok=True)
         if i % 50 == 0 or i == len(downloaded):
-            print(f"  CRW subset {i}/{len(downloaded)} ok={len(ok_paths)}", flush=True)
+            print(f"  CRW subset {i}/{len(downloaded)} new_ok={new_ok}", flush=True)
 
-    frames = [pd.read_parquet(pth) for pth in sorted(ok_paths)]
-    summary_rows = []
-    if frames:
-        stacked = pd.concat(frames, ignore_index=True)
-        out_all = PROC / "crw_mhw_ireland_daily.parquet"
-        stacked.to_parquet(out_all, index=False)
-        ocean = stacked[stacked["heatwave_category"].between(0, 5)]
-        g = (
-            ocean.assign(is_mhw=ocean["heatwave_category"] >= 1)
-            .groupby("time", as_index=False)
-            .agg(
-                n_ocean=("heatwave_category", "size"),
-                n_mhw=("is_mhw", "sum"),
-                mean_cat=("heatwave_category", "mean"),
-                max_cat=("heatwave_category", "max"),
-                frac_mhw=("is_mhw", "mean"),
-            )
-        )
-        g.to_parquet(PROC / "crw_mhw_ireland_daily_summary.parquet", index=False)
-        g.to_csv(PROC / "crw_mhw_ireland_daily_summary.csv", index=False)
-        summary_rows = g.to_dict(orient="records")
+    all_ireland = sorted((RAW / "crw_mhw").glob("ireland_*.parquet"))
+    n_summary, tmin, tmax = _rebuild_crw_summary(all_ireland)
 
-    june = [r for r in results if r["date"].startswith("2023-06") and r["status"] == "ok"]
+    ok_or_skip = [r for r in results if r["status"] in ("ok", "skip_existing")]
+    june_paths = list((RAW / "crw_mhw").glob("ireland_202306*.parquet"))
+    product = dict(CRW_PRODUCT)
+    product["local_coverage"] = {
+        "ireland_day_files": len(all_ireland),
+        "summary_rows": n_summary,
+        "start": tmin.date().isoformat() if tmin is not None else None,
+        "end": tmax.date().isoformat() if tmax is not None else None,
+        "note": (
+            "STAR HTTPS daily NetCDF; PacIOOS ERDDAP mhw_5km often 404/TLS-fail. "
+            "Extend with: python scripts/ingest_scout_p0.py --skip-smartbay --skip-met "
+            "--skip-conn --crw-start YYYY-MM-DD --crw-end auto"
+        ),
+    }
     product_path = RAW / "crw_mhw" / "product.json"
-    product_path.write_text(json.dumps(CRW_PRODUCT, indent=2))
-    INFO.joinpath("crw_mhw_product.json").write_text(json.dumps(CRW_PRODUCT, indent=2))
+    product_path.write_text(json.dumps(product, indent=2))
+    INFO.joinpath("crw_mhw_product.json").write_text(json.dumps(product, indent=2))
 
     return {
         "requested_days": len(days),
-        "ok_days": len(ok_paths),
-        "fail_days": len(days) - len(ok_paths),
+        "ok_days": len(ok_or_skip),
+        "new_days": new_ok,
+        "skipped_existing": skipped,
+        "fail_days": len(days) - len(ok_or_skip),
         "start": start.isoformat(),
         "end": end.isoformat(),
-        "ireland_parquet": str(PROC / "crw_mhw_ireland_daily.parquet") if frames else None,
-        "bytes_ireland_parquet": (PROC / "crw_mhw_ireland_daily.parquet").stat().st_size if frames else 0,
-        "june_2023_ok_days": len(june),
+        "coverage_start": tmin.date().isoformat() if tmin is not None else None,
+        "coverage_end": tmax.date().isoformat() if tmax is not None else None,
+        "ireland_parquet": str(PROC / "crw_mhw_ireland_daily.parquet") if all_ireland else None,
+        "bytes_ireland_parquet": (PROC / "crw_mhw_ireland_daily.parquet").stat().st_size
+        if (PROC / "crw_mhw_ireland_daily.parquet").exists()
+        else 0,
+        "june_2023_ok_days": len(june_paths),
         "product_doc": str(product_path),
-        "failures_sample": [r for r in results if r["status"] != "ok"][:10],
-        "daily_summary_rows": len(summary_rows),
+        "failures_sample": [r for r in results if r["status"] not in ("ok", "skip_existing")][:10],
+        "daily_summary_rows": n_summary,
     }
 
 
@@ -788,7 +850,11 @@ def write_report(payload: dict) -> Path:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--crw-start", default="2022-01-01")
-    ap.add_argument("--crw-end", default="2024-12-31")
+    ap.add_argument(
+        "--crw-end",
+        default="auto",
+        help="YYYY-MM-DD or 'auto' (= UTC today − 2 days; STAR often lags 1–2 days)",
+    )
     ap.add_argument("--crw-workers", type=int, default=10)
     ap.add_argument("--skip-crw", action="store_true")
     ap.add_argument("--skip-smartbay", action="store_true")
@@ -801,9 +867,15 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.skip_crw:
         print("== CRW MHW ==", flush=True)
+        crw_end = (
+            (datetime.now(timezone.utc).date() - timedelta(days=2)).isoformat()
+            if args.crw_end in ("auto", "", "today")
+            else args.crw_end
+        )
+        print(f"  CRW end resolved: {crw_end}", flush=True)
         payload["crw_mhw"] = ingest_crw_mhw(
             date.fromisoformat(args.crw_start),
-            date.fromisoformat(args.crw_end),
+            date.fromisoformat(crw_end),
             workers=args.crw_workers,
         )
     if not args.skip_smartbay:

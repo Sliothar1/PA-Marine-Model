@@ -52,7 +52,7 @@ From the repo root (venv with project deps; **no network** required if processed
 # Flagship June 2023 brief
 python scripts/mhw_hab_brief.py
 
-# Most recent ~30 days of CRW Irish-bbox coverage
+# Most recent ~30 days of *available* CRW Irish-bbox coverage (not calendar today)
 python scripts/mhw_hab_brief.py --latest
 python scripts/mhw_hab_brief.py --latest --latest-days 14
 
@@ -83,6 +83,41 @@ Rebuild upstream pieces via `scripts/ingest_scout_p0.py`, `scripts/ingest_sentin
 
 ---
 
+## How to run for today’s briefing
+
+**Morning / demo path (no network if CRW summary is already fresh):**
+
+```bash
+# 1) Check what CRW Irish-bbox days you have (printed by the brief script too)
+python scripts/mhw_hab_brief.py --latest
+
+# 2) If coverage lags “today” by more than ~2 weeks, extend NOAA STAR category files
+#    (skips days already present as data/raw/crw_mhw/ireland_YYYYMMDD.parquet)
+python scripts/ingest_scout_p0.py \
+  --skip-smartbay --skip-met --skip-conn \
+  --crw-start 2025-01-01 --crw-end auto
+
+# 3) Re-run the latest brief, then open the dated outputs
+python scripts/mhw_hab_brief.py --latest
+# → data/processed/briefs/mhw_hab_brief_YYYY-MM-DD.md
+# → data/processed/briefs/mhw_hab_brief_YYYY-MM-DD.txt
+```
+
+**`--latest` uses the last N days of the local CRW summary**, not calendar “today”. STAR daily NetCDF often lags 1–2 days; PacIOOS ERDDAP `mhw_5km` is frequently unavailable from this environment (see `data/raw/erddap_info/crw_mhw_product.json`).
+
+**Current local coverage (as of 2026-09-02 morning extend):** `crw_mhw_ireland_daily_summary` spans **2022-01-01 → 2026-08-31** (~1704 days). Re-extend with `--crw-end auto` when STAR publishes newer category files.
+
+**Flagship stays June 2023** for talks and hackathon demos — even after you extend CRW:
+
+```bash
+python scripts/mhw_hab_brief.py
+# → data/processed/briefs/mhw_hab_brief_2023-06-30.md (+ .txt)
+```
+
+Use `--latest` for an ops-shaped “what’s on the shelf now?” refresh; use the default June 2023 window when you need the Berthou-aligned narrative and full HAB/closure/Mace/river context already in the case study.
+
+---
+
 ## How to read the June 2023 flagship
 
 Headline takeaways from `mhw_hab_brief_2023-06-30.*` (aligned with the case study):
@@ -99,6 +134,7 @@ Headline takeaways from `mhw_hab_brief_2023-06-30.*` (aligned with the case stud
 ## Limits
 
 - **Not operational warning.** No SLA, no guaranteed latency, no authority stamp.
+- **CRW coverage is local.** `--latest` cannot go past the last day in `crw_mhw_ireland_daily_summary` until you extend STAR downloads (`ingest_scout_p0.py`). Default demo window remains **June 2023**.
 - **Shelf ≠ bay.** Irish-bbox CRW averages can differ from embayment conditions.
 - **Sampling gaps.** Missing HAB weeks ≠ confirmed all-clear.
 - **Coastal SST mask.** Some inshore sites lack OISST/CRW SST (e.g. Rosmuc).

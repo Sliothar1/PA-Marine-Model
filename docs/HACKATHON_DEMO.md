@@ -4,9 +4,17 @@
 
 This is a research nowcast demo, **not** an operational warning product.
 
-**Open [`docs/demo.html`](demo.html) for a layman walkthrough** (non-technical one-pager; figures under `docs/demo_assets/`).
+**Start here for Cork:** [`docs/CORK_CHEAT_SHEET.md`](CORK_CHEAT_SHEET.md) (1-page talk track) → open [`docs/demo.html`](demo.html) (layman walkthrough; figures under `docs/demo_assets/`).
 
-Generated / verified artifacts: **2026-09-01** (Europe/Dublin). Snapshot without retrain:
+**Three products to show:**
+
+| Product | Artifact | One metric |
+| --- | --- | --- |
+| Harvest-closure risk | [`dsp_closure_risk_report.md`](../data/processed/dsp_closure_risk_report.md) | Test PR-AUC **~0.32** vs clim **~0.21** |
+| Connemara Farms weekly scores | [`connemara_farms_scores.html`](../data/processed/connemara_farms_scores.html) · [`CONNEMARA_FARMS.md`](../CONNEMARA_FARMS.md) | National apply PR-AUC **~0.29** vs clim **~0.18** |
+| MHW × HAB event brief | [`mhw_hab_brief_2023-06-30.md`](../data/processed/briefs/mhw_hab_brief_2023-06-30.md) · [`MHW_EVENT_PRODUCT.md`](MHW_EVENT_PRODUCT.md) | June 2023 CRW mean **frac_mhw ≈ 0.96** (HAB/closures not above clim) |
+
+Generated / verified artifacts: **2026-09-01** (Europe/Dublin); CRW `--latest` coverage extended **2026-09-02**. Snapshot without retrain:
 
 ```bash
 python scripts/demo_snapshot.py
@@ -136,11 +144,13 @@ Requires processed CRW summary, HAB panel, joined features, Mace Head daily, Spi
 ### D2. MHW event brief (“Will this heatwave matter for HABs?”)
 
 ```bash
-python scripts/mhw_hab_brief.py                 # June 2023 flagship
-python scripts/mhw_hab_brief.py --latest        # last ~30 days of CRW
+python scripts/mhw_hab_brief.py                 # June 2023 flagship (keep for demos)
+python scripts/mhw_hab_brief.py --latest        # last ~30 days of *available* CRW
+# If coverage lags calendar: extend STAR NetCDF then re-run --latest
+python scripts/ingest_scout_p0.py --skip-smartbay --skip-met --skip-conn --crw-end auto
 ```
 
-Writes `data/processed/briefs/mhw_hab_brief_YYYY-MM-DD.md` + `.txt`. Product note: [`docs/MHW_EVENT_PRODUCT.md`](MHW_EVENT_PRODUCT.md).
+Writes `data/processed/briefs/mhw_hab_brief_YYYY-MM-DD.md` + `.txt`. Product note + morning path: [`docs/MHW_EVENT_PRODUCT.md`](MHW_EVENT_PRODUCT.md).
 
 ### E. Optional local re-ingest (network)
 
@@ -194,6 +204,19 @@ python scripts/mhw_hab_brief.py
 
 Demo beat: June 2023 was a **severe shelf-wide MHW** (CRW frac ≈ 0.96) but national Dinophysis/closure rates were **not** above climatology — use the brief to argue for heightened monitoring **without** assuming MHW ⇒ immediate bloom. **Not** an official warning product.
 
+---
+
+## Grower product — Connemara Farms (idea 2)
+
+National **strong OISST** Dinophysis model applied to Connemara NMP sites (Killary, Mannin, Clifden, …) — weekly risk bands + optional closure proxy. Do **not** retrain locally (positives too sparse).
+
+```bash
+python scripts/score_connemara_farms.py
+# → data/processed/connemara_farms_scores.html
+# → data/processed/connemara_farms_latest.csv
+```
+
+Spec: [`CONNEMARA_FARMS.md`](../CONNEMARA_FARMS.md). Quote **national** PR-AUC ~0.29 vs clim ~0.18; Connemara-only test PR skill ≈ 0 on this window (rare positives).
 
 ---
 
@@ -245,9 +268,12 @@ EPA HydroNet remains interactive-only (data.gov.ie → SPA). **OPW Hydro-Data JS
 ## 8. Artifact cheat-sheet
 
 ```
+docs/CORK_CHEAT_SHEET.md               ← 1-page Cork talk track (start here)
 docs/HACKATHON_DEMO.md                 ← this file
 docs/demo.html                         ← layman one-pager walkthrough
 docs/demo_assets/june2023_*.png        ← figures bundled for local HTML
+docs/MHW_EVENT_PRODUCT.md              ← MHW brief product + morning --latest path
+
 scripts/demo_snapshot.py               ← print key metrics + figure paths
 scripts/run_pipeline.py --fixture
 scripts/evaluate.py --feature-mode strong
@@ -255,12 +281,15 @@ scripts/train_scotland_dino.py
 scripts/build_june2023_case_study.py
 scripts/train_dsp_closure_risk.py
 scripts/mhw_hab_brief.py
+scripts/score_connemara_farms.py
 scripts/ingest_sentinel_sites.py
-scripts/ingest_scout_p0.py
+scripts/ingest_scout_p0.py             ← extend CRW with --crw-end auto
 
-docs/MHW_EVENT_PRODUCT.md
-data/processed/briefs/mhw_hab_brief_2023-06-30.md
+data/processed/briefs/mhw_hab_brief_2023-06-30.md   ← flagship MHW brief
 data/processed/briefs/mhw_hab_brief_2023-06-30.txt
+data/processed/connemara_farms_scores.html          ← grower product
+data/processed/connemara_farms_latest.csv
+CONNEMARA_FARMS.md
 
 data/processed/metrics_dino_strong.json
 data/processed/scotland_dino_metrics.json
@@ -273,6 +302,7 @@ data/processed/dsp_closure_risk_metrics.json
 data/processed/local_sites_report.md
 data/processed/june2023_case_study.md
 data/processed/figures/june2023_*.png
+data/processed/crw_mhw_ireland_daily_summary.csv    ← CRW coverage for --latest
 ```
 
 MIT code; HAB © Marine Institute; OISST © NOAA; cite Berthou et al. (2024) for the June 2023 MHW narrative.

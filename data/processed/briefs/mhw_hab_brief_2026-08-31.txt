@@ -1,0 +1,60 @@
+WILL THIS HEATWAVE MATTER FOR HABs?
+Window: 2026-08-02 to 2026-08-31
+Generated: 2026-09-02 11:41 IST
+
+Will this heatwave matter for HABs? Brief for 2026-08-02 to 2026-08-31 (Irish shelf). This is a situational summary for industry and agencies — not an official warning or harvest decision.
+
+BOTTOM LINE
+- Over 2026-08-02 to 2026-08-31, on average 69.5% of Irish-shelf ocean pixels were in a marine heatwave (NOAA Coral Reef Watch).
+- The hottest footprint day was 2026-08-31 (frac_mhw 0.991; peak mean category 1.34 on 2026-08-28; max category 5).
+- Industry read: this window looks like a moderate-to-strong shelf MHW.
+- Across Irish HAB stations, 6.9% of station-weeks in this window had Dinophysis at or above 100 cells/L (18 of 259).
+- In the Connemara focus set the rate was 0.0% (0 of 18).
+- National exceedance rate is below the same-week climatology — a strong shelf MHW does not automatically mean a national Dinophysis spike in this window.
+- In this window, 23.5% of monitored shellfish area-weeks were closed or harvest-restricted (89 of 378).
+- Closure incidence is near the same-week multi-year average.
+- Our research prototype can partially rank closure risk from SST, but DSP toxin weeks are too scarce on the recent test window to claim a toxin early-warning product.
+- Mace Head buoy mean temperature was 16.35 °C over the window (range 15.50–16.88 °C, 30 days).
+- That is about 0.08 °C cooler than the buoy's same-month average in other years.
+- Freshwater (Corrib / Owenboliskey): No Corrib/Owenboliskey Q in this window.
+- This is situational awareness for industry and government — not an official warning.
+
+DETAILS
+
+SHELF MARINE HEATWAVE (CRW)
+- Irish bbox (51–56°N, 11–5°W) CRW Daily Global 5 km MHW Watch — 30 days in window.
+- Mean ocean fraction in MHW (cat ≥ 1): 0.695 (69.5% of ocean pixels).
+- Peak frac_mhw: 0.991 on 2026-08-31 (1 day(s) ≥ 0.99).
+- Peak daily mean category: 1.34 on 2026-08-28; max category observed: 5 (0 = none … 5 = beyond extreme).
+- Days with any pixel ≥ cat 3: 30 / 30.
+- Plain-language severity: moderate-to-strong shelf MHW.
+
+DINOPHYSIS EXCEEDANCE (NATIONAL + CONNEMARA)
+- Threshold: Dinophysis ≥ 100 cells/L (`y_dinophysis`). ISO weeks overlapping window: 2026-W31, 2026-W32, 2026-W33, 2026-W34, 2026-W35, 2026-W36.
+- National: 6.9% of station-weeks exceeded (18/259); same-week climatology 2015–2024 excl. event: 10.4%.
+- Connemara focus (Rosmuc, Mannin, Gubbaros, Cliffden Outer, Ballynakill): 0.0% exceeded (0/18); clim 4.9%.
+- No Dinophysis exceedance weeks in the Connemara focus set during overlapping ISO weeks.
+
+CLOSURE / DSP RISK CONTEXT
+- Area-week closure rate (`habs_status` closed / closed-pending / harvest-restricted): 23.5% (89/378 area-weeks); same-week clim 23.9%.
+- Model context (not a live forecast): area-closed LightGBM calibrated test PR-AUC 0.315 vs clim 0.208 (PR skill 0.135) — partial SST ranking skill.
+- DSP-exceed model on the same features is not ops-ready on 2022+ test (PR-AUC 0.009, prevalence ~0.23%; too few positives).
+- Full write-up: `data/processed/dsp_closure_risk_report.md`.
+
+MACE HEAD BUOY TEMPERATURE
+- compass_mace_head daily SBE — 30 days with temperature.
+- Mean / min / max T: 16.35 / 15.50 / 16.88 °C.
+- Anomaly vs other-year same-month mean (16.42 °C): -0.08 °C.
+- Mean salinity: 34.94 PSU.
+- Mean DO: 7.93 mg/L.
+
+FRESHWATER (CORRIB / OWENBOLISKEY)
+No Corrib/Owenboliskey Q in this window.
+
+LIMITS
+- Shelf CRW averages can differ from your bay.
+- Missing HAB samples are not confirmed all-clears.
+- Do not treat this brief as a harvest open/close decision.
+
+Regenerate: python scripts/mhw_hab_brief.py [--latest | --start YYYY-MM-DD --end YYYY-MM-DD]
+Product note: docs/MHW_EVENT_PRODUCT.md
