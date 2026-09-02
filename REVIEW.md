@@ -237,3 +237,105 @@ tests/test_mhw_event_order.py  | 104 +   new (12 tests)
 47/47 tests pass. Fixture pipeline and `evaluate.py --bootstrap` verified end-to-end.
 All existing tests pass unmodified under the new defaults — no test was weakened to
 accommodate a fix.
+
+---
+
+# Addendum — second patch (`diagnostics`)
+
+Adds `src/pa_marine/diagnostics.py`, `scripts/run_diagnostics.py`, and
+`tests/test_diagnostics.py`. New files only, so it will not conflict with concurrent
+work elsewhere in the repo. 57/57 tests pass.
+
+## 5. The climatology baseline is too weak to support the headline claim
+
+**Severity: high. This supersedes item 4 as the most important finding.**
+
+`metrics.climatology_probs` is a week-of-year mean pooled across all stations. But the
+model is handed `latitude` and `longitude`, and Irish HAB stations differ enormously in
+base exceedance rate. So the model can beat that baseline purely by learning *which
+farms are risky* — which every operator already knows — without any forecasting skill.
+
+I tested this by simulating a panel with station effects and seasonality but **no
+dynamical signal at all**, then scoring an oracle that sees exactly that structure and
+nothing more:
+
+| baseline | baseline PR-AUC | model PR-AUC | PR skill |
+| --- | ---: | ---: | ---: |
+| prevalence | 0.218 | 0.610 | 0.501 |
+| **week (current)** | 0.437 | 0.610 | **0.307** |
+| station | 0.358 | 0.610 | 0.392 |
+| **station × week (added)** | 0.599 | 0.610 | **0.028** |
+
+A model with zero dynamical information scores **PR skill 0.307** against the baseline
+currently used in `metrics.json`, and correctly ~0.03 against a station × week baseline.
+
+The reported Dinophysis figure is **PR skill ~0.12**. On a second, more realistic
+simulation (48,880 station-weeks, 24 years, AR(1) SST, correct train/val/test split) a
+zero-signal panel produced **PR skill 0.102 against the week baseline and −0.109 against
+station × week** — statistically indistinguishable from the project's headline number.
+
+To be precise about what this does and does not establish: I could not run this on the
+real panel, because `joined_features.parquet` is gitignored and not in the repo. So this
+does **not** show the model lacks skill. It shows the current baseline cannot tell the
+difference, and that the headline number is fully consistent with having none. That
+question is now answerable in one command.
+
+`station_week` is logit-additive with empirical-Bayes shrinkage (station effect + week
+effect over a global rate) rather than raw station × week cell means, because 207 stations
+× 52 weeks is far too sparse to estimate directly. Unseen stations and weeks fall back to
+the global rate, so it is always defined on the evaluation split.
+
+## 6. Negative controls
+
+Four graded permutation controls, each refitting the model on shuffled labels. Verified
+that each destroys exactly the structure it claims to and preserves the rest:
+
+| control | corr(y, SST) | station rate kept | seasonality kept |
+| --- | ---: | ---: | ---: |
+| unpermuted | 0.212 | 1.000 | 1.000 |
+| `global` | −0.004 | 0.001 | 0.119 |
+| `within_station` | 0.001 | 1.000 | −0.092 |
+| `within_week` | 0.011 | −0.034 | 1.000 |
+| `within_station_month` | 0.012 | **1.000** | **0.983** |
+
+`within_station_month` is the one that matters: it preserves station base rate *and*
+seasonality while destroying only the residual within-station, within-season variation —
+which is precisely the SST/MHW signal the project claims to forecast. Any skill surviving
+it is real dynamical signal. It gives the honest ceiling that a headline number has to
+clear.
+
+End-to-end validation against known ground truth (`global` sits at ~0.000 in both cases,
+confirming the metric plumbing is sound):
+
+| truth | PR skill vs `station_week` | `within_station_month` p95 | verdict |
+| --- | ---: | ---: | --- |
+| no dynamical signal (β=0) | −0.109 | −0.082 | correctly **no signal** |
+| real SST signal (β=1.0) | 0.567 | −0.036 | correctly **signal detected** |
+
+The tool returns the right answer in both directions, which is the minimum bar before
+trusting it on real data.
+
+## 7. Coverage stratification
+
+Wires finding 3 into a report: PR skill split by `n_obs_<tax>_<horizon>`. If skill only
+appears in well-sampled strata, it is tracking the sampling calendar.
+
+## Run it
+
+```bash
+python scripts/run_diagnostics.py \
+    --joined data/processed/joined_features.parquet \
+    --target y_dinophysis_nowcast --feature-mode strong \
+    --bootstrap 500 --permutation-repeats 50
+```
+
+Writes `data/processed/diagnostics.json` and `diagnostics_report.md`. Reads existing
+joined features; no network, no re-download, nothing upstream retrained. Coverage
+stratification needs a panel rebuilt with the patched `add_horizon_labels` to emit the
+`n_obs_*` columns; it skips with a clear message otherwise.
+
+**Do this before the ablations.** If the Dinophysis skill does not clear the
+`within_station_month` ceiling under a `station_week` baseline, then re-running feature
+ablations is measuring noise, and the honest headline is "seasonality and station identity
+carry the signal; SST/MHW add little" — which is still a publishable result, just a
+different one.
