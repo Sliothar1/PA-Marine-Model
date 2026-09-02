@@ -1,0 +1,239 @@
+# PA-Marine-Model — review
+
+Reviewed at `ae51c4b` (2026-09-02). 28/28 tests passing on arrival; fixture pipeline runs
+clean; `pip install -e ".[dev]"` resolves.
+
+First, the honest headline: this is a well-built repo. The time split is never random, the
+calibrator is fitted on validation only, the ERDDAP column names are verified against
+`info.json` rather than assumed, the percent-encoding workaround for Tomcat is documented,
+and the README reports a negative Karenia result instead of hiding it. The `Caveats`
+section already names several of the things a reviewer would reach for. That is rarer than
+it should be, and it made the real problems easier to find.
+
+Three of those real problems are below, all confirmed by execution rather than reading, and
+all fixed on branch `review/mhw-labels-uncertainty`.
+
+---
+
+## 1. MHW event assembly is in the wrong order — ~55% over-detection
+
+**Severity: high.** `src/pa_marine/mhw.py`
+
+`detect_mhw` merged gaps of ≤ `max_gap` days *before* applying the ≥ `min_duration` filter.
+Hobday et al. (2016), and Eric Oliver's reference `marineHeatWaves` implementation, do the
+opposite: identify above-threshold runs of ≥ 5 days first, *then* join surviving events
+across gaps of ≤ 2 days.
+
+The order matters because merging first lets two runs that are each too short to be events
+bootstrap each other into one:
+
+| exceedance pattern | v1 | Hobday order | correct |
+| --- | ---: | ---: | ---: |
+| 3d + 2d gap + 3d | **8 MHW days** | 0 | 0 |
+| 4d + 1d gap + 4d + 1d gap + 4d | **14 MHW days** | 0 | 0 |
+| 3d + 2d gap + 6d | **11 MHW days** | 6 | 6 |
+| 6d + 2d gap + 6d | 14 | 14 | 14 ✓ |
+| 6d + 3d gap + 6d | 12 | 12 | 12 ✓ |
+
+On 30-year AR(1) red-noise SST with a 10-day decorrelation scale and a realistic seasonal
+cycle (12 seeds), v1 flagged **919 MHW days per 30 years vs 591** under the correct
+ordering — **55.5% over-detection**, consistent across every seed (39–72%). v1 put 8.4% of
+all days in a marine heatwave; the corrected version gives 5.4%, which is in the right
+range for a 90th-percentile definition.
+
+The existing `test_two_day_gap_merged` uses 6d + 2d gap + 6d, which passes under *both*
+orderings — that is why the bug survived. The three cases that discriminate are now in
+`tests/test_mhw_event_order.py`.
+
+**Why this matters beyond tidiness.** The project's central scientific question is whether
+MHW features predict HAB exceedance, and the answer on record is that `in_mhw*` and
+duration features are "near-zero noise". Those features were computed with a ~55% inflated,
+noise-contaminated event indicator. Attenuating a real signal is exactly what that kind of
+label noise does. The negative MHW result needs re-running before it can be trusted — and
+note the direction: the fix can only *help* the MHW features, so the current conclusion is
+not conservative in the way one might assume.
+
+**Fixed:** `event_order="hobday"` is now the default; `"legacy"` reproduces pre-fix numbers.
+Exposed as `mhw.event_order` in config.
+
+---
+
+## 2. MHW climatology is fitted on the full series, including the test years
+
+**Severity: high.** `src/pa_marine/mhw.py`
+
+`_doy_climatology` pooled the entire local record to compute both the seasonal mean and the
+90th-percentile threshold. The README lists this under caveats ("not a fixed 30-year
+baseline"), but it is understated as a fidelity issue when it is actually two separate
+problems.
+
+**(a) Test-set leakage.** Every day's `thresh`, `clim`, `ssta`, `ssta_pctile`, `in_mhw` and
+`mhw_category` for 2022+ was computed using 2022+ SST.
+
+**(b) A method-induced train/test shift, which is the worse one.** Irish shelf SST is
+warming. Pooling all years lets the trend raise the threshold, so recent warm anomalies get
+graded against a warmer bar. Simulating 2003–2026 with +0.3 °C/decade on the project's own
+split:
+
+| era | MHW days, full-series climatology | MHW days, baseline fixed to 2003–2018 |
+| --- | ---: | ---: |
+| train 2003–2018 | 8.1% | 9.9% |
+| val 2019–2021 | 5.5% | 8.2% |
+| test 2022+ | 13.6% | 17.2% |
+
+The current approach under-detects test-era MHW by ~21% relative. So a model trained on
+train-era MHW features is applied to test-era features whose distribution shifted because
+*the estimator* changed, not because the ocean did. This degrades exactly the features the
+ablation then reports as worthless. Findings 1 and 2 both push in the same direction, and
+they compound.
+
+**Fixed:** `baseline_years=(y0, y1)` restricts the climatology *pool* while still applying
+the fitted threshold to every day. Config default `mhw.climatology_baseline: [2003, 2018]`
+(the training split). Set `[1983, 2012]` for the Hobday convention, or `null` for v1.
+
+Note that the default `--feature-mode strong` uses only `sst`, `sst_roll*`, `woy_*` and
+lat/lon — no threshold-derived columns — so **the headline Dinophysis number is clean**.
+Every MHW and IBI ablation is affected.
+
+---
+
+## 3. The horizon label silently encodes sampling effort
+
+**Severity: high (methodological, not a crash).** `src/pa_marine/hab.py`
+
+`y_<tax>_nowcast` is an OR over whichever station-weeks happen to be sampled in
+`[week_start, week_start + 14d]`. HAB sampling is irregular and *seasonal* — heavier in
+summer, which is also bloom season. So a station-week whose window contains three samples
+has three independent chances to be positive; one with a single sample has one.
+
+On a simulated panel with realistic seasonal sampling effort:
+
+| sampled weeks in window | station-weeks | label positive rate | underlying weekly rate |
+| ---: | ---: | ---: | ---: |
+| 1 | 6,755 | 0.070 | 0.070 |
+| 2 | 10,205 | 0.326 | 0.187 |
+| 3 | 23,228 | 0.608 | 0.271 |
+
+The label rate rises **8.7×** across coverage strata while the underlying bloom rate rises
+3.9×. The excess is pure OR-inflation. And mean window coverage is 2.71 in weeks 18–40
+versus 1.55 off-season.
+
+This is the uncomfortable part: the project's own feature study found LightGBM gain and
+permutation importance **dominated by `woy_cos`, `woy_sin`, `latitude`, `longitude`** — and
+those are precisely the variables that predict *when and where people sample*. Some
+unknown fraction of the reported PR skill over climatology may be the model recovering the
+sampling calendar rather than bloom dynamics. The week-of-year climatology baseline does
+not control for this, because it is computed on the same effort-confounded labels.
+
+I don't think this invalidates the result — but it is currently unmeasured, and it is
+measurable.
+
+**Fixed:** `add_horizon_labels` now emits `n_obs_<tax>_<horizon>`, the number of sampled
+station-weeks in each label window. Enough to (a) restrict to fully-observed windows, or
+(b) stratify metrics by coverage. Recommended next step: report Dinophysis nowcast PR skill
+separately for `n_obs == 3` rows. If the skill survives there, the result is solid and much
+more defensible.
+
+Same commit vectorises the label construction via `searchsorted` — it was an O(k²) pairwise
+date-difference scan per station per taxon. **7× faster** on a 40k-row panel, verified
+bit-identical to the original loop against an oracle implementation retained in
+`tests/test_horizon_labels.py`.
+
+---
+
+## 4. No uncertainty on any reported metric
+
+**Severity: medium-high.** `src/pa_marine/metrics.py`
+
+"PR-AUC 0.296 vs climatology 0.183, PR skill ~0.12" is quoted as a point estimate. With
+test prevalence near 18% and a few thousand positives spread over 207 stations, the
+sampling error is not negligible, and there is no way to tell whether 0.293 (`strong`) beats
+0.281 (`all`) or whether that +0.012 is noise. The same applies to the whole ablation table
+— it currently ranks feature modes on differences that may be smaller than their own error
+bars, and then the winner gets hard-coded as the default (`STRONG_OISST`), which is a
+selection-on-noise risk.
+
+The right resampling unit is the **station**, not the row: station-weeks within a station
+share a location, an SST series and a sampling regime, and neighbouring stations co-bloom.
+On a panel sized like the real test split (207 stations × 250 weeks):
+
+| bootstrap unit | PR skill | 95% CI | width |
+| --- | ---: | --- | ---: |
+| rows (i.i.d.) | 0.262 | [0.251, 0.276] | 0.025 |
+| stations (cluster) | 0.262 | [0.225, 0.303] | **0.078** |
+
+An i.i.d. row bootstrap would have reported intervals **3.1× too tight**.
+
+**Added:** `bootstrap_summary(...)` — percentile CIs on PR-AUC, Brier and both skill scores,
+plus `pr_auc_skill_gt0` (bootstrap P(model beats climatology)). Wired into `evaluate.py` as
+`--bootstrap N --bootstrap-cluster location_id`; results land in `metrics.json`. Degenerate
+replicates (no positives) are skipped and reported via `n_boot_used`, so the Karenia case
+returns NaN instead of crashing.
+
+---
+
+## Smaller items (not fixed)
+
+- **`join_features.py` → `features.join_week_panel`**: column selection uses
+  `c.endswith("d")`, which matches `location_id`. Harmless today because `feature_columns`
+  skips it explicitly, but it is the same naïve-suffix bug the README says was fixed in
+  `feature_columns`, still live one function away. Worth an allow-list.
+- **`evaluate.py`**: `fit_predict(est, Xtr, ytr, Xtr)` discards its return value — it is
+  called only for the fitting side effect, and predicts over the whole training set for
+  nothing. Use `est.fit(...)`.
+- **`evaluate.py`**: `ytr = train[tgt].astype(int)` then `mtr = ytr.notna()` — `astype(int)`
+  cannot produce NaN, so every `notna()` mask in this script is a no-op. Either mask before
+  the cast or drop the masks; as written they imply a missing-label guard that isn't there.
+- **`requirements.txt`** is stale against `pyproject.toml` (no `pyproj`, which
+  `uk_fsa.py` and `smc_geocode.py` both import). Anyone following it instead of the README
+  gets 6 test failures — which is exactly what happened to me. Consider deleting it and
+  pointing at the extras.
+- **Leap years**: `dayofyear` shifts by one after 28 Feb in leap years, so the DOY
+  climatology mixes calendar positions. Minor at an 11-day window, but standard MHW
+  implementations handle it.
+- **`mhw_i_ratio`** is computed twice — once inside the event loop (used for
+  `mhw_category`) and once globally (stored as the column). They differ outside events.
+  Intentional, probably, but undocumented.
+- **`data/processed` whitelist** in `.gitignore` is ~90 lines of `!` exceptions. It works,
+  but a `data/reports/` directory that is committed wholesale would be easier to maintain
+  than a growing list of negations.
+
+---
+
+## What I'd do next, in order
+
+1. **Re-run the MHW ablations** with `event_order: hobday` and
+   `climatology_baseline: [2003, 2018]`. The claim "MHW features are near-zero noise" is
+   the project's most interesting finding and it was measured through two compounding
+   defects, both of which biased against MHW features. This is the single highest-value
+   thing on the list.
+2. **Re-run the feature-mode ablation with `--bootstrap 1000`.** If `strong` (0.293) and
+   `all` (0.281) have overlapping CIs, say so in the README and stop treating `strong` as
+   an established winner. Selecting a default on a 0.012 difference is how ablation tables
+   turn into folklore.
+3. **Stratify Dinophysis PR skill by `n_obs_dinophysis_nowcast`.** If skill holds on
+   fully-observed windows, finding 3 is answered and the headline number gets much stronger.
+   If it collapses, better to know now.
+4. **Add leave-one-station-out and leave-one-year-out** alongside the fixed temporal split.
+   `evaluate_uk_dino.py` already does LOYO — that machinery should be promoted to the Irish
+   path, where 207 stations make grouped CV cheap and informative.
+5. **A negative control.** Train on shuffled-within-station labels and confirm PR skill
+   collapses to ~0. With seasonality and geography dominating the model, this is the
+   cheapest guard against the whole pipeline quietly learning the sampling calendar.
+
+## Changes on this branch
+
+```
+configs/default.yaml           |   9 +   mhw.event_order, mhw.climatology_baseline
+scripts/evaluate.py            |  47 +   --bootstrap / --bootstrap-cluster
+src/pa_marine/hab.py           |  51 +   vectorised labels + n_obs_* coverage
+src/pa_marine/metrics.py       |  77 +   bootstrap_summary, cluster resampling
+src/pa_marine/mhw.py           | 130 +   event_order, baseline_years
+tests/test_horizon_labels.py   | 118 +   new (5 tests, incl. oracle equivalence)
+tests/test_metrics.py          |  44 +   bootstrap tests
+tests/test_mhw_event_order.py  | 104 +   new (12 tests)
+```
+
+47/47 tests pass. Fixture pipeline and `evaluate.py --bootstrap` verified end-to-end.
+All existing tests pass unmodified under the new defaults — no test was weakened to
+accommodate a fix.

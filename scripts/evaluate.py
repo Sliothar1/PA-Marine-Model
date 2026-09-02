@@ -11,7 +11,7 @@ import pandas as pd
 from pa_marine.calibration import ProbCalibrator
 from pa_marine.config import load_config
 from pa_marine.features import feature_columns, select_feature_mode
-from pa_marine.metrics import climatology_probs, summarise
+from pa_marine.metrics import bootstrap_summary, climatology_probs, summarise
 from pa_marine.models import fit_predict, make_estimators
 
 
@@ -34,6 +34,21 @@ def main():
         help="Fit calibrator on validation only (default: auto = isotonic if enough positives).",
     )
     p.add_argument("--out", default=None)
+    p.add_argument(
+        "--bootstrap",
+        type=int,
+        default=0,
+        help="Bootstrap replicates for 95%% CIs on PR-AUC / Brier / skill (0 = off). "
+        "Resamples whole stations, not rows: station-weeks within a station share a "
+        "location, an SST series and a sampling regime, so an i.i.d. row bootstrap "
+        "reports intervals roughly 3x too tight.",
+    )
+    p.add_argument(
+        "--bootstrap-cluster",
+        default="location_id",
+        help="Column to resample as the independent unit (default location_id). "
+        "Pass 'row' for an i.i.d. row bootstrap (not recommended).",
+    )
     p.add_argument(
         "--feature-mode",
         default="strong",
@@ -61,7 +76,15 @@ def main():
     feats = select_feature_mode(df, args.feature_mode)
     train = df[df["split"] == "train"]
     val = df[df["split"] == "val"]
-    results: dict = {"_meta": {"calibration": args.calibration, "feature_mode": args.feature_mode, "n_features": len(feats)}}
+    results: dict = {
+        "_meta": {
+            "calibration": args.calibration,
+            "feature_mode": args.feature_mode,
+            "n_features": len(feats),
+            "bootstrap": args.bootstrap,
+            "bootstrap_cluster": args.bootstrap_cluster if args.bootstrap else None,
+        }
+    }
     horizons = ["nowcast", "ahead7"] if args.horizon == "both" else [args.horizon]
     for horizon in horizons:
         targets = [c for c in df.columns if c.startswith("y_") and c.endswith(f"_{horizon}")]
@@ -97,7 +120,23 @@ def main():
                     pr_raw = _raw_probs(est, ev.loc[mask, feats])
                     clim = climatology_probs(clim_week, clim_y, ev.loc[mask, "iso_week"].to_numpy())
                     y_np = y.loc[mask].to_numpy()
-                    raw_summary = summarise(y_np, pr_raw, clim)
+
+                    boot_groups = None
+                    if args.bootstrap > 0 and args.bootstrap_cluster != "row":
+                        if args.bootstrap_cluster not in ev.columns:
+                            raise SystemExit(
+                                f"--bootstrap-cluster {args.bootstrap_cluster!r} not in {path}"
+                            )
+                        boot_groups = ev.loc[mask, args.bootstrap_cluster].to_numpy()
+
+                    def _score(probs):
+                        if args.bootstrap > 0:
+                            return bootstrap_summary(
+                                y_np, probs, clim, groups=boot_groups, n_boot=args.bootstrap
+                            )
+                        return summarise(y_np, probs, clim)
+
+                    raw_summary = _score(pr_raw)
                     key = f"{name}_{split}"
                     results[tgt][key] = dict(raw_summary)
                     results[tgt][key]["calibrated"] = False
@@ -106,7 +145,7 @@ def main():
                         # On val, report both raw and calibrated; calibrator was fit on val
                         # so calibrated val metrics are in-sample for the calibrator.
                         pr_cal = calibrator.transform(pr_raw)
-                        cal_summary = summarise(y_np, pr_cal, clim)
+                        cal_summary = _score(pr_cal)
                         cal_key = f"{name}_{split}_calibrated"
                         results[tgt][cal_key] = dict(cal_summary)
                         results[tgt][cal_key]["calibrated"] = True
