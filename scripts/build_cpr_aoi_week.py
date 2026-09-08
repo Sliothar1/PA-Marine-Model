@@ -24,8 +24,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CSV = (
     ROOT / "data" / "external" / "cpr_mba" / "raw" / "CPR_IrishHeatwaves_Data_04092026.csv"
 )
-OUT_CSV = ROOT / "data" / "processed" / "cpr_aoi_week.csv"
-OUT_SUMMARY = ROOT / "data" / "processed" / "cpr_aoi_summary.json"
+OUT_CSV = ROOT / "data" / "processed" / "cpr_aoi_week_climate_drivers.csv"
+OUT_SUMMARY = ROOT / "data" / "processed" / "cpr_aoi_summary_climate_drivers.json"
 
 AOIS: dict[str, dict[str, float | str]] = {
     "full_extract": {
@@ -202,6 +202,8 @@ def main() -> int:
             week=week["iso_week"],
         )
     args.out.parent.mkdir(parents=True, exist_ok=True)
+    if Path(args.out).name=="cpr_aoi_week.csv":
+        raise SystemExit("Refusing to overwrite PA canonical cpr_aoi_week.csv")
     week.to_csv(args.out, index=False)
     summary = build_summary(df, week)
     args.summary.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
