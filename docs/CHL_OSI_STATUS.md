@@ -1,6 +1,6 @@
 # Status: OC Chl + OSI SAF / ODYSSEA SST fold-in
 
-**Updated:** 2026-09-08 (IST, ~12:14)
+**Updated:** 2026-09-08 12:20 IST
 **Repo:** `/workspace/pa-marine-model` (github.com/Sliothar1/PA-Marine-Model)
 
 ## Product choices
@@ -32,49 +32,58 @@ Catalogue describe for Chl succeeded (bbox covers Irish shelf). Prior OSTIA/IBI 
 **Not touched:** `docs/CPR_MBA.md`.
 
 
-## ODYSSEA coverage update (2018+ ARCO — 2026-09-08)
+## PA ask — multi-decade open SST L4 via ARCO? (2026-09-08)
 
-Extended CloudFerro ARCO extract supersedes the 2022–2024-only hard_block extract:
+**Answer: No** — no anonymous CloudFerro ARCO (or similar HTTPS zarr) SST L4 honestly covers Irish HAB **train 2003–2018** as an OISST provider-swap beyond what we already have/tested. Hunting stopped; evidence from disk + prior report.
 
-| Table | Coverage |
-| --- | --- |
-| `odyssea_station_day.parquet` | **207** locs · **2018-01-01 → 2026-09-06** · 656 190 rows · 0% NaN |
-| `odyssea_station_week.parquet` | **207** locs · ISO **2018–2026** · 93 771 rows |
+| Candidate | Start | Covers train 2003–2018? | ARCO / open HTTPS? | Notes |
+| --- | --- | --- | --- | --- |
+| **ODYSSEA** `SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025` | **2018-01-01** | **No** (~11% train = 2018 only) | Yes — CloudFerro `…/timeChunked.zarr` (`zarr_format=2`) | Working Climate Drivers extract; **not** full-train swap-capable |
+| **OSTIA L4 REP** `SST_GLO_SST_L4_REP_OBSERVATIONS_010_011` / `METOFFICE-GLO-SST-L4-REP-OBS-SST` | disk **2002-01-01 → 2026-03-31** (catalogue ~1981+) | **Yes** | **No** ARCO URI in repo — `copernicusmarine` only (auth TLS broken here) | **Already extracted + tested**; cal LightGBM test PR-AUC **~0.24 vs OISST ~0.29** (`data/processed/ostia_vs_oisst_report.md`). Not OISST rebranded (~0.05° Met Office) — but **lost** as predictive default |
+| ESA CCI / other MY SST L4 | multi-decade (catalogue) | likely | **Not** found as working anonymous ARCO like ODYSSEA | Do not invent URLs/creds |
 
-**Implication for locked split:** train 2003–2018 still mostly empty (product starts 2018) — expect **~1 year** of late-train overlap, full val 2019–2021, full test 2022+. Gatekeeper should **re-run** provider-swap ablation; prior `hard_block` (0% train) is outdated. Still cannot claim full-history OISST train parity. Cite DOI 10.48670/moi-00152. Commit `be15664`.
+**Recommendation**
+1. **Park** ODYSSEA / OSI SAF as a **predictive** OISST-swap lane (train hard-limit; OSTIA already answered “finer multi-decade L4 ≠ skill lift”).
+2. Keep ODYSSEA ARCO only as **descriptive / Climate Drivers** context (2018+, agreement vs OISST on overlap).
+3. **Pivot** open multi-decade driver work to GlobColour Chl MY `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` (~**1997+**, covers locked train) — expand beyond the 2023 pilot.
+4. Default SST remains **NOAA OISST**; OSTIA stays optional `--provider ostia` (local parquet exists).
 
+**Next step:** full-history Chl station-week extract + ablation vs `STRONG_OISST` — not more SST ARCO hunting.
 
 ## ODYSSEA station-day / week (Climate Drivers — ARCO)
 
-**Status 2026-09-08:** Full Irish HAB station extract via CloudFerro ARCO (no CMEMS auth).
+**Updated:** 2026-09-08 12:16 IST
+
+Full Irish HAB station extract via public CloudFerro ARCO zarr (`zarr_format=2`), no CMEMS auth. Scripts: `extract_odyssea_station_day_arco.py` / `download_odyssea_arco_station_day.py` (append/merge). Catalogue product start **2018-01-01**; single ARCO gap **2018-10-22** (403).
 
 | Table | Path | Coverage |
 | --- | --- | --- |
-| Station-day | `data/processed/odyssea_station_day.parquet` | **207** locations · **2022-01-01 → 2024-12-31** · 226 872 rows · 100% finite `sst_c` |
-| Station-week | `data/processed/odyssea_station_week.parquet` | **207** locs · 32 706 rows · cols `odyssea_sst_week`, `iso_year`, `iso_week` |
-| Joined panel | `data/processed/joined_features_oc_osi.parquet` (+ alias `joined_features_odyssea.parquet`) | HAB panel + `osi_sst_week` (= `odyssea_sst_week`) + `osi_minus_oisst` + pilot Chl lags |
-| Join summary | `data/processed/oc_osi_join_summary.json` | coverage by split |
-| Gate JSON | `data/processed/odyssea_ablation_gate.json` | deltas + hard_block + `alert_pa` |
+| Station-day | `data/processed/odyssea_station_day.parquet` | **207** locs · **2018-01-01 → 2026-09-06** · **656 190** rows · 100% finite `sst_c` (2018–2024 slice: 529 092 rows / 2556 days) |
+| Station-week | `data/processed/odyssea_station_week.parquet` | **207** locs · ISO **2018–2026** · **93 771** rows · cols `odyssea_sst_week`, `iso_year`, `iso_week` |
+| Summary | `data/processed/odyssea_arco_summary.json` + `data/raw/osi_saf/sources.json` | extract meta / skipped day |
+| Joined panel (prior) | `data/processed/joined_features_oc_osi.parquet` | still reflects **pre-extend** join — re-run `join_oc_osi_week.py` |
+| Gate JSON (prior) | `data/processed/odyssea_ablation_gate.json` | **stale** hard_block from 2022–2024-only extract |
 
-**Access:** ARCO zarr `…/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/…/timeChunked.zarr` (`zarr_format=2`). Sources: `data/raw/osi_saf/odyssea_station_day_sources.json`.
+**Access:** ARCO zarr `…/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/…/timeChunked.zarr` (`zarr_format=2`). DOI 10.48670/moi-00152.
 
-### ODYSSEA coverage on HAB panel (by split)
+### Expected ODYSSEA coverage on HAB panel (by locked split; week join estimate)
 
 | Split | n rows | n with `odyssea_sst_week` | coverage |
 | --- | ---: | ---: | ---: |
-| train (2003–2018) | 29 683 | **0** | **0.0%** |
-| val (2019–2021) | 9 189 | 3 | 0.03% |
-| test (2022+) | 14 270 | 9 317 | **65.3%** |
-| all | 53 172 | 9 320 | 17.5% |
+| train (2003–2018) | 29 683 | 3 354 | **11.3%** (2018 only) |
+| val (2019–2021) | 9 189 | 9 189 | **100%** |
+| test (2022+) | 14 270 | 14 270 | **100%** |
+| all | 53 172 | 26 813 | **50.4%** |
 
-### HARD BLOCK — true OISST→ODYSSEA provider-swap
+### Hard limit — full 2003–2018 train still impossible
 
-**Cannot rebuild STRONG features from ODYSSEA across train 2003–2018 with the current extract.**  
-ODYSSEA station-week is ~2022–2024 only → train coverage = 0. Ablation `STRONG+ODYSSEA` is an **add-on** with missing→0 fill on train/val, **not** a fair provider swap. Do not claim SST-provider substitution skill.
+ODYSSEA / this ARCO product **starts ~2018-01-01**. Under the locked **2003–2018** train split, pre-2018 years remain empty → **full-history OISST→ODYSSEA provider-swap is still impossible**. Prior gate `hard_block` (0% train from 2022–2024-only extract) is outdated on coverage, but the **protocol conclusion stands**: do not claim SST-provider substitution skill over the full locked train.
 
-Secondary (honest, non-swap): on **test ∩ ODYSSEA** (n=3 813 rows with both SSTs), `corr(odyssea_sst_week, sst)` ≈ **0.971**, MAE ≈ 0.61 °C, bias (ODY−OISST) ≈ −0.39 °C. This is product agreement only.
+**Allowed exploratory uses only:** late-train (2018 overlap), val/test, or alternate **2018+** splits. Re-run join + provider-swap ablation before updating `alert_pa`.
 
-## Ablation results (LightGBM, val isotonic cal, `y_dinophysis_nowcast`)
+Secondary (honest, non-swap; from prior test ∩ ODYSSEA window): `corr(odyssea_sst_week, sst)` ≈ **0.971**, MAE ≈ 0.61 °C, bias (ODY−OISST) ≈ −0.39 °C. Product agreement only.
+
+## Ablation results (LightGBM — **stale vs extended extract**)
 
 Reference prior strong run: test cal PR-AUC ≈ **0.293** (`metrics_dino_strong.json`).
 
@@ -84,9 +93,9 @@ Reference prior strong run: test cal PR-AUC ≈ **0.293** (`metrics_dino_strong.
 | Apr–Sep | 0.290 | 0.290 | **0.000** | 0.184 |
 | Connemara bbox | 0.078 | 0.078 | **0.000** | 0.084 |
 
-Δ=0 is expected under the hard block: ODYSSEA columns are all-missing (→0) on train, so trees never split on them. JSON: `odyssea_ablation_{national,apr_sep,connemara}.json`.
+These Δ=0 numbers were fit under the **2022–2024-only** extract (train all-missing →0). **Do not treat as current** until join + ablation are re-run on the 2018+ week table. JSON: `odyssea_ablation_{national,apr_sep,connemara}.json`.
 
-**`alert_pa`:** **true** — reason: `hard_block` (provider-swap impossible with current extract); national Δ is not >0.
+**`alert_pa` (prior):** **true** — `hard_block` from 2022–2024 extract; keep until Gatekeeper re-evaluates with 2018+ coverage (full 2003–2018 swap remains impossible).
 
 ## Chl — still pilot-only
 
@@ -120,4 +129,4 @@ PYTHONPATH=src .venv/bin/python scripts/oc_osi_ablation.py --connemara \
 
 ## Local anchors
 
-Mace Head / Lehanagh Pool remain in `configs/default.yaml` sentinel block; Chl pilot snaps to 5 stations only. ODYSSEA covers all 207 HAB `location_id`s in the 2022–2024 window (lat 51.47–55.28, lon −10.57…−6.03).
+Mace Head / Lehanagh Pool remain in `configs/default.yaml` sentinel block; Chl pilot snaps to 5 stations only. ODYSSEA covers all 207 HAB `location_id`s for **2018-01-01 → 2026-09-06** (lat 51.47–55.28, lon −10.57…−6.03); product start prevents full 2003–2018 train.

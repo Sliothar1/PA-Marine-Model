@@ -45,7 +45,6 @@ data.gov.ie mirrors (Belmullet):
 - Folded to: `data/processed/mace_head_garry_monthly.{csv,parquet}` + lag features `data/processed/mace_head_garry_monthly_lag_features.csv` (`meant`/`rain`/`wdsp` lag1m + meant roll3m).  
 - Same blank-sun story on open clidata `mly275.csv`.
 
-
 ### Historical Data gold (Garry drop — box-local)
 
 CSVs live under `data/external/met_eireann/historical/` (**gitignored**; keep on the shared box). Manifest: `historical/sources.json` (committed).
@@ -83,7 +82,6 @@ Flat CSV + LTA companions sit beside each JSON. Ingest should **merge with these
 **Also in `data/external/met_eireann/`:** `daily_mace_head_dly275.csv` (~743 KB), `monthly_classic_mace_head_mly275.csv`, `monthly_classic_malin_head_mly1575.csv` (~45 KB). See **1991–2020 normals** section below for `normals_9120/` (IE_*.txt gitignored; **zips + Readmes + extract** committed).
 
 **Long radiation/sunshine for HAB weeks → use Belmullet daily `glorad`/`sun` (clidata), not Agmet alone.**
-
 
 ### 1991–2020 1 km climatological NORMALS (Garry drop)
 
@@ -216,7 +214,6 @@ Open CPC / NCEI indices for explanatory / Cork narrative live in **[`MACRO_CLIMA
 - Week join: `data/processed/climate_indices_week.csv` (`iso_year`, `iso_week`)
 - Ablation: `scripts/macro_climate_ablation.py` — **no national PR-AUC lift** vs `STRONG_OISST`
 
-
 ## 6. MBA CPR IrishHeatwaves (AOI-week covariates — not Met/NAO)
 
 MBA Continuous Plankton Recorder extract (Pierre Hélaouët; DOI [10.17031/6a9e6f4a00142](https://doi.org/10.17031/6a9e6f4a00142)) — **group aggregates only**. Full notes: **[`CPR_MBA.md`](CPR_MBA.md)**.
@@ -226,7 +223,6 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 - **Build:** `scripts/build_cpr_aoi_week.py` → `data/processed/cpr_aoi_week.csv` + `cpr_aoi_summary.json`.
 - **Join:** left-join HAB week panel on `iso_year` + `iso_week` after filtering `aoi` (Connemara nested = **0** tows; west shelf sparse ~35).
 - **Not** species-level Dinophysis; heavy CPR ingest stays with PA (`scripts/ingest_cpr_mba.py`).
-
 
 ## 7. Ocean colour Chl + OSI SAF SST (spring–summer MHW × Dinophysis)
 
