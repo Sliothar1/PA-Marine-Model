@@ -1,6 +1,6 @@
 # Status: OC Chl + OSI SAF / ODYSSEA SST fold-in
 
-**Updated:** 2026-09-08 12:20 IST
+**Updated:** 2026-09-08 12:25 IST
 **Repo:** `/workspace/pa-marine-model` (github.com/Sliothar1/PA-Marine-Model)
 
 ## Product choices
@@ -59,7 +59,7 @@ Catalogue describe for Chl succeeded (bbox covers Irish shelf). Prior OSTIA/IBI 
 
 ## ODYSSEA station-day / week (Climate Drivers — ARCO)
 
-**Updated:** 2026-09-08 12:16 IST
+**Updated:** 2026-09-08 12:25 IST
 
 Full Irish HAB station extract via public CloudFerro ARCO zarr (`zarr_format=2`), no CMEMS auth. Scripts: `extract_odyssea_station_day_arco.py` / `download_odyssea_arco_station_day.py` (append/merge). Catalogue product start **2018-01-01**; single ARCO gap **2018-10-22** (403).
 
@@ -70,7 +70,7 @@ Full Irish HAB station extract via public CloudFerro ARCO zarr (`zarr_format=2`)
 | Joined panel | `data/processed/joined_features_osi_sst.parquet` | left-join on `location_id`+ISO week · `odyssea_sst_week` / `odyssea_minus_oisst` · ~50% coverage (HAB weeks outside 2018+) |
 | Summary | `data/processed/odyssea_arco_summary.json` + `data/raw/osi_saf/sources.json` | extract meta / skipped day |
 | Joined panel (prior) | `data/processed/joined_features_oc_osi.parquet` | still reflects **pre-extend** join — re-run `join_oc_osi_week.py` |
-| Gate JSON (prior) | `data/processed/odyssea_ablation_gate.json` | **stale** hard_block from 2022–2024-only extract |
+| Gate JSON | `data/processed/odyssea_ablation_gate.json` | **EXTENDED** provider-swap: hard_block=true, Δ=−0.074, alert_pa=true |
 
 **Access:** ARCO zarr `…/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/…/timeChunked.zarr` (`zarr_format=2`). DOI 10.48670/moi-00152.
 
@@ -87,23 +87,55 @@ Full Irish HAB station extract via public CloudFerro ARCO zarr (`zarr_format=2`)
 
 ODYSSEA / this ARCO product **starts ~2018-01-01**. Under the locked **2003–2018** train split, pre-2018 years remain empty → **full-history OISST→ODYSSEA provider-swap is still impossible**. Prior gate `hard_block` (0% train from 2022–2024-only extract) is outdated on coverage, but the **protocol conclusion stands**: do not claim SST-provider substitution skill over the full locked train.
 
-**Allowed exploratory uses only:** late-train (2018 overlap), val/test, or alternate **2018+** splits marked `exploratory_not_protocol`. Do **not** re-run Cork-facing provider-swap ablation for a national claim; leave `alert_pa` / judge card on prior `hard_block`.
+**Allowed exploratory uses only:** late-train (2018 overlap), val/test, or alternate **2018+** splits marked `exploratory_not_protocol`. EXTENDED provider-swap re-run confirms **`hard_block`** + **Δ < 0**; no national skill claim.
 
 Secondary (honest, non-swap; from prior test ∩ ODYSSEA window): `corr(odyssea_sst_week, sst)` ≈ **0.971**, MAE ≈ 0.61 °C, bias (ODY−OISST) ≈ −0.39 °C. Product agreement only.
 
-## Ablation results (LightGBM — **stale vs extended extract**)
+## Ablation results (LightGBM — EXTENDED provider-swap, 2026-09-08)
 
-Reference prior strong run: test cal PR-AUC ≈ **0.293** (`metrics_dino_strong.json`).
+Canonical run: `scripts/odyssea_provider_swap_ablation.py` on ODYSSEA **2018-01-01 → 2026-09-06** (rebuild same 9 `STRONG_OISST` feats from `sst_c`; not stacked). Cite DOI 10.48670/moi-00152.
 
-| Slice | STRONG test cal PR-AUC | STRONG+ODYSSEA | Δ | clim |
-| --- | ---: | ---: | ---: | ---: |
-| National | 0.295 | 0.295 | **0.000** | 0.183 |
-| Apr–Sep | 0.290 | 0.290 | **0.000** | 0.184 |
-| Connemara bbox | 0.078 | 0.078 | **0.000** | 0.084 |
+| Split | ODYSSEA sst coverage |
+| --- | ---: |
+| train (2003–2018) | **11.3%** (2018 only; n_train with ODYSSEA=**3354**) |
+| val (2019–2021) | **100%** |
+| test (2022+) | **100%** |
 
-These Δ=0 numbers were fit under the **2022–2024-only** extract (train all-missing →0). **Do not treat as current** until join + ablation are re-run on the 2018+ week table. JSON: `odyssea_ablation_{national,apr_sep,connemara}.json`.
+| Config | LGBM test cal PR-AUC | PR skill vs WoY |
+| --- | ---: | ---: |
+| STRONG_OISST (OISST re-run) | **0.2953** | 0.1373 |
+| ODYSSEA_STRONG (require_sst fit) | **0.2217** | 0.0805 |
+| **Δ (ODY − OISST)** | **−0.0736** | — |
 
-**`alert_pa`:** **true** (`hard_block`) — locked. Do not refresh for Cork from a late-only 2018+ fit. Full 2003–2018 swap remains impossible.
+| Subset (≠ national) | n / prev (test∩ODY) | OISST PR-AUC | ODYSSEA PR-AUC |
+| --- | --- | ---: | ---: |
+| Apr–Sep | 7610 / 0.096 | 0.2904 | 0.2182 |
+| Connemara 53.2–53.7N, −10.2…−9.4 | 1654 / 0.029 | 0.0781 | 0.0982 |
+
+- **`hard_block`:** **true** — partial late-train ≠ full history (11.3% train ≠ 2003–2018).
+- **`skill_claim`:** **false** (Δ ≤ 0 and hard_block).
+- **`alert_pa`:** **true** (hard_block).
+- Fit was **attempted** on late-2018 overlap (diagnostic only). Gate: `odyssea_ablation_gate.json`; report: `odyssea_provider_swap_ablation_report.md`.
+
+Prior stacked STRONG+ODYSSEA Δ=0 JSONs (`odyssea_ablation_{national,apr_sep,connemara}.json`) are **non-protocol** / superseded.
+
+## Ablation results (LightGBM — Gatekeeper 2018+ exploratory, 2026-09-08)
+
+Label if cited: **`exploratory_short_history_not_cork_spine`**. Does **not** replace Cork spine STRONG_OISST ~0.295. DOI [10.48670/moi-00152](https://doi.org/10.48670/moi-00152).
+
+| Slice / metric | Value |
+| --- | ---: |
+| Train ODYSSEA coverage | **11.3%** (2018-only; n_train with SST=3354) |
+| Val / test coverage | **100%** |
+| STRONG_OISST test cal PR-AUC | **0.295** |
+| ODYSSEA_STRONG test cal PR-AUC | **0.222** |
+| Δ | **−0.074** |
+| `skill_claim` | **false** |
+| `hard_block` | **true** (partial late-train ≠ full history) |
+
+Gate/metrics: `data/processed/odyssea_ablation_gate.json`, `data/processed/odyssea_provider_swap_ablation_metrics.json`.
+
+**Lane:** ODYSSEA/OSI predictive parked (Cork narrative only). Active open driver = **Chl MY** fill (2003–2017 ARCO in progress → week handoff to Gatekeeper).
 
 ## Chl — still pilot-only
 
@@ -123,6 +155,7 @@ Earthdata / Ifremer FTP session still missing on box for protected PO.DAAC NAR g
 
 ```bash
 cd /workspace/pa-marine-model
+PYTHONPATH=src .venv/bin/python scripts/odyssea_provider_swap_ablation.py
 PYTHONPATH=src .venv/bin/python scripts/join_oc_osi_week.py
 PYTHONPATH=src .venv/bin/python scripts/oc_osi_ablation.py \
   --out-json data/processed/odyssea_ablation_national.json \
