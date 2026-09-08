@@ -1,0 +1,189 @@
+{
+  "generated_at_utc": "2026-09-08T09:38:29.984928+00:00",
+  "doi": "10.17031/6a9e6f4a00142",
+  "doi_url": "https://doi.mba.ac.uk/data/3793",
+  "extractor": "Pierre H\u00e9laou\u00ebt",
+  "source_csv": "data/external/cpr_mba/raw/CPR_IrishHeatwaves_Data_04092026.csv",
+  "n_samples": 41884,
+  "year_min": 1982,
+  "year_max": 2022,
+  "iso_year_min": 1981,
+  "iso_year_max": 2022,
+  "columns_value": [
+    "cpr_mean_large_copepods",
+    "cpr_mean_small_copepods",
+    "cpr_mean_diatoms",
+    "cpr_mean_dinoflagellates",
+    "cpr_pci"
+  ],
+  "note_volume": "Each CPR sample filters ~3 m3 seawater",
+  "note_aggregates_only": true,
+  "note_not_dinophysis": "Mean_Dinoflagellates is an aggregate over routine taxa; list is Ceratium-heavy and contains 0 Dinophysis spp. Do not treat as HAB Dinophysis labels.",
+  "dinoflagellate_taxa_n": 44,
+  "dinoflagellate_ceratium_n": 29,
+  "dinoflagellate_dinophysis_n": 0,
+  "aoi_sample_counts": {
+    "western_shelf": 35,
+    "celtic": 5783,
+    "irish_sea": 3944,
+    "shelf_break": 863,
+    "malin": 300,
+    "scotland": 11673,
+    "connemara": 0,
+    "total_box": 33270
+  },
+  "connemara_nested_zero_tows": true,
+  "n_aoi_week_rows": 4750,
+  "aoi_week_rows_by_aoi": {
+    "western_shelf": 14,
+    "celtic": 801,
+    "irish_sea": 683,
+    "shelf_break": 162,
+    "malin": 192,
+    "scotland": 1145,
+    "connemara": 0,
+    "total_box": 1753
+  },
+  "outputs": {
+    "cpr_samples_parquet": "data/processed/cpr_samples.parquet",
+    "cpr_aoi_week_csv": "data/processed/cpr_aoi_week.csv",
+    "control_map_figure": "data/processed/figures/CPR_IrishHeatwaves_ControlMap_04092026.png",
+    "summary_json": "data/processed/cpr_ingest_summary.json"
+  },
+  "taxa_lists": {
+    "large_copepods": {
+      "path": "data/external/cpr_mba/raw/CPR_IrishHeatwaves_List_LargeCopepods_04092026.csv",
+      "exists": true,
+      "n_taxa": 44,
+      "n_ceratium": 0,
+      "n_dinophysis": 0,
+      "columns": [
+        "Accepted_ID",
+        "Taxon_Name",
+        "WoRMS_Name",
+        "Aphia_ID",
+        "DRI",
+        "Kingdom",
+        "Phylum",
+        "Class",
+        "Order",
+        "Family",
+        "Genus",
+        "Species"
+      ]
+    },
+    "small_copepods": {
+      "path": "data/external/cpr_mba/raw/CPR_IrishHeatwaves_List_SmallCopepods_04092026.csv",
+      "exists": true,
+      "n_taxa": 33,
+      "n_ceratium": 0,
+      "n_dinophysis": 0,
+      "columns": [
+        "Accepted_ID",
+        "Taxon_Name",
+        "WoRMS_Name",
+        "Aphia_ID",
+        "DRI",
+        "Kingdom",
+        "Phylum",
+        "Class",
+        "Order",
+        "Family",
+        "Genus",
+        "Species"
+      ]
+    },
+    "diatoms": {
+      "path": "data/external/cpr_mba/raw/CPR_IrishHeatwaves_List_Diatoms_04092026.csv",
+      "exists": true,
+      "n_taxa": 61,
+      "n_ceratium": 0,
+      "n_dinophysis": 0,
+      "columns": [
+        "Accepted_ID",
+        "Taxon_Name",
+        "WoRMS_Name",
+        "Aphia_ID",
+        "DRI",
+        "Kingdom",
+        "Phylum",
+        "Class",
+        "Order",
+        "Family",
+        "Genus",
+        "Species"
+      ]
+    },
+    "dinoflagellates": {
+      "path": "data/external/cpr_mba/raw/CPR_IrishHeatwaves_List_Dinoflagellates_04092026.csv",
+      "exists": true,
+      "n_taxa": 44,
+      "n_ceratium": 29,
+      "n_dinophysis": 0,
+      "columns": [
+        "Accepted_ID",
+        "Taxon_Name",
+        "WoRMS_Name",
+        "Aphia_ID",
+        "DRI",
+        "Kingdom",
+        "Phylum",
+        "Class",
+        "Order",
+        "Family",
+        "Genus",
+        "Species"
+      ]
+    }
+  },
+  "aoi_boxes": {
+    "western_shelf": {
+      "lat_min": 52.5,
+      "lat_max": 55.0,
+      "lon_min": -11.5,
+      "lon_max": -9.0
+    },
+    "celtic": {
+      "lat_min": 49.5,
+      "lat_max": 52.0,
+      "lon_min": -10.5,
+      "lon_max": -5.5
+    },
+    "irish_sea": {
+      "lat_min": 52.5,
+      "lat_max": 54.5,
+      "lon_min": -6.2,
+      "lon_max": -3.2
+    },
+    "shelf_break": {
+      "lat_min": 51.0,
+      "lat_max": 55.0,
+      "lon_min": -15.0,
+      "lon_max": -11.5
+    },
+    "malin": {
+      "lat_min": 54.5,
+      "lat_max": 55.8,
+      "lon_min": -8.0,
+      "lon_max": -4.5
+    },
+    "scotland": {
+      "lat_min": 54.75,
+      "lat_max": 60.76,
+      "lon_min": -7.5,
+      "lon_max": -0.83
+    },
+    "connemara": {
+      "lat_min": 53.2,
+      "lat_max": 53.7,
+      "lon_min": -10.2,
+      "lon_max": -9.4
+    },
+    "total_box": {
+      "lat_min": 49.5,
+      "lat_max": 60.76,
+      "lon_min": -15.0,
+      "lon_max": -0.83
+    }
+  }
+}

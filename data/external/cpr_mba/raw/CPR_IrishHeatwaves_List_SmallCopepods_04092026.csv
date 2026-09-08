@@ -1,0 +1,34 @@
+Accepted_ID,Taxon_Name,WoRMS_Name,Aphia_ID,DRI,Kingdom,Phylum,Class,Order,Family,Genus,Species
+1,Calanus I-IV,Calanus,104152,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Calanus,
+3,Para-Pseudocalanus spp.,Para-Pseudocalanus,104165,1958,Animalia,Arthropoda,Copepoda,Calanoida,Clausocalanidae,Pseudocalanus,
+4,Temora longicornis,Temora longicornis,104878,1958,Animalia,Arthropoda,Copepoda,Calanoida,Temoridae,Temora,longicornis
+5,Acartia spp. (unidentified),Acartia,104108,1958,Animalia,Arthropoda,Copepoda,Calanoida,Acartiidae,Acartia,
+6,Centropages typicus,Centropages typicus,104499,1958,Animalia,Arthropoda,Copepoda,Calanoida,Centropagidae,Centropages,typicus
+7,Centropages hamatus,Centropages hamatus,104496,1958,Animalia,Arthropoda,Copepoda,Calanoida,Centropagidae,Centropages,hamatus
+8,Isias clavipes,Isias clavipes,104501,1958,Animalia,Arthropoda,Copepoda,Calanoida,Centropagidae,Isias,clavipes
+9,Clausocalanus spp.,Clausocalanus,104161,1958,Animalia,Arthropoda,Copepoda,Calanoida,Clausocalanidae,Clausocalanus,
+10,Oithona spp.,Oithona,106485,1958,Animalia,Arthropoda,Copepoda,Cyclopoida,Oithonidae,Oithona,
+11,Corycaeus spp.,Corycaeus,128634,1958,Animalia,Arthropoda,Copepoda,Cyclopoida,Corycaeidae,Corycaeus,
+12,Calanus Total Traverse,Calanus,104152,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Calanus,
+13,Total Copepods,Copepods,1080,1958,Animalia,Arthropoda,Copepoda,,,,
+300,Acartia danae,Acartia danae,346026,1964,Animalia,Arthropoda,Copepoda,Calanoida,Acartiidae,Acartia,danae
+303,Candacia I-IV,Candacia,104157,1958,Animalia,Arthropoda,Copepoda,Calanoida,Candaciidae,Candacia,
+304,Ctenocalanus vanus,Ctenocalanus vanus,104510,1959,Animalia,Arthropoda,Copepoda,Calanoida,Clausocalanidae,Ctenocalanus,vanus
+307,Euterpina acutifrons,Euterpina acutifrons,116162,1964,Animalia,Arthropoda,Copepoda,Harpacticoida,Tachidiidae,Euterpina,acutifrons
+309,Macrosetella gracilis,Macrosetella gracilis,116382,1965,Animalia,Arthropoda,Copepoda,Harpacticoida,Miraciidae,Macrosetella,gracilis
+311,Lubbockia spp.,Lubbockia,128672,1958,Animalia,Arthropoda,Copepoda,Cyclopoida,Lubbockiidae,Lubbockia,
+312,Lucicutia spp.,Lucicutia,104183,1958,Animalia,Arthropoda,Copepoda,Calanoida,Lucicutiidae,Lucicutia,
+313,Mecynocera clausi,Mecynocera clausi,104616,1958,Animalia,Arthropoda,Copepoda,Calanoida,Paracalanidae,Mecynocera,clausi
+314,Metridia I-IV,Metridia,104190,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Metridia,
+316,Microcalanus spp.,Microcalanus,104164,1958,Animalia,Arthropoda,Copepoda,Calanoida,Clausocalanidae,Microcalanus,
+318,Parapontella brevicornis,Parapontella brevicornis,104686,1958,Animalia,Arthropoda,Copepoda,Calanoida,Parapontellidae,Parapontella,brevicornis
+321,Scolecithricella spp.,Scolecithricella,104229,1958,Animalia,Arthropoda,Copepoda,Calanoida,Scolecitrichidae,Scolecithricella,
+322,Temora stylifera,Temora stylifera,104879,1963,Animalia,Arthropoda,Copepoda,Calanoida,Temoridae,Temora,stylifera
+323,Temora turbinata,Temora turbinata,104880,1968,Animalia,Arthropoda,Copepoda,Calanoida,Temoridae,Temora,turbinata
+324,Tortanus discaudatus,Tortanus discaudatus,157684,1961,Animalia,Arthropoda,Copepoda,Calanoida,Tortanidae,Tortanus,discaudatus
+326,Copepod nauplii,Copepod,1080,1958,Animalia,Arthropoda,Copepoda,,,,
+329,Diaixis hibernica,Diaixis hibernica,104521,1962,Animalia,Arthropoda,Copepoda,Calanoida,Diaixidae,Diaixis,hibernica
+330,Diaixis pygmaea,Diaixis pygmaea,104522,1965,Animalia,Arthropoda,Copepoda,Calanoida,Diaixidae,Diaixis,pygmaea
+431,Centropages spp. (Unidentified),Centropages,104159,1958,Animalia,Arthropoda,Copepoda,Calanoida,Centropagidae,Centropages,
+10587,Clytemnestridae,Clytemnestridae,587514,1965,Animalia,Arthropoda,Copepoda,Harpacticoida,Clytemnestridae,,
+10742,Pseudocalanus spp. adult Total,Pseudocalanus,104165,1958,Animalia,Arthropoda,Copepoda,Calanoida,Clausocalanidae,Pseudocalanus,

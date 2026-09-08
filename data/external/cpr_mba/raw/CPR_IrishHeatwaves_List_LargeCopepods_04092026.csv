@@ -1,0 +1,45 @@
+Accepted_ID,Taxon_Name,WoRMS_Name,Aphia_ID,DRI,Kingdom,Phylum,Class,Order,Family,Genus,Species
+40,Calanus finmarchicus,Calanus finmarchicus,104464,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Calanus,finmarchicus
+41,Calanus helgolandicus,Calanus helgolandicus,104466,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Calanus,helgolandicus
+42,Calanus glacialis,Calanus glacialis,104465,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Calanus,glacialis
+44,Calanus hyperboreus,Calanus hyperboreus,104467,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Calanus,hyperboreus
+45,Neocalanus gracilis,Neocalanus gracilis,104471,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Neocalanus,gracilis
+47,Nannocalanus minor,Nannocalanus minor,104469,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Nannocalanus,minor
+48,Calanoides carinatus,Calanoides carinatus,104462,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Calanoides,carinatus
+50,Rhincalanus nasutus,Rhincalanus nasutus,104543,1958,Animalia,Arthropoda,Copepoda,Calanoida,Rhincalanidae,Rhincalanus,nasutus
+51,Euchirella rostrata,Euchirella rostrata,104303,1958,Animalia,Arthropoda,Copepoda,Calanoida,Aetideidae,Euchirella,rostrata
+53,Euchaeta acuta,Euchaeta acuta,104550,1958,Animalia,Arthropoda,Copepoda,Calanoida,Euchaetidae,Euchaeta,acuta
+55,Metridia lucens,Metridia lucens,104633,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Metridia,lucens
+56,Metridia longa,Metridia longa,104632,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Metridia,longa
+57,Pleuromamma robusta,Pleuromamma robusta,104642,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Pleuromamma,robusta
+58,Pleuromamma abdominalis,Pleuromamma abdominalis,104637,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Pleuromamma,abdominalis
+59,Pleuromamma borealis,Pleuromamma borealis,104638,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Pleuromamma,borealis
+60,Pleuromamma gracilis,Pleuromamma gracilis,104639,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Pleuromamma,gracilis
+61,Candacia armata,Candacia armata,104474,1958,Animalia,Arthropoda,Copepoda,Calanoida,Candaciidae,Candacia,armata
+63,Labidocera wollastoni,Labidocera wollastoni,104736,1958,Animalia,Arthropoda,Copepoda,Calanoida,Pontellidae,Labidocera,wollastoni
+320,Scaphocalanus echinatus,Scaphocalanus echinatus,104793,1965,Animalia,Arthropoda,Copepoda,Calanoida,Scolecitrichidae,Scaphocalanus,echinatus
+369,Heterorhabdus spp. (Unidentified),Heterorhabdus,104178,1958,Animalia,Arthropoda,Copepoda,Calanoida,Heterorhabdidae,Heterorhabdus,
+370,Aetideus armatus,Aetideus armatus,104275,1958,Animalia,Arthropoda,Copepoda,Calanoida,Aetideidae,Aetideus,armatus
+372,Anomalocera patersoni,Anomalocera patersoni,104722,1958,Animalia,Arthropoda,Copepoda,Calanoida,Pontellidae,Anomalocera,patersoni
+380,Centropages bradyi,Centropages bradyi,104491,1958,Animalia,Arthropoda,Copepoda,Calanoida,Centropagidae,Centropages,bradyi
+386,Eucalanus hyalinus,Eucalanus hyalinus,345781,1958,Animalia,Arthropoda,Copepoda,Calanoida,Eucalanidae,Eucalanus,hyalinus
+407,Heterorhabdus norvegicus,Heterorhabdus norvegicus,104579,1958,Animalia,Arthropoda,Copepoda,Calanoida,Heterorhabdidae,Heterorhabdus,norvegicus
+408,Heterorhabdus papilliger,Heterorhabdus papilliger,104580,1958,Animalia,Arthropoda,Copepoda,Calanoida,Heterorhabdidae,Heterorhabdus,papilliger
+411,Pleuromamma piseki,Pleuromamma piseki,104640,1960,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Pleuromamma,piseki
+412,Pleuromamma xiphias,Pleuromamma xiphias,104643,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Pleuromamma,xiphias
+414,Sapphirina spp.,Sapphirina,128722,1958,Animalia,Arthropoda,Copepoda,Cyclopoida,Sapphirinidae,Sapphirina,
+418,Undeuchaeta major,Undeuchaeta major,104342,1958,Animalia,Arthropoda,Copepoda,Calanoida,Aetideidae,Undeuchaeta,major
+419,Undeuchaeta plumosa,Undeuchaeta plumosa,104343,1958,Animalia,Arthropoda,Copepoda,Calanoida,Aetideidae,Undeuchaeta,plumosa
+428,Euchirella spp. (Unidentified),Euchirella,104120,1958,Animalia,Arthropoda,Copepoda,Calanoida,Aetideidae,Euchirella,
+429,Candacia spp. (Unidentified),Candacia,104157,1958,Animalia,Arthropoda,Copepoda,Calanoida,Candaciidae,Candacia,
+434,Pleuromamma spp. (Unidentified),Pleuromamma,104191,1958,Animalia,Arthropoda,Copepoda,Calanoida,Metridinidae,Pleuromamma,
+435,Undeuchaeta spp. (Unidentified),Undeuchaeta,104128,1958,Animalia,Arthropoda,Copepoda,Calanoida,Aetideidae,Undeuchaeta,
+10066,Siphonostomatoida,Siphonostomatoida,1104,1958,Animalia,Arthropoda,Copepoda,Siphonostomatoida,,,
+10588,Mesocalanus tenuicornis,Mesocalanus tenuicornis,104468,1958,Animalia,Arthropoda,Copepoda,Calanoida,Calanidae,Mesocalanus,tenuicornis
+10596,Subeucalanus crassus,Subeucalanus crassus,104544,1958,Animalia,Arthropoda,Copepoda,Calanoida,Eucalanidae,Subeucalanus,crassus
+10601,Eucalanidae (unidentified),Eucalanidae,104085,1958,Animalia,Arthropoda,Copepoda,Calanoida,Eucalanidae,,
+10603,Paraeuchaeta gracilis,Paraeuchaeta gracilis,104561,1958,Animalia,Arthropoda,Copepoda,Calanoida,Euchaetidae,Paraeuchaeta,gracilis
+10604,Paraeuchaeta hebes,Paraeuchaeta hebes,104563,1958,Animalia,Arthropoda,Copepoda,Calanoida,Euchaetidae,Paraeuchaeta,hebes
+10605,Paraeuchaeta norvegica,Paraeuchaeta norvegica,104566,1958,Animalia,Arthropoda,Copepoda,Calanoida,Euchaetidae,Paraeuchaeta,norvegica
+10606,Euchaetidae (unidentified),Euchaetidae,104086,1958,Animalia,Arthropoda,Copepoda,Calanoida,Euchaetidae,,
+10610,Parathalestris croni,Parathalestris croni,724226,1958,Animalia,Arthropoda,Copepoda,Harpacticoida,Thalestridae,Parathalestris,croni

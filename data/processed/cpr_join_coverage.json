@@ -1,0 +1,31 @@
+{
+  "n_rows": 53172,
+  "n_locations": 207,
+  "aoi_assignment": {
+    "total_box": 16599,
+    "celtic": 15651,
+    "western_shelf": 15088,
+    "malin": 3367,
+    "irish_sea": 2467
+  },
+  "coverage_pct": {
+    "cpr_aoi_n_samples": 28.203,
+    "cpr_aoi_mean_large_copepods": 28.203,
+    "cpr_aoi_mean_small_copepods": 28.203,
+    "cpr_aoi_mean_diatoms": 28.203,
+    "cpr_aoi_mean_dinoflagellates": 28.203,
+    "cpr_aoi_pci": 28.203,
+    "cpr_aoi_dino_diatom_ratio": 25.241,
+    "cpr_near_dist_km": 0.0,
+    "cpr_near_mean_large_copepods": 0.0,
+    "cpr_near_mean_small_copepods": 0.0,
+    "cpr_near_mean_diatoms": 0.0,
+    "cpr_near_mean_dinoflagellates": 0.0,
+    "cpr_near_pci": 0.0,
+    "any_cpr_aoi": 28.203,
+    "any_cpr_nearest100": 0.0
+  },
+  "outputs": {
+    "joined": "data/processed/joined_features_with_cpr.parquet"
+  }
+}
