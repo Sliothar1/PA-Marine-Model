@@ -75,7 +75,7 @@ Climate-facing aliases (summary JSON only; same boxes where mapped):
 - **Western shelf ~35 samples** — not a primary west-coast HAB ML feature.
 - Prefer **Irish Sea / Celtic / Scotland** (and `total_box` / `full_extract`) for CPR narrative and heatwave/shelf context.
 
-Exact counts: `data/processed/cpr_aoi_summary_climate_drivers.json` (and PA `cpr_ingest_summary.json`).
+Exact counts: `data/processed/cpr_aoi_week_summary.json` and `cpr_ingest_summary.json`.
 
 ---
 
@@ -107,7 +107,7 @@ Week metrics (means): `cpr_mean_dinoflagellates`, `cpr_mean_diatoms`, `cpr_mean_
 **Left-join keys onto the HAB week panel** (same ISO week convention as `climate_indices_week` / `met_west_climate_week`):
 
 1. Choose an AOI (`celtic`, `irish_sea`, `scotland`, … — **not** `connemara`).
-2. Filter `cpr_aoi_week_climate_drivers.csv` to that `aoi` (climate ids: `celtic_sea` / `irish_sea` / `scotland_west`).
+2. Filter `cpr_aoi_week` to that `aoi`.
 3. **Left-join** on **`iso_year` + `iso_week`**.
 
 ```python
@@ -180,9 +180,11 @@ Further ask to Pierre deferred unless species-level *Dinophysis* or post-2022 da
 
 ## 9. Climate Drivers notes
 
-Climate Drivers does **not** own CPR ingest or Dinophysis ablation (§§6–8 above stay locked after Int’l HAB Dev reconcile).
+Climate Drivers does **not** own CPR ingest or Dinophysis ablation (§§6–8 above stay locked).
 
-- Cross-links: [`CLIMATE_DRIVERS.md`](CLIMATE_DRIVERS.md) §6 and [`MACRO_CLIMATE.md`](MACRO_CLIMATE.md) point here.
-- Role: treat CPR AOI-week features as **shelf / heatwave narrative covariates** alongside Met Éireann and NAO/EA/AMO — **not** a Met or teleconnection replacement, and **not** species-level *Dinophysis*.
-- Connemara nested AOI remains **0** CPR tows; prefer Irish Sea / Celtic / Scotland-west AOIs for joins.
-- Further Climate Drivers edits to this file: **append under §9 only** (or edit the climate-doc pointers). Do not rewrite §§1–8.
+- Cross-links: [`CLIMATE_DRIVERS.md`](CLIMATE_DRIVERS.md) and [`MACRO_CLIMATE.md`](MACRO_CLIMATE.md) point here.
+- Role: CPR AOI-week features as **shelf / heatwave narrative covariates** alongside Met Éireann and NAO/EA/AMO — **not** a Met/teleconnection replacement, and **not** species-level *Dinophysis*.
+- Connemara nested AOI remains **0** CPR tows; prefer Irish Sea / Celtic / Scotland AOIs for narrative joins.
+- Further Climate Drivers edits: **append under §9 only** (or edit climate-doc pointers). Do not rewrite §§1–8.
+- AOI-week CSVs/summaries stay **local/gitignored** (Legal NC-conservative); public repo keeps cite + metrics/narrative.
+
