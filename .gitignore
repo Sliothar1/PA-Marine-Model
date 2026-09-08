@@ -160,3 +160,7 @@ data/processed/cpr_aoi_week_climate_drivers.csv
 data/processed/cpr_aoi_summary.json
 data/processed/cpr_aoi_summary_climate_drivers.json
 data/processed/cpr_aoi_week_summary_climate_drivers.json
+
+!data/processed/oc_osi_ablation_metrics.json
+!data/processed/oc_osi_ablation_report.md
+!data/processed/oc_osi_join_summary.json

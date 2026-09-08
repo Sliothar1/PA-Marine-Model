@@ -227,3 +227,67 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 - **Join:** left-join HAB week panel on `iso_year` + `iso_week` after filtering `aoi` (Connemara nested = **0** tows; west shelf sparse ~35).
 - **Not** species-level Dinophysis; heavy CPR ingest stays with PA (`scripts/ingest_cpr_mba.py`).
 
+
+## 7. Ocean colour Chl + OSI SAF SST (spring–summer MHW × Dinophysis)
+
+**Purpose:** Fold **open** Copernicus/WEkEO chlorophyll and **EUMETSAT OSI SAF** SST into the Cork Ocean Hackathon story as shelf bloom context + independent SST/MHW check. Not a Sextant weekend dump.
+
+### (a) Ocean colour — chlorophyll
+
+| | |
+| --- | --- |
+| **Product** | `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` (Copernicus-GlobColour Atlantic L4) |
+| **Dataset** | `cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D` |
+| **Variable** | `CHL` (mg m⁻³), daily **gap-free** multi-sensor, ~1 km |
+| **Coverage** | 1997 → ongoing; bbox includes Irish shelf (−46…13°E, 20…66°N) |
+| **Why this one** | Long MY series for station-weeks 2002–2026; gap-free so week joins don’t die on cloud; WEkEO mirrors the same CMEMS IDs |
+| **Not chosen (yet)** | NWS/IBI HR Sentinel-2 Chl (`OCEANCOLOUR_NWS_BGC_HR_*`) — coastal 100 m but short/gappy; better for case-study maps than national week ML |
+| **Access** | `copernicusmarine` + `~/.copernicusmarine` (same login as OSTIA/IBI) |
+| **Script** | `scripts/download_oc_chl.py` → `data/raw/oc_chl_daily.parquet` |
+| **Module** | `src/pa_marine/oc_chl.py` |
+
+### (b) OSI SAF SST — independent MHW / shelf check
+
+| | |
+| --- | --- |
+| **Primary** | **OSI-202-c** NAR L3C Metop-B/AVHRR (~2 km, 4× daily, GHRSST) |
+| **GHRSST id** | `AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0` |
+| **DOI / licence** | [10.15770/EUM_SAF_OSI_NRT_2012](https://doi.org/10.15770/EUM_SAF_OSI_NRT_2012) · **CC BY 4.0** |
+| **Fallback** | **OSI-201-b** Global Metop L3C 0.05° (`AVHRR_SST_METOP_B_GLB-OSISAF-L3C-v1.0`) |
+| **Why L3C** | True OSI SAF sensor SST (independent of NOAA OISST / CMEMS OSTIA analyses). Cloud gaps → use **week-mean clear-sky** (quality_level ≥ 3), not Hobday daily MHW |
+| **Discover** | `scripts/download_osi_saf_sst.py` → CMR manifest under `data/raw/osi_saf_sst/` |
+| **Module** | `src/pa_marine/osi_saf_sst.py` |
+| **Download paths** | PO.DAAC protected granules (Earthdata `~/.netrc`) · Ifremer FTP `ftp://ftp.ifremer.fr/ifremer/cersat/projects/osisaf/sst/l3c/north_atlantic/` |
+
+### Week-join schema
+
+1. **Chl daily** at nearest ocean pixel → `chl`, `chl_log1p` + lags `{0,7,14,21}` + rolls `{7,14,30}` → attach at `feat_date = week_start + 6d` (same as SST/MHW).
+2. **OSI SAF** clear-sky daily → ISO-week mean `osi_sst_week`, `osi_sst_n_clear`; optional `osi_minus_oisst` vs OISST week-end `sst`.
+3. Join script: `scripts/join_oc_osi_week.py` → `data/processed/joined_features_oc_osi.parquet`.
+
+Feature sets in `src/pa_marine/features.py`: `OC_CHL_CORE`, `OSI_SAF_WEEK`; modes `strong_chl`, `strong_osi`, `strong_chl_osi`.
+
+### Ablation plan vs strong 9-feature baseline
+
+Baseline = `STRONG_OISST` (test PR-AUC ~0.29 vs clim ~0.18 from prior runs — **do not re-invent**).
+
+| Config | Features |
+| --- | --- |
+| STRONG_OISST | season + lat/lon + SST lags/rolls |
+| STRONG+CHL | + `OC_CHL_CORE` |
+| STRONG+OSI | + `OSI_SAF_WEEK` |
+| STRONG+CHL+OSI | both |
+
+Optional: `--apr-sep` (spring–summer filter on `week_start` month).
+
+```bash
+.venv/bin/python scripts/download_oc_chl.py
+.venv/bin/python scripts/download_osi_saf_sst.py --t0 2023-06-01 --t1 2023-06-30
+# after Earthdata/FTP granule pull + daily extract:
+.venv/bin/python scripts/join_oc_osi_week.py --osi-daily data/raw/osi_saf_sst/osi_sst_daily.parquet
+.venv/bin/python scripts/oc_osi_ablation.py
+.venv/bin/python scripts/oc_osi_ablation.py --apr-sep
+```
+
+Status scratchpad: `docs/CHL_OSI_STATUS.md`.
+

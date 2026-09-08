@@ -113,6 +113,10 @@ paths:
   smc_toxin_panel: data/processed/smc_toxin_station_week_panel.parquet
   smc_areas: data/processed/smc_areas.csv
   raw_ibi: data/raw/ibi_daily.parquet
+  raw_oc_chl: data/raw/oc_chl_daily.parquet
+  raw_osi_saf_manifest: data/raw/osi_saf_sst/nar_metop_b_manifest.csv
+  joined_oc_osi: data/processed/joined_features_oc_osi.parquet
+  metrics_oc_osi: data/processed/oc_osi_ablation_metrics.json
   mhw_enriched: data/processed/mhw_daily_enriched.parquet
   joined_ibi: data/processed/joined_features_ibi.parquet
   metrics_ibi: data/processed/metrics_dino_ibi.json
@@ -159,3 +163,24 @@ sentinel:
     dataset_id: sentinel_lehanagh
     lat: 53.4001
     lon: -9.8207
+
+# Copernicus / WEkEO Atlantic Ocean Colour L4 gap-free Chl (station-pixel).
+ocean_colour:
+  product: OCEANCOLOUR_ATL_BGC_L4_MY_009_118
+  dataset_id: cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D
+  variable: CHL
+  service: timeseries
+  t0: "2002-01-01"
+  t1: "2026-08-31"
+
+# EUMETSAT OSI SAF SST (independent MHW / shelf check; L3C clear-sky week means).
+# NAR (OSI-202-c) preferred for Irish shelf; glb = OSI-201-b 0.05°.
+osi_saf_sst:
+  product: nar
+  osi_id: OSI-202-c
+  ghrsst_short_name: AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0
+  doi: "10.15770/EUM_SAF_OSI_NRT_2012"
+  licence: "CC BY 4.0"
+  quality_min: 3
+  kelvin_to_celsius: true
+

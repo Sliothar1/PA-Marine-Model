@@ -44,7 +44,9 @@ WIND_COLS = [
     "msl",
 ]
 
-FEATURE_PREFIXES = tuple(BASE_COLS + PHYSICS_COLS + WIND_COLS)
+CHL_COLS = ["chl", "chl_log1p"]
+
+FEATURE_PREFIXES = tuple(BASE_COLS + PHYSICS_COLS + WIND_COLS + CHL_COLS)
 
 
 def _week_end_features(daily: pd.DataFrame) -> pd.DataFrame:
@@ -227,6 +229,29 @@ ERA5_WIND_CORE = {
     "wind_crossshore_roll14d",
 }
 
+
+# Copernicus Atlantic OC L4 gap-free chlorophyll (station-pixel)
+OC_CHL_CORE = {
+    "chl",
+    "chl_lag0d",
+    "chl_lag7d",
+    "chl_roll7d",
+    "chl_roll14d",
+    "chl_roll30d",
+    "chl_log1p",
+    "chl_log1p_lag0d",
+    "chl_log1p_roll14d",
+    "chl_log1p_roll30d",
+}
+
+# EUMETSAT OSI SAF clear-sky week means (independent SST check; not Hobday daily)
+OSI_SAF_WEEK = {
+    "osi_sst_week",
+    "osi_sst_n_clear",
+    "osi_minus_oisst",
+}
+
+
 IBI_SSS_CUR = {
     "so",
     "so_lag0d",
@@ -280,5 +305,14 @@ def select_feature_mode(df: pd.DataFrame, mode: str) -> list[str]:
         return [f for f in all_feats if f in keep]
     if mode in {"strong_era5_wind", "strong_wind"}:
         keep = STRONG_OISST | ERA5_WIND_CORE
+        return [f for f in all_feats if f in keep]
+    if mode in {"strong_chl", "strong_oc"}:
+        keep = STRONG_OISST | OC_CHL_CORE
+        return [f for f in all_feats if f in keep]
+    if mode in {"strong_osi", "strong_osisaf"}:
+        keep = STRONG_OISST | OSI_SAF_WEEK
+        return [f for f in all_feats if f in keep]
+    if mode in {"strong_chl_osi", "strong_oc_osi"}:
+        keep = STRONG_OISST | OC_CHL_CORE | OSI_SAF_WEEK
         return [f for f in all_feats if f in keep]
     raise ValueError(f"Unknown feature mode: {mode}")
