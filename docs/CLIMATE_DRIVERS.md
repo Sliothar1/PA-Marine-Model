@@ -217,12 +217,13 @@ Open CPC / NCEI indices for explanatory / Cork narrative live in **[`MACRO_CLIMA
 - Ablation: `scripts/macro_climate_ablation.py` — **no national PR-AUC lift** vs `STRONG_OISST`
 
 
-## 6. MBA CPR IrishHeatwaves (AOI-week support)
+## 6. MBA CPR IrishHeatwaves (AOI-week covariates — not Met/NAO)
 
-MBA Continuous Plankton Recorder extract (Pierre Hélaouët; DOI [10.17031/6a9e6f4a00142](https://doi.org/10.17031/6a9e6f4a00142)) — **group aggregates only** for Irish Sea / Celtic / Scotland-west / heatwave–shelf context.
+MBA Continuous Plankton Recorder extract (Pierre Hélaouët; DOI [10.17031/6a9e6f4a00142](https://doi.org/10.17031/6a9e6f4a00142)) — **group aggregates only**. Full notes: **[`CPR_MBA.md`](CPR_MBA.md)**.
 
-- **Doc:** [`CPR_MBA.md`](CPR_MBA.md) (spatial honesty, Dinophysis limit, join keys).
-- **Build:** `scripts/build_cpr_aoi_week.py` → `data/processed/cpr_aoi_week.csv` + `cpr_aoi_week_summary.json`.
-- **Join:** left-join HAB week panel on `iso_year` + `iso_week` after filtering `aoi` (Connemara nested = **0** tows; west shelf sparse).
-- **Not** species-level Dinophysis; heavy CPR ingest stays with PA.
+CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for Irish Sea / Celtic / Scotland-west / heatwave–shelf narrative. It is **not** a replacement for Met Éireann radiation/wind (`met_west_climate_week`) or NAO/EA/AMO teleconnections ([`MACRO_CLIMATE.md`](MACRO_CLIMATE.md)).
+
+- **Build:** `scripts/build_cpr_aoi_week.py` → `data/processed/cpr_aoi_week.csv` + `cpr_aoi_summary.json`.
+- **Join:** left-join HAB week panel on `iso_year` + `iso_week` after filtering `aoi` (Connemara nested = **0** tows; west shelf sparse ~35).
+- **Not** species-level Dinophysis; heavy CPR ingest stays with PA (`scripts/ingest_cpr_mba.py`).
 

@@ -137,7 +137,8 @@ data/external/climate_indices/processed/*.parquet
 !data/processed/macro_climate_ablation_metrics.json
 !data/processed/macro_climate_ablation_report.md
 
-# CPR MBA (Pierre Hélaouët IrishHeatwaves) — large raw CSV/PNG local; track lists + summaries
+# MBA CPR IrishHeatwaves (Pierre Hélaouët / DOI 10.17031/6a9e6f4a00142)
+# Large raw sample CSV / control PNG / docx stay local; taxa lists + README tracked.
 data/external/cpr_mba/raw/CPR_IrishHeatwaves_Data_*.csv
 data/external/cpr_mba/raw/*.png
 data/external/cpr_mba/raw/*.docx
@@ -146,17 +147,12 @@ data/external/cpr_mba/*.png
 !data/external/cpr_mba/raw/CPR_IrishHeatwaves_List_*.csv
 !data/processed/cpr_ingest_summary.json
 !data/processed/cpr_aoi_week.csv
+!data/processed/cpr_aoi_week_summary.json
+!data/processed/cpr_aoi_summary_climate_drivers.json
+!data/processed/cpr_aoi_week_climate_drivers.csv
+!data/processed/cpr_aoi_summary.json
 !data/processed/cpr_join_coverage.json
 !data/processed/cpr_ablation_metrics.json
 !data/processed/cpr_ablation_report.md
-!data/processed/cpr_hab_join_report.md
-!data/processed/cpr_hab_ablation_metrics.json
-!data/processed/cpr_hab_ablation_report.md
 !data/processed/cpr_join_blocker.md
 !data/processed/cpr_ablation_blocker.md
-
-# MBA CPR bulky raw (keep taxa lists + README tracked via force-add if needed)
-data/external/cpr_mba/raw/CPR_IrishHeatwaves_Data_04092026.csv
-data/external/cpr_mba/raw/CPR_IrishHeatwaves_ControlMap_04092026.png
-data/external/cpr_mba/raw/*.docx
-data/external/cpr_mba/*.png
