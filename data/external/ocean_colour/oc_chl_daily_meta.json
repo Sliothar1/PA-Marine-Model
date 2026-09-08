@@ -1,17 +1,16 @@
 {
   "out": "data/raw/oc_chl_daily.parquet",
-  "n_rows": 1789308,
+  "n_rows": 2179503,
   "n_stations": 207,
-  "date_min": "2003-01-01",
+  "date_min": "1997-10-01",
   "date_max": "2026-08-31",
   "prefer_arco": true,
   "arco_zarr": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-042/arco/OCEANCOLOUR_ATL_BGC_L4_MY_009_118/cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D_202603/timeChunked.zarr",
-  "t0": "2003-01-01",
+  "t0": "1997-10-01",
   "t1": "2026-08-31",
   "lon_max": null,
-  "week_path": "data/processed/ocean_colour_chl_week.parquet",
-  "n_week": 255852,
-  "product": "OCEANCOLOUR_ATL_BGC_L4_MY_009_118",
-  "note": "2003-2017 ARCO fill merged with 2018-2026; train chl coverage ~99.6%; 1997-2002 optional under ARCO 403 backoff",
-  "updated_at_dublin": "2026-09-08 12:39 IST"
+  "side_hist": "data/raw/oc_chl_daily_1997_2017.parquet",
+  "hist_t0": "1997-10-01",
+  "hist_t1": "2017-12-31",
+  "n_arco_skips": 48
 }
