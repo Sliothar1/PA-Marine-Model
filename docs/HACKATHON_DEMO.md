@@ -306,3 +306,7 @@ data/processed/crw_mhw_ireland_daily_summary.csv    ← CRW coverage for --lates
 ```
 
 MIT code; HAB © Marine Institute; OISST © NOAA; cite Berthou et al. (2024) for the June 2023 MHW narrative.
+
+## Data / licence rules
+
+See [`OCEAN_HACKATHON_DATA_RULES.md`](OCEAN_HACKATHON_DATA_RULES.md) (Campus Mer / OH 2026 §5.1 + partner stores).
