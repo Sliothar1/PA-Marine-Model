@@ -1,25 +1,16 @@
 {
-  "lane": "osi_saf_sst",
-  "preferred_product": {
+  "lane": "osi_saf / odyssea_sst",
+  "created_at_utc": "2026-09-08T11:12:38.364318+00:00",
+  "created_at_dublin": "2026-09-08 12:12 IST",
+  "auth_note": {
+    "copernicusmarine_cli": "fails TLS EOF on auth.marine.copernicus.eu from this box",
+    "credentials_present": true,
+    "working_path": "public CloudFerro ARCO zarr HTTPS with zarr_format=2"
+  },
+  "preferred_osi_saf_l3c": {
     "id": "OSI-202-c",
-    "ghrsst": "AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0",
-    "url": "https://osi-saf.eumetsat.int/products/osi-202-c",
-    "ftp": "ftp://ftp.ifremer.fr/ifremer/cersat/projects/osisaf/sst/l3c/north_atlantic/",
-    "https": "https://osi-saf.ifremer.fr/sst/l3c/north_atlantic/",
-    "licence": "CC BY 4.0",
-    "doi": "10.15770/EUM_SAF_OSI_NRT_2012",
-    "status_this_box": "blocked",
-    "blockers": [
-      "osi-saf.ifremer.fr HTTPS TLS unexpected EOF",
-      "ftp.ifremer.fr listing timeout",
-      "opensearch.ifremer.fr TLS EOF",
-      "PO.DAAC protected granules HTTP 401 (no Earthdata ~/.netrc)"
-    ],
-    "cmr_manifest": "data/raw/osi_saf_sst/nar_metop_b_manifest.csv",
-    "sample_granule_on_disk": {
-      "path": "data/raw/osi_saf/20230615100000-OSISAF-L3C_GHRSST-SSTsubskin-AVHRR_SST_METOP_B_NAR-sstnar_metop01_20230615_100000-v02.0-fv01.0.nc",
-      "note": "Single June-15 10UTC NAR L3C granule present under raw (gitignored). Full series not ingested: PO.DAAC still 401 without Earthdata; Ifremer unreachable."
-    }
+    "status_this_box": "not used for full extract (TLS/FTP blockers); ODYSSEA L4 fallback",
+    "note": "ODYSSEA L4 uses OSI SAF among IR/MW inputs"
   },
   "working_product": {
     "product_id": "SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025",
@@ -30,34 +21,48 @@
     "access": "anonymous ARCO zarr (CloudFerro S3 HTTPS)",
     "arco_uri": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-045/arco/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE_201904/timeChunked.zarr",
     "note": "ODYSSEA L4 ingests OSI SAF among other IR/MW inputs; gap-free daily foundation SST ~0.02\u00b0",
-    "url": "https://data.marine.copernicus.eu/product/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/description",
-    "open_data_note": "Copernicus Marine Service open data under product licence; ARCO zarr objects (.zmetadata / chunks) readable anonymously over HTTPS from CloudFerro S3 when toolbox auth host is unreachable.",
-    "status_this_box": "ok_anonymous_arco"
+    "arco_zarr": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-045/arco/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE_201904/timeChunked.zarr",
+    "catalogue_time": [
+      "2018-01-01",
+      "2026-09-06"
+    ],
+    "spatial_resolution": "~0.02 deg (~2 km)"
   },
-  "pilot": {
-    "t0": "2023-05-01",
-    "t1": "2023-08-31",
-    "bbox": [
-      51.0,
-      56.0,
-      -11.0,
-      -5.0
+  "pilot_reuse": {
+    "path": "data/raw/osi_saf/odyssea_pilot_2023_jun.parquet",
+    "n_rows": 150,
+    "stations": 5,
+    "period": "2023-06",
+    "note": "Connemara Jun 2023 pilot kept on disk; full extract supersedes for week join"
+  },
+  "extract": {
+    "script": "scripts/extract_odyssea_station_day_arco.py",
+    "chunking": "quarterly with month/day fallback; skip ARCO 403 days",
+    "t0": "2018-01-01",
+    "t1": "2026-09-06",
+    "skipped_days": [
+      "2018-10-22"
     ],
-    "station_ids": [
-      184,
-      190,
-      171,
-      216,
-      177
-    ],
-    "n_rows": 615,
-    "n_days": 123,
-    "n_stations": 5,
+    "n_stations_requested": 207,
+    "n_stations_mapped": 207,
+    "n_unique_pixels": 163,
+    "n_rows": 656190,
+    "n_days": 3170,
+    "n_finite_sst_c": 656190,
+    "sst_c_min": 3.75,
+    "sst_c_median": 11.600000000000023,
+    "sst_c_max": 20.69999999999999,
+    "median_dist_deg": 0.00982459860093557,
     "paths": {
-      "odyssea_daily": "data/raw/odyssea_daily.parquet",
-      "station_day": "data/processed/osi_saf_station_day.parquet",
-      "bbox_nc": "data/raw/osi_saf/odyssea_irish_202306_bbox.nc"
+      "odyssea_station_day_parquet": "data/processed/odyssea_station_day.parquet",
+      "odyssea_station_day_csv": null,
+      "odyssea_station_pixel_map_csv": "data/processed/odyssea_station_pixel_map.csv",
+      "pilot_parquet": "data/raw/osi_saf/odyssea_pilot_2023_jun.parquet",
+      "sources_json": "data/raw/osi_saf/sources.json"
     },
-    "june_bbox_nc_mb": 11.28
-  }
+    "elapsed_s": 192.2,
+    "parquet_mb": 2.29,
+    "csv_note": "skipped: ~97 MB; parquet 2.2 MB kept"
+  },
+  "station_pixel_map_n": 207
 }

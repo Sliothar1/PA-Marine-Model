@@ -178,4 +178,5 @@ data/raw/osi_saf_sst/*
 !data/processed/osi_saf_odyssea_pilot_status.json
 !data/processed/osi_saf_station_day.csv
 !data/processed/chl_osi_saf_ingest_plan.md
-
+!data/processed/odyssea_station_day.parquet
+!data/processed/odyssea_station_pixel_map.csv

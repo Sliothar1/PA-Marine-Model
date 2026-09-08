@@ -185,60 +185,88 @@ def extract_station_pixels_from_nc(
     variable: str = "sea_surface_temperature",
     quality_min: int = 3,
     kelvin_to_celsius: bool = True,
+    max_dist_deg: float = 0.35,
+    lat_min: float = 50.5,
+    lat_max: float = 56.5,
+    lon_min: float = -12.0,
+    lon_max: float = -4.5,
 ) -> pd.DataFrame:
-    """Nearest-pixel extract from one GHRSST L3C netCDF (quality-filtered)."""
+    """Nearest clear-sky pixel extract from one GHRSST L3C netCDF.
+
+    NAR L3C uses 2-D ``lat``/``lon`` on a polar-stereographic grid — do **not**
+    use xarray ``.sel(method="nearest")`` on those coords.
+    """
     import xarray as xr
 
     ds = xr.open_dataset(nc_path)
     if variable not in ds:
-        # some files use 'analysed_sst'
         for alt in ("analysed_sst", "sst", "sea_surface_temperature"):
             if alt in ds:
                 variable = alt
                 break
-    da = ds[variable]
-    q = ds["quality_level"] if "quality_level" in ds else None
+    if variable not in ds:
+        ds.close()
+        return pd.DataFrame()
 
-    # Handle lon/lat naming
-    lat_name = "lat" if "lat" in da.coords or "lat" in da.dims else "latitude"
-    lon_name = "lon" if "lon" in da.coords or "lon" in da.dims else "longitude"
+    lat = np.asarray(ds["lat"].values if "lat" in ds else ds["latitude"].values, dtype=float)
+    lon = np.asarray(ds["lon"].values if "lon" in ds else ds["longitude"].values, dtype=float)
+    sst_da = ds[variable]
+    if "time" in sst_da.dims:
+        sst = np.asarray(sst_da.isel(time=0).values, dtype=float)
+        t0 = pd.Timestamp(np.asarray(ds["time"].values)[0]).tz_localize(None).normalize()
+    else:
+        sst = np.asarray(sst_da.values, dtype=float)
+        t0 = pd.NaT
+    if "quality_level" in ds:
+        ql_da = ds["quality_level"]
+        ql = np.asarray(ql_da.isel(time=0).values if "time" in ql_da.dims else ql_da.values, dtype=float)
+    else:
+        ql = np.full(sst.shape, float(quality_min))
 
-    times = pd.to_datetime(np.asarray(ds["time"].values)).tz_localize(None)
-    rows = []
+    if lat.ndim == 1 and lon.ndim == 1 and sst.ndim == 2:
+        lon2, lat2 = np.meshgrid(lon, lat)
+        lat, lon = lat2, lon2
+
+    bbox = (lat >= lat_min) & (lat <= lat_max) & (lon >= lon_min) & (lon <= lon_max)
     uniq = stations.drop_duplicates("location_id")[["location_id", "latitude", "longitude"]]
+    rows = []
     for row in uniq.itertuples(index=False):
-        try:
-            pt = da.sel({lat_name: float(row.latitude), lon_name: float(row.longitude)}, method="nearest")
-            if q is not None:
-                qpt = q.sel(
-                    {lat_name: float(row.latitude), lon_name: float(row.longitude)},
-                    method="nearest",
-                )
-            else:
-                qpt = None
-        except Exception:
-            continue
-        vals = np.asarray(pt.values, dtype=float).reshape(-1)
-        qvals = (
-            np.asarray(qpt.values, dtype=float).reshape(-1)
-            if qpt is not None
-            else np.full(len(vals), quality_min)
-        )
-        for t, v, qv in zip(times, vals, qvals, strict=False):
-            if not np.isfinite(v) or qv < quality_min:
+        dist2 = (lat - float(row.latitude)) ** 2 + (lon - float(row.longitude)) ** 2
+        chosen = None
+        for qmin in (quality_min, max(1, quality_min - 1), 1):
+            ok = bbox & np.isfinite(sst) & (ql >= qmin)
+            d = np.where(ok, dist2, np.inf)
+            if not np.isfinite(d).any():
                 continue
-            sst = float(v) - 273.15 if kelvin_to_celsius and float(v) > 200 else float(v)
-            rows.append(
-                {
-                    "location_id": row.location_id,
-                    "date": pd.Timestamp(t).normalize(),
-                    "osi_sst": sst,
-                    "quality_level": float(qv),
-                    "source_file": nc_path.name,
-                }
-            )
+            i, j = np.unravel_index(int(np.argmin(d)), d.shape)
+            dist = float(np.sqrt(d[i, j]))
+            if dist > max_dist_deg:
+                continue
+            chosen = (i, j, dist, float(ql[i, j]), float(sst[i, j]))
+            break
+        if chosen is None:
+            continue
+        i, j, dist, qv, v = chosen
+        sst_c = (v - 273.15) if kelvin_to_celsius and v > 200 else v
+        rows.append(
+            {
+                "location_id": row.location_id,
+                "date": t0,
+                "sst": float(sst_c),
+                "osi_sst": float(sst_c),
+                "quality_level": qv,
+                "request_lat": float(row.latitude),
+                "request_lon": float(row.longitude),
+                "grid_lat": float(lat[i, j]),
+                "grid_lon": float(lon[i, j]),
+                "dist_deg": dist,
+                "source_file": Path(nc_path).name,
+                "source": "osi_202c_nar_l3c",
+            }
+        )
     ds.close()
     return pd.DataFrame(rows)
+
 
 
 def ftp_hint(product: str = "nar") -> str:
@@ -251,6 +279,103 @@ def ftp_hint(product: str = "nar") -> str:
         "ftp://ftp.ifremer.fr/ifremer/cersat/projects/osisaf/sst/l3c/north_atlantic/"
         " (OSI-202-c NAR Metop-B / NOAA-20)"
     )
+
+
+
+IFREMER_FTP_HOST = "ftp.ifremer.fr"
+IFREMER_NAR_METOP_B_ROOT = (
+    "ifremer/cersat/projects/osisaf/sst/l3c/north_atlantic/nar_avhrr_metop_b"
+)
+
+
+def nar_metop_b_ftp_url(granule_title: str) -> str:
+    """Map CMR/GHRSST title (with or without .nc) → anonymous Ifremer FTP URL."""
+    title = granule_title[:-3] if granule_title.endswith(".nc") else granule_title
+    # title starts YYYYMMDDHHMMSS-...
+    ymd = title[:8]
+    ts = pd.Timestamp(ymd)
+    doy = int(ts.dayofyear)
+    year = int(ts.year)
+    remote = f"{IFREMER_NAR_METOP_B_ROOT}/{year}/{doy:03d}/{title}.nc"
+    return f"ftp://{IFREMER_FTP_HOST}/{remote}"
+
+
+def curl_ftp_download(url: str, dest: Path, *, retries: int = 5) -> Path:
+    """Download via curl FTP PASV (ftplib PASV data connections often time out here)."""
+    import subprocess
+
+    dest = Path(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.exists() and dest.stat().st_size > 1_000_000:
+        return dest
+    cmd = [
+        "curl",
+        "--ftp-pasv",
+        "--retry",
+        str(retries),
+        "--retry-delay",
+        "3",
+        "--connect-timeout",
+        "30",
+        "--max-time",
+        "600",
+        "-u",
+        "anonymous:climate-drivers@pa-marine.local",
+        "-C",
+        "-",
+        "-o",
+        str(dest),
+        url,
+    ]
+    subprocess.run(cmd, check=True)
+    return dest
+
+
+def download_nar_metop_b_granules(
+    titles: list[str],
+    out_dir: Path,
+) -> list[Path]:
+    """Download OSI-202-c Metop-B NAR L3C granules to out_dir."""
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    paths: list[Path] = []
+    for title in titles:
+        url = nar_metop_b_ftp_url(title)
+        dest = out_dir / (title if title.endswith(".nc") else f"{title}.nc")
+        print(f"FTP get {dest.name} …", flush=True)
+        try:
+            curl_ftp_download(url, dest)
+            paths.append(dest)
+            print(f"  ok size={dest.stat().st_size}", flush=True)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  FAIL {exc}", flush=True)
+    return paths
+
+
+def extract_nar_station_day(
+    nc_paths: list[Path],
+    stations: pd.DataFrame,
+    *,
+    quality_min: int = 3,
+    max_dist_deg: float = 0.35,
+) -> pd.DataFrame:
+    """Extract + daily-aggregate (best quality, then nearest) across L3C granules."""
+    frames = []
+    for p in nc_paths:
+        part = extract_station_pixels_from_nc(
+            p, stations, quality_min=quality_min, max_dist_deg=max_dist_deg
+        )
+        if not part.empty:
+            frames.append(part)
+            print(f"extract {p.name}: rows={len(part)}", flush=True)
+    if not frames:
+        return pd.DataFrame()
+    raw = pd.concat(frames, ignore_index=True)
+    raw["date"] = pd.to_datetime(raw["date"]).dt.normalize()
+    # prefer higher quality, then smaller dist
+    raw = raw.sort_values(["location_id", "date", "quality_level", "dist_deg"], ascending=[True, True, False, True])
+    daily = raw.drop_duplicates(["location_id", "date"], keep="first")
+    return daily.reset_index(drop=True)
 
 
 # ---------------------------------------------------------------------------

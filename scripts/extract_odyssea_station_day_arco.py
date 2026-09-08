@@ -38,7 +38,6 @@ def quarter_chunks(t0: str, t1: str) -> list[tuple[str, str]]:
     start = pd.Timestamp(t0)
     end = pd.Timestamp(t1)
     chunks: list[tuple[str, str]] = []
-    # Align to calendar quarters
     y, q = start.year, (start.month - 1) // 3
     cur = pd.Timestamp(year=y, month=q * 3 + 1, day=1)
     if cur < start:
@@ -54,24 +53,79 @@ def quarter_chunks(t0: str, t1: str) -> list[tuple[str, str]]:
     return chunks
 
 
-def extract_with_retries(
-    stations: pd.DataFrame, t0: str, t1: str, retries: int = 4
+def month_chunks(t0: str, t1: str) -> list[tuple[str, str]]:
+    start = pd.Timestamp(t0)
+    end = pd.Timestamp(t1)
+    chunks = []
+    cur = start.replace(day=1)
+    if cur < start:
+        cur = start
+    while cur <= end:
+        m_end = cur + pd.offsets.MonthEnd(0)
+        a = max(cur if cur.day == 1 else cur, start)
+        # if cur was mid-month start
+        a = max(pd.Timestamp(t0) if cur <= pd.Timestamp(t0) else cur.replace(day=1), start)
+        a = max(cur.replace(day=1), start) if cur.day == 1 else max(cur, start)
+        b = min(m_end, end)
+        if a <= b:
+            chunks.append((a.strftime("%Y-%m-%d"), b.strftime("%Y-%m-%d")))
+        cur = m_end + pd.Timedelta(days=1)
+    return chunks
+
+
+def day_list(t0: str, t1: str) -> list[str]:
+    return [d.strftime("%Y-%m-%d") for d in pd.date_range(t0, t1, freq="D")]
+
+
+def try_extract(stations: pd.DataFrame, t0: str, t1: str) -> pd.DataFrame:
+    return download_odyssea_for_stations(stations, t0, t1)
+
+
+def extract_range(
+    stations: pd.DataFrame, t0: str, t1: str, *, skipped: list[str]
 ) -> pd.DataFrame:
-    last_exc: Exception | None = None
-    for attempt in range(1, retries + 1):
+    """Quarter → month → day fallback; skip individual ARCO-403 days."""
+    try:
+        return try_extract(stations, t0, t1)
+    except Exception as exc:
+        print(f"  range fail {t0}..{t1}: {type(exc).__name__} → split", flush=True)
+
+    # If single day, skip
+    if t0 == t1:
+        print(f"  SKIP bad day {t0}", flush=True)
+        skipped.append(t0)
+        return pd.DataFrame()
+
+    # Prefer monthly split if span > 31 days else daily
+    span = (pd.Timestamp(t1) - pd.Timestamp(t0)).days + 1
+    if span > 31:
+        sub_chunks = month_chunks(t0, t1)
+    else:
+        sub_chunks = [(d, d) for d in day_list(t0, t1)]
+
+    frames = []
+    for a, b in sub_chunks:
         try:
-            return download_odyssea_for_stations(stations, t0, t1)
-        except Exception as exc:  # noqa: BLE001 — network flakiness
-            last_exc = exc
-            wait = min(2 ** attempt, 30)
-            print(
-                f"  retry {attempt}/{retries} after {type(exc).__name__}: "
-                f"{str(exc)[:120]} … sleep {wait}s",
-                flush=True,
-            )
-            time.sleep(wait)
-    assert last_exc is not None
-    raise last_exc
+            part = try_extract(stations, a, b)
+            frames.append(part)
+            print(f"  ok {a}..{b} rows={len(part)}", flush=True)
+        except Exception:
+            if a == b:
+                print(f"  SKIP bad day {a}", flush=True)
+                skipped.append(a)
+            else:
+                # recurse to days
+                for d in day_list(a, b):
+                    try:
+                        part = try_extract(stations, d, d)
+                        frames.append(part)
+                        print(f"  ok day {d}", flush=True)
+                    except Exception:
+                        print(f"  SKIP bad day {d}", flush=True)
+                        skipped.append(d)
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)
 
 
 def main() -> int:
@@ -103,22 +157,25 @@ def main() -> int:
     t0 = max(args.t0, t_min)
     t1 = min(args.t1, t_max)
     chunks = quarter_chunks(t0, t1)
-    print(f"n_chunks={len(chunks)} (quarterly)", flush=True)
+    print(f"n_chunks={len(chunks)} (quarterly + fallback)", flush=True)
 
+    skipped: list[str] = []
     frames: list[pd.DataFrame] = []
     for a_s, b_s in chunks:
         t0c = time.time()
         print(f"chunk {a_s}..{b_s}", flush=True)
-        part = extract_with_retries(stations, a_s, b_s)
-        print(
-            f"  rows={len(part)} finite={int(np.isfinite(part['sst']).sum())} "
-            f"elapsed={time.time()-t0c:.1f}s",
-            flush=True,
-        )
-        frames.append(part)
+        part = extract_range(stations, a_s, b_s, skipped=skipped)
+        n = len(part)
+        finite = int(np.isfinite(part["sst"]).sum()) if n else 0
+        print(f"  rows={n} finite={finite} elapsed={time.time()-t0c:.1f}s", flush=True)
+        if n:
+            frames.append(part)
         if args.timing_only:
             print("timing-only done", flush=True)
             return 0
+
+    if not frames:
+        raise SystemExit("no data extracted")
 
     daily = pd.concat(frames, ignore_index=True)
     daily["date"] = pd.to_datetime(daily["date"]).dt.tz_localize(None).dt.normalize()
@@ -126,11 +183,8 @@ def main() -> int:
         ["location_id", "date"], keep="last"
     )
 
-    # Attach names + schema aligned with pilot (sst_c / analysed_sst)
     names = stations[["location_id", "location_name"]]
     out = daily.merge(names, on="location_id", how="left")
-    # Rebuild dist from first occurrence of grid mapping via a one-day call if needed
-    # Prefer computing from request/grid already present — add dist_deg
     out["dist_deg"] = np.sqrt(
         (out["grid_lat"] - out["request_lat"]) ** 2
         + (out["grid_lon"] - out["request_lon"]) ** 2
@@ -166,7 +220,6 @@ def main() -> int:
     else:
         print(f"skip CSV (parquet {size_mb:.1f} MB > 8 MB threshold)", flush=True)
 
-    # Station pixel map (unique)
     smap = (
         out.drop_duplicates("location_id")[
             [
@@ -182,6 +235,8 @@ def main() -> int:
         .sort_values("location_id")
         .reset_index(drop=True)
     )
+    map_path = ROOT / "data/processed/odyssea_station_pixel_map.csv"
+    smap.to_csv(map_path, index=False)
 
     finite = out["sst_c"].to_numpy(dtype=float)
     finite = finite[np.isfinite(finite)]
@@ -215,13 +270,15 @@ def main() -> int:
         },
         "extract": {
             "script": "scripts/extract_odyssea_station_day_arco.py",
-            "chunking": "quarterly (avoids intermittent ARCO 403 on long year slices)",
+            "chunking": "quarterly with month/day fallback; skip ARCO 403 days",
             "t0": t0,
             "t1": t1,
+            "skipped_days": skipped,
             "n_stations_requested": int(len(stations)),
             "n_stations_mapped": int(out["location_id"].nunique()),
             "n_unique_pixels": int(smap[["grid_lat", "grid_lon"]].drop_duplicates().shape[0]),
             "n_rows": int(len(out)),
+            "n_days": int(out["date"].nunique()),
             "n_finite_sst_c": int(len(finite)),
             "sst_c_min": float(finite.min()) if len(finite) else None,
             "sst_c_median": float(np.median(finite)) if len(finite) else None,
@@ -232,6 +289,7 @@ def main() -> int:
                 "odyssea_station_day_csv": (
                     str(csv_path.relative_to(ROOT)) if csv_path else None
                 ),
+                "odyssea_station_pixel_map_csv": str(map_path.relative_to(ROOT)),
                 "pilot_parquet": str(PILOT.relative_to(ROOT)),
                 "sources_json": str(Path(args.sources).relative_to(ROOT)),
             },
@@ -242,17 +300,12 @@ def main() -> int:
     }
     sources_path = Path(args.sources)
     sources_path.parent.mkdir(parents=True, exist_ok=True)
-    # Keep sources.json small: drop full station map (207 rows) — summary only
     sources_path.write_text(json.dumps(sources, indent=2) + "\n")
-
-    # Optional slim map alongside
-    map_path = ROOT / "data/processed/odyssea_station_pixel_map.csv"
-    smap.to_csv(map_path, index=False)
 
     print(
         f"wrote {out_path} n={len(out)} stations={out['location_id'].nunique()} "
         f"dates={out['date'].min().date()}..{out['date'].max().date()} "
-        f"mb={size_mb:.2f} elapsed={sources['extract']['elapsed_s']}s",
+        f"skipped={skipped} mb={size_mb:.2f} elapsed={sources['extract']['elapsed_s']}s",
         flush=True,
     )
     print(f"wrote {sources_path}", flush=True)

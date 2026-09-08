@@ -225,13 +225,19 @@ def main() -> int:
         ends.append(min(e, pd.Timestamp(args.t1)))
 
     frames = []
+    failed_chunks: list[str] = []
     for s, e in zip(starts, ends):
         if s > e:
             continue
         a_s, b_s = s.strftime("%Y-%m-%d"), e.strftime("%Y-%m-%d")
         t0c = time.time()
         print(f"chunk {a_s}..{b_s}", flush=True)
-        part = extract_chunk(ds, smap, a_s, b_s)
+        try:
+            part = extract_chunk(ds, smap, a_s, b_s)
+        except Exception as exc:  # noqa: BLE001
+            failed_chunks.append(f"{a_s}..{b_s}: {type(exc).__name__}: {exc}")
+            print(f"  SKIP failed chunk: {exc}", flush=True)
+            continue
         n_fin = int(np.isfinite(part["analysed_sst"]).sum())
         print(
             f"  rows={len(part)} finite={n_fin} elapsed={time.time()-t0c:.1f}s",
@@ -242,6 +248,8 @@ def main() -> int:
             print("timing-only done", flush=True)
             return 0
 
+    if not frames:
+        raise SystemExit(f"no chunks succeeded; failed={failed_chunks}")
     out = pd.concat(frames, ignore_index=True)
     out["date"] = pd.to_datetime(out["date"]).dt.tz_localize(None).dt.normalize()
     out = out.sort_values(["location_id", "date"]).drop_duplicates(
@@ -298,6 +306,7 @@ def main() -> int:
         "out_week": str(week_path) if week_path else None,
         "n_week_rows": int(len(week)) if week is not None else None,
         "stations": smap.to_dict(orient="records"),
+        "failed_chunks": failed_chunks,
         "elapsed_s": round(time.time() - t_wall0, 1),
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "created_at_dublin": datetime.now(ZoneInfo("Europe/Dublin")).strftime(

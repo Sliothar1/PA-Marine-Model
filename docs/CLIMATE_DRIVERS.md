@@ -246,18 +246,20 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 | **Script** | `scripts/download_oc_chl.py` → `data/raw/oc_chl_daily.parquet` |
 | **Module** | `src/pa_marine/oc_chl.py` |
 
-### (b) OSI SAF SST lane — Climate Drivers (pilot 2026-09-08)
+### (b) OSI SAF / ODYSSEA SST lane — Climate Drivers (full extract 2026-09-08)
 
 | | |
 | --- | --- |
 | **Preferred** | **OSI-202-c** NAR L3C Metop-B/AVHRR (~2 km, GHRSST `AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0`) · DOI [10.15770/EUM_SAF_OSI_NRT_2012](https://doi.org/10.15770/EUM_SAF_OSI_NRT_2012) · **CC BY 4.0** |
-| **Working fallback** | CMEMS **ODYSSEA** L4 `SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025` / dataset `IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE` · DOI [10.48670/moi-00152](https://doi.org/10.48670/moi-00152) (uses OSI SAF among IR/MW inputs; gap-free ~0.02°) |
-| **Pilot scope** | Irish bbox 51–56°N, 11–5°W · **May–Aug 2023** · **5** HAB stations (184 Glenbeigh, 190 Tahilla, 171 Killary Inner, 216 Rosmoney, 177 Mannin) |
-| **What worked** | Anonymous **CloudFerro ARCO zarr** (`timeChunked.zarr`, zarr v2 consolidated) — **123** days × **5** stations, 0% NaN |
-| **Paths** | Raw: `data/raw/odyssea_daily.parquet`, `data/raw/osi_saf/odyssea_irish_202306_bbox.nc`, `data/raw/osi_saf/sources.json` · Station-day: `data/processed/osi_saf_station_day.parquet` (+ `.csv`) · Status: `data/processed/osi_saf_odyssea_pilot_status.json` |
-| **Ingest** | `PYTHONPATH=src .venv/bin/python scripts/ingest_odyssea_sst.py` · helpers in `src/pa_marine/osi_saf_sst.py` |
-| **OSI-202-c blockers (this box)** | Ifremer HTTPS/OpenSearch TLS EOF · FTP listing timeout · PO.DAAC granules HTTP 401 (no Earthdata `~/.netrc`) · CMR manifest only: `data/raw/osi_saf_sst/nar_metop_b_manifest.csv` (60 June 2023 granules) |
-| **Not owned here** | Ocean-colour Chl (`OCEANCOLOUR_ATL_BGC_L4_MY_009_118`) — Gatekeeper lane |
+| **Working product** | CMEMS **ODYSSEA** L4 `SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025` / `IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE` · DOI [10.48670/moi-00152](https://doi.org/10.48670/moi-00152) (OSI SAF among IR/MW inputs; gap-free ~0.02°) |
+| **Auth note (Gatekeeper)** | `copernicusmarine` login to `auth.marine.copernicus.eu` fails **TLS EOF** from this box (creds present; CLI auth broken). **Working path:** public CloudFerro ARCO zarr HTTPS with `zarr_format=2` |
+| **ARCO URI** | `https://s3.waw3-1.cloudferro.com/mdl-arco-time-045/arco/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE_201904/timeChunked.zarr` |
+| **Full extract** | **207** Irish HAB stations (nearest-ocean grid from `station_week_panel`) · **2018-01-01 → 2026-09-06** (catalogue) · **656 190** station-days · **3170**/3171 days (skipped ARCO-403 day **2018-10-22**) · 0% NaN on kept days |
+| **Pilot reuse** | `data/raw/osi_saf/odyssea_pilot_2023_jun.parquet` (150 rows, 5 Connemara stations, Jun 2023) kept; bit-identical overlap vs full extract |
+| **Paths** | `data/processed/odyssea_station_day.parquet` (~2.2 MB) · `data/processed/odyssea_station_pixel_map.csv` · `data/raw/osi_saf/sources.json` · status: `data/processed/chl_osi_saf_pilot_status.json` |
+| **Scripts** | `PYTHONPATH=src .venv/bin/python scripts/extract_odyssea_station_day_arco.py` · helpers `open_odyssea_arco` / `download_odyssea_for_stations` in `src/pa_marine/osi_saf_sst.py` |
+| **OSI-202-c blockers (this box)** | Ifremer HTTPS/OpenSearch TLS EOF · FTP listing timeout · PO.DAAC 401 · CMR manifest only via `scripts/download_osi_saf_sst.py` |
+| **Not owned here** | Ocean-colour Chl ingest — do **not** pull Chl in this lane (Gatekeeper) |
 
 ### Week-join schema
 
