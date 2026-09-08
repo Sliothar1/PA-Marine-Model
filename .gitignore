@@ -187,3 +187,6 @@ data/raw/osi_saf_sst/*
 !data/processed/joined_features_osi_sst.parquet
 !data/processed/odyssea_arco_summary.json
 !data/processed/odyssea_osi_join_summary.json
+
+!data/processed/osi_saf_nar_station_day.csv
+!data/processed/osi_saf_nar_pilot_status.json

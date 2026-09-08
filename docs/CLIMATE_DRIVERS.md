@@ -254,7 +254,7 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 | **Pilot reuse** | `data/raw/osi_saf/odyssea_pilot_2023_jun.parquet` (150 rows, 5 Connemara stations, Jun 2023) kept; bit-identical overlap vs full extract |
 | **Paths** | `data/processed/odyssea_station_day.parquet` (~2.2 MB) · `data/processed/odyssea_station_week.parquet` · `data/processed/joined_features_osi_sst.parquet` · `data/processed/odyssea_arco_summary.json` · `data/processed/odyssea_station_pixel_map.csv` · `data/raw/osi_saf/sources.json` · status: `docs/CHL_OSI_STATUS.md` |
 | **Scripts** | `PYTHONPATH=src .venv/bin/python scripts/extract_odyssea_station_day_arco.py` · helpers `open_odyssea_arco` / `download_odyssea_for_stations` in `src/pa_marine/osi_saf_sst.py` |
-| **OSI-202-c blockers (this box)** | Ifremer HTTPS/OpenSearch TLS EOF · FTP listing timeout · PO.DAAC 401 · CMR manifest only via `scripts/download_osi_saf_sst.py` |
+| **OSI-202-c access (this box)** | Anonymous **Ifremer FTP via `curl --ftp-pasv`** works (`nar_avhrr_metop_b/{year}/{doy}/{granule}.nc`); ftplib NLST often times out; HTTPS TLS EOF; PO.DAAC needs Earthdata. Sample NAR L3C extract: **4** granules → `data/processed/osi_saf_nar_station_day.parquet` (5 stations × 3 clear-sky days in Jun 2023; cloudy L3C → prefer ODYSSEA for gap-free week joins). Script: `scripts/download_osi_saf_nar_pilot.py` |
 | **Not owned here** | Ocean-colour Chl ingest — do **not** pull Chl in this lane (Gatekeeper) |
 
 ### Week-join schema

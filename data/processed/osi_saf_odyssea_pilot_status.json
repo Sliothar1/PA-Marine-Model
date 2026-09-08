@@ -1,20 +1,46 @@
 {
-  "product_worked": "ODYSSEA L4 IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE (anonymous ARCO)",
-  "osi_202c_worked": false,
-  "n_days": 123,
-  "n_stations": 5,
-  "date_min": "2023-05-01",
-  "date_max": "2023-08-31",
-  "paths": {
-    "odyssea_daily": "data/raw/odyssea_daily.parquet",
-    "station_day": "data/processed/osi_saf_station_day.parquet",
-    "bbox_nc": "data/raw/osi_saf/odyssea_irish_202306_bbox.nc"
+  "lane": "Climate Drivers \u2014 OSI SAF / ODYSSEA SST",
+  "created_at_dublin": "2026-09-08 12:22 IST",
+  "created_at_utc": "2026-09-08T11:22:11.599698+00:00",
+  "ready_for_gatekeeper": true,
+  "station_day_primary": {
+    "path": "data/processed/odyssea_station_day.parquet",
+    "columns": [
+      "date",
+      "location_id",
+      "sst_c",
+      "request_lat",
+      "request_lon",
+      "grid_lat",
+      "grid_lon"
+    ],
+    "n_stations": 207,
+    "date_min": "2018-01-01",
+    "date_max": "2026-09-06",
+    "n_rows": 656190,
+    "product": "SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025 / IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE",
+    "access": "CloudFerro ARCO zarr anonymous HTTPS"
+  },
+  "station_day_pilot_5stn": {
+    "path": "data/processed/osi_saf_station_day.parquet",
+    "also_csv": "data/processed/osi_saf_station_day.csv",
+    "n_stations": 5,
+    "date_min": "2023-05-01",
+    "date_max": "2023-08-31",
+    "n_rows": 615
+  },
+  "osi_202c_nar_sample": {
+    "path": "data/processed/osi_saf_nar_station_day.parquet",
+    "n_granules": 4,
+    "n_days": 3,
+    "n_stations": 5,
+    "raw_dir": "data/raw/osi_saf/"
+  },
+  "week_join_ready": {
+    "odyssea_station_week": "data/processed/odyssea_station_week.parquet",
+    "joined_features_osi_sst": "data/processed/joined_features_osi_sst.parquet"
   },
   "sources_json": "data/raw/osi_saf/sources.json",
-  "blockers": [
-    "osi-saf.ifremer.fr HTTPS TLS unexpected EOF",
-    "ftp.ifremer.fr listing timeout",
-    "opensearch.ifremer.fr TLS EOF",
-    "PO.DAAC protected granules HTTP 401 (no Earthdata ~/.netrc)"
-  ]
+  "docs": "docs/CLIMATE_DRIVERS.md \u00a77(b)",
+  "note": "National ablation left for Prediction Gatekeeper (not re-run here)."
 }

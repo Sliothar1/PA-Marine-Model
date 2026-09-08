@@ -9,8 +9,10 @@
   },
   "preferred_osi_saf_l3c": {
     "id": "OSI-202-c",
-    "status_this_box": "not used for full extract (TLS/FTP blockers); ODYSSEA L4 fallback",
-    "note": "ODYSSEA L4 uses OSI SAF among IR/MW inputs"
+    "ghrsst": "AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0",
+    "status_this_box": "ok_anonymous_ftp_curl_sample",
+    "note": "curl FTP PASV downloads work; full-month NAR ingest optional. ODYSSEA L4 remains the gap-free station-day product for week joins (OSI SAF among IR/MW inputs).",
+    "nar_pilot_path": "data/processed/osi_saf_nar_station_day.parquet"
   },
   "working_product": {
     "product_id": "SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025",
@@ -64,5 +66,37 @@
     "parquet_mb": 2.29,
     "csv_note": "skipped: ~97 MB; parquet 2.2 MB kept"
   },
-  "station_pixel_map_n": 207
+  "station_pixel_map_n": 207,
+  "preferred_product": {
+    "id": "OSI-202-c",
+    "ghrsst": "AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0",
+    "url": "https://osi-saf.eumetsat.int/products/osi-202-c",
+    "ftp": "ftp://ftp.ifremer.fr/ifremer/cersat/projects/osisaf/sst/l3c/north_atlantic/nar_avhrr_metop_b/",
+    "https": "https://osi-saf.ifremer.fr/sst/l3c/north_atlantic/",
+    "licence": "CC BY 4.0",
+    "doi": "10.15770/EUM_SAF_OSI_NRT_2012",
+    "status_this_box": "ok_anonymous_ftp_curl",
+    "access_note": "Anonymous FTP download works with curl --ftp-pasv; ftplib NLST/PASV data connections often time out; HTTPS TLS fails from this box; PO.DAAC still needs Earthdata ~/.netrc.",
+    "path_pattern": "nar_avhrr_metop_b/{year}/{doy:03d}/{granule}.nc",
+    "cmr_manifest": "data/raw/osi_saf_sst/nar_metop_b_manifest.csv"
+  },
+  "nar_pilot": {
+    "t0": "2023-06-01",
+    "t1": "2023-06-30",
+    "station_ids": [
+      184,
+      190,
+      171,
+      216,
+      177
+    ],
+    "n_granules_downloaded": 4,
+    "n_rows": 15,
+    "n_days": 3,
+    "n_stations": 5,
+    "paths": {
+      "nar_station_day": "data/processed/osi_saf_nar_station_day.parquet",
+      "raw_dir": "data/raw/osi_saf"
+    }
+  }
 }
