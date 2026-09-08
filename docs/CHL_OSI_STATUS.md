@@ -50,6 +50,13 @@ Catalogue describe for Chl succeeded (bbox covers Irish shelf). Prior OSTIA/IBI 
 
 **Next step:** full-history Chl station-week extract + ablation vs `STRONG_OISST` — not more SST ARCO hunting.
 
+### Cork / protocol lock (PA + Int’l HAB Dev, 2026-09-08)
+
+- **Cork use only:** ODYSSEA as **June 2023 narrative SST** (+ DOI 10.48670/moi-00152). Do **not** spend Cork hours on partial ~2018+ extracts hoping for a national skill claim.
+- **2018+ ARCO extract on disk:** **exploratory-only** — late-train / val / test honesty or documented short-history protocols. **Not** comparable to locked STRONG_OISST (train 2003–2018). **No judge-card quote**; no national Δ claim.
+- **`hard_block` stands** for full-history provider-swap. STRONG_OISST ~0.295 remains the only national SST baseline to cite.
+- Multi-decade open SST already answered by **OSTIA REP** (lost ~0.24 vs ~0.295). Pivot Climate Drivers cycles to **Chl MY** week features.
+
 ## ODYSSEA station-day / week (Climate Drivers — ARCO)
 
 **Updated:** 2026-09-08 12:16 IST
@@ -80,7 +87,7 @@ Full Irish HAB station extract via public CloudFerro ARCO zarr (`zarr_format=2`)
 
 ODYSSEA / this ARCO product **starts ~2018-01-01**. Under the locked **2003–2018** train split, pre-2018 years remain empty → **full-history OISST→ODYSSEA provider-swap is still impossible**. Prior gate `hard_block` (0% train from 2022–2024-only extract) is outdated on coverage, but the **protocol conclusion stands**: do not claim SST-provider substitution skill over the full locked train.
 
-**Allowed exploratory uses only:** late-train (2018 overlap), val/test, or alternate **2018+** splits. Re-run join + provider-swap ablation before updating `alert_pa`.
+**Allowed exploratory uses only:** late-train (2018 overlap), val/test, or alternate **2018+** splits marked `exploratory_not_protocol`. Do **not** re-run Cork-facing provider-swap ablation for a national claim; leave `alert_pa` / judge card on prior `hard_block`.
 
 Secondary (honest, non-swap; from prior test ∩ ODYSSEA window): `corr(odyssea_sst_week, sst)` ≈ **0.971**, MAE ≈ 0.61 °C, bias (ODY−OISST) ≈ −0.39 °C. Product agreement only.
 
@@ -96,7 +103,7 @@ Reference prior strong run: test cal PR-AUC ≈ **0.293** (`metrics_dino_strong.
 
 These Δ=0 numbers were fit under the **2022–2024-only** extract (train all-missing →0). **Do not treat as current** until join + ablation are re-run on the 2018+ week table. JSON: `odyssea_ablation_{national,apr_sep,connemara}.json`.
 
-**`alert_pa` (prior):** **true** — `hard_block` from 2022–2024 extract; keep until Gatekeeper re-evaluates with 2018+ coverage (full 2003–2018 swap remains impossible).
+**`alert_pa`:** **true** (`hard_block`) — locked. Do not refresh for Cork from a late-only 2018+ fit. Full 2003–2018 swap remains impossible.
 
 ## Chl — still pilot-only
 

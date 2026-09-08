@@ -303,4 +303,6 @@ Status scratchpad: `docs/CHL_OSI_STATUS.md`.
 | OSTIA GLO L4 REP `010_011` | disk **2002-01-01 → 2026-03-31** | `copernicusmarine` (local parquet; auth TLS broken from box) | Tested — cal PR-AUC **~0.24 vs OISST ~0.29** (`ostia_vs_oisst_report.md`); keep OISST default |
 | Other CCI/MY L4 anonymous ARCO | — | not located like ODYSSEA | Stop hunting; no invented URLs/creds |
 
+
+**Cork:** narrative SST (June 2023) only. ODYSSEA 2018+ extract = **exploratory-only** — **no judge-card quote**, no national Δ.
 **Pivot:** GlobColour Chl MY `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` (~1997 → ongoing) covers the locked train. See §7(a) and `docs/CHL_OSI_STATUS.md`.
