@@ -174,13 +174,8 @@ def main() -> int:
     if not week.empty:
         week["week_start"] = pd.to_datetime(week["week_start"]).dt.strftime("%Y-%m-%d")
     args.out.parent.mkdir(parents=True, exist_ok=True)
-
-    if args.out.resolve() == (PROC / "cpr_aoi_week.csv").resolve():
-        raise SystemExit(
-            "Refusing to overwrite PA canonical data/processed/cpr_aoi_week.csv; "
-            "use cpr_aoi_week_climate_drivers.csv (default)."
-        )
-
+    if args.out.name == "cpr_aoi_week.csv" or args.out.resolve() == (ROOT / "data/processed/cpr_aoi_week.csv").resolve():
+        raise SystemExit("Refusing to overwrite PA canonical cpr_aoi_week.csv")
     week.to_csv(args.out, index=False)
     summary = build_summary(df, week)
     args.summary.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

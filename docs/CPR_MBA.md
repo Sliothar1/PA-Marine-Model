@@ -175,3 +175,14 @@ Source of truth: `data/processed/cpr_ablation_metrics.json` + `cpr_ablation_repo
 > Across 40 years of MBA CPR tows on the Irish–Scottish shelf (~42k samples, 1982–2022), offshore dinoflagellate abundance in summer is ~200× winter — community context for our Dinophysis nowcast, not species counts, and the series stops before the June 2023 heatwave.
 
 Further ask to Pierre deferred unless species-level *Dinophysis* or post-2022 data is needed.
+
+---
+
+## 9. Climate Drivers notes
+
+Climate Drivers does **not** own CPR ingest or Dinophysis ablation (§§6–8 above stay locked after Int’l HAB Dev reconcile).
+
+- Cross-links: [`CLIMATE_DRIVERS.md`](CLIMATE_DRIVERS.md) §6 and [`MACRO_CLIMATE.md`](MACRO_CLIMATE.md) point here.
+- Role: treat CPR AOI-week features as **shelf / heatwave narrative covariates** alongside Met Éireann and NAO/EA/AMO — **not** a Met or teleconnection replacement, and **not** species-level *Dinophysis*.
+- Connemara nested AOI remains **0** CPR tows; prefer Irish Sea / Celtic / Scotland-west AOIs for joins.
+- Further Climate Drivers edits to this file: **append under §9 only** (or edit the climate-doc pointers). Do not rewrite §§1–8.

@@ -364,7 +364,7 @@ def write_ablation_md(metrics: dict, cov: dict) -> None:
         cal = r.get("lightgbm_test_cal", {})
         lines.append(
             f"| {r['label']} | {r['n_features']} | {cal.get('pr_auc', float('nan')):.4f} | "
-            f"{cal.get('clim_pr_auc', float('nan')):.4f} | {cal.get('pr_skill', float('nan')):.4f} | "
+            f"{cal.get('pr_auc_clim', float('nan')):.4f} | {cal.get('pr_auc_skill', float('nan')):.4f} | "
             f"{cal.get('brier_skill', float('nan')):.4f} |"
         )
     lines += [

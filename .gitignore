@@ -149,6 +149,7 @@ data/external/cpr_mba/*.png
 !data/processed/cpr_aoi_week.csv
 !data/processed/cpr_aoi_week_summary.json
 !data/processed/cpr_aoi_summary_climate_drivers.json
+!data/processed/cpr_aoi_week_summary_climate_drivers.json
 !data/processed/cpr_aoi_week_climate_drivers.csv
 !data/processed/cpr_aoi_summary.json
 !data/processed/cpr_join_coverage.json
