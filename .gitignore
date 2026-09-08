@@ -190,3 +190,18 @@ data/raw/osi_saf_sst/*
 
 !data/processed/osi_saf_nar_station_day.csv
 !data/processed/osi_saf_nar_pilot_status.json
+
+# Ocean colour + OSI SAF / ODYSSEA climate drivers (small artefacts only)
+!data/processed/ocean_colour_chl_week.csv
+!data/processed/ocean_colour_ingest_summary.json
+!data/processed/oc_osi_join_summary.json
+!data/processed/oc_osi_ablation_metrics.json
+!data/processed/oc_osi_ablation_report.md
+!data/processed/oc_osi_ablation_metrics_aprsep.json
+!data/processed/oc_osi_ablation_report_aprsep.md
+!data/external/ocean_colour/sources.json
+!data/external/osi_saf_sst/sources.json
+data/external/ocean_colour/*.parquet
+data/external/ocean_colour/raw_*/
+data/external/osi_saf_sst/*.parquet
+data/external/osi_saf_sst/raw_nc/

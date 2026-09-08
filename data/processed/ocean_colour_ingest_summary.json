@@ -1,0 +1,30 @@
+{
+  "active_source": "cloudferro_arco_zarr",
+  "product_id": "OCEANCOLOUR_ATL_BGC_L4_MY_009_118",
+  "dataset_id": "cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D",
+  "variable": "CHL",
+  "units": "mg m-3",
+  "arco_zarr": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-042/arco/OCEANCOLOUR_ATL_BGC_L4_MY_009_118/cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D_202603/timeChunked.zarr",
+  "zarr_format": 2,
+  "daily_path": "data/raw/oc_chl_daily.parquet",
+  "external_daily_path": "data/external/ocean_colour/chl_station_daily.parquet",
+  "week_path": "data/processed/ocean_colour_chl_week.parquet",
+  "n_daily": 1789308,
+  "n_week": 255852,
+  "date_min": "2003-01-01",
+  "date_max": "2026-08-31",
+  "n_stations": 207,
+  "join_keys": [
+    "location_id",
+    "iso_year",
+    "iso_week"
+  ],
+  "catalogue_span": [
+    "1997-10-01",
+    "2026-08-31"
+  ],
+  "on_disk_span": [
+    "2003-01-01",
+    "2026-08-31"
+  ]
+}

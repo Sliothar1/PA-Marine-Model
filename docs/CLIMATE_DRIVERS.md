@@ -238,7 +238,7 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 | **Coverage** | 1997 → ongoing; bbox includes Irish shelf (−46…13°E, 20…66°N) |
 | **Why this one** | Long MY series for station-weeks 2002–2026; gap-free so week joins don’t die on cloud; WEkEO mirrors the same CMEMS IDs |
 | **Not chosen (yet)** | NWS/IBI HR Sentinel-2 Chl (`OCEANCOLOUR_NWS_BGC_HR_*`) — coastal 100 m but short/gappy; better for case-study maps than national week ML |
-| **Access** | `copernicusmarine` + `~/.copernicusmarine` (same login as OSTIA/IBI) |
+| **Access** | Prefer public CloudFerro **ARCO** zarr (`zarr_format=2`); `copernicusmarine` TLS broken on box |
 | **Script** | `scripts/download_oc_chl.py` → `data/raw/oc_chl_daily.parquet` |
 | **Module** | `src/pa_marine/oc_chl.py` |
 
@@ -289,6 +289,29 @@ Optional: `--apr-sep` (spring–summer filter on `week_start` month).
 
 Status scratchpad: `docs/CHL_OSI_STATUS.md`.
 
+### (c) Pull status + ablation (2026-09-08, Europe/Dublin)
+
+| Lane | On disk | Product IDs | Date range | Join keys |
+| --- | --- | --- | --- | --- |
+| **OC Chl** | `data/external/ocean_colour/chl_station_daily.parquet` · week `data/processed/ocean_colour_chl_week.csv` · sources `data/external/ocean_colour/sources.json` | Product `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` · dataset `cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D` · var `CHL` | **2003-01-01 → 2026-08-31** · 207 stations · **1 789 308** station-days · week 255 852 · train chl cov **99.64%** | `location_id` + `feat_date=week_start+6d` (lags/rolls) or `iso_year`+`iso_week` |
+| **OSI SAF cross-check (working)** | `data/external/osi_saf_sst/osi_sst_daily.parquet` (+ ODYSSEA week) · sources `data/external/osi_saf_sst/sources.json` | ODYSSEA L4 `SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025` / `IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE` (OSI SAF among IR/MW inputs) | **2018-01-01 → 2026-09-06** | `location_id`,`iso_year`,`iso_week` → `osi_sst_week` |
+| **True OSI SAF (partial)** | OSI-202-c NAR FTP pilot + OSI-203-a Metop-B NHL L3C spring–summer extract in progress (`scripts/ingest_osi_saf_sst.py` → `data/external/osi_saf_sst/`) | OSI-202-c / OSI-203-a | spring–summer midday passes | same week keys when complete |
+
+**Auth blockers:** `auth.marine.copernicus.eu` TLS EOF (`CouldNotConnectToAuthenticationSystem`) — Chl + ODYSSEA pulled via **anonymous CloudFerro ARCO** instead of toolbox login. Ifremer HTTPS TLS EOF; NAR granules via anonymous `curl --ftp-pasv`.
+
+**Joined panel:** `data/processed/joined_features_oc_osi.parquet` (Chl train/test coverage ≈ **0.994**).
+
+**Ablation vs `STRONG_OISST` (LightGBM test calibrated PR-AUC; full Chl 2003–2026, cov≈0.993):**
+
+| config | n_feat | test cal PR-AUC | Δ vs strong |
+| --- | ---: | ---: | ---: |
+| `strong` | 9 | **0.2953** | — |
+| `strong_chl` | 19 | 0.2833 | −0.0120 |
+| `strong_osi` (ODYSSEA week) | 12 | 0.2764 | −0.0189 |
+| `strong_chl_osi` | 22 | 0.2850 | −0.0103 |
+
+**Honest verdict: no national lift** — STRONG alone wins. Report: `data/processed/oc_osi_ablation_report.md` · metrics JSON beside it.
+
 
 
 ### (d) Multi-decade SST L4 for OISST provider-swap — decision (2026-09-08)
@@ -305,4 +328,8 @@ Status scratchpad: `docs/CHL_OSI_STATUS.md`.
 
 
 **Cork:** narrative SST (June 2023) only. ODYSSEA 2018+ extract = **exploratory-only** — **no judge-card quote**, no national Δ.
+
+**Chl MY gate (2026-09-08):** train covered (~99%); STRONG+CHL Δ test cal PR-AUC **−0.008** vs STRONG **0.295** — no skill claim; Cork quote unchanged. See `CHL_OSI_STATUS.md`.
 **Pivot:** GlobColour Chl MY `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` (~1997 → ongoing) covers the locked train. See §7(a) and `docs/CHL_OSI_STATUS.md`.
+**Chl fill update (Climate Drivers, 2026-09-08 12:37 IST):** late-only / 2018+ / 2023 pilot was **not** Cork-claimable. Full MY station daily now on disk: `data/raw/oc_chl_daily.parquet` **1 789 308** rows · **207** stn · **2003-01-01 → 2026-08-31** (ARCO span 1997-10-01→2026-08-31; early years optional). Week: `data/processed/ocean_colour_chl_week.parquet`. Coverage on `joined_features`: train **99.64%** / val **99.66%** / test **99.67%** finite `chl_mean` (was ~11% train when ODYSSEA-dated / late-only). See `docs/CHL_OSI_STATUS.md`. Do not duplicate download — Prediction Gatekeeper should join/ablate only.
+

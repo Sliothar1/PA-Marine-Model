@@ -1,0 +1,35 @@
+{
+  "preferred_true_osi_saf": {
+    "product_id": "OSI-202-c",
+    "ghrsst": "AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0",
+    "status": "partial_FTP_pilot_June2023",
+    "also": "OSI-203-a Metop-B NHL L3C via thredds.met.no (spring-summer ingest in progress)"
+  },
+  "working_crosscheck_on_disk": {
+    "product_id": "SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025",
+    "dataset_id": "IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE",
+    "role": "ODYSSEA L4 \u2014 ingests OSI SAF among IR/MW; gap-free independent of OISST/OSTIA narrative",
+    "access": "anonymous CloudFerro ARCO",
+    "date_min": "2018-01-01",
+    "date_max": "2026-08-31",
+    "n_daily": 636111,
+    "n_stations": 207,
+    "column": "osi_sst (\u00b0C)",
+    "paths": {
+      "daily": "data/external/osi_saf_sst/osi_sst_daily.parquet",
+      "raw": "data/raw/osi_saf_sst/osi_sst_daily.parquet"
+    }
+  },
+  "join_keys": [
+    "location_id",
+    "iso_year",
+    "iso_week"
+  ],
+  "osi203a_spring_summer_ingest": {
+    "product": "OSI-203-a",
+    "script": "scripts/ingest_osi_saf_sst.py",
+    "status": "in_progress_on_box",
+    "note": "MET Norway THREDDS fileServer midday May\u2013Aug 2018\u20132024; extracts then deletes granules; week parquet written on completion",
+    "log": "/tmp/ingest_osi.log"
+  }
+}

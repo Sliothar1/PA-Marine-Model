@@ -1,0 +1,125 @@
+{
+  "n_joined_in": 53172,
+  "chl_path": "data/raw/oc_chl_daily.parquet",
+  "osi_daily_path": "data/raw/osi_saf_sst/osi_sst_daily.parquet",
+  "odyssea_week_path": "/workspace/pa-marine-model/data/processed/odyssea_station_week.parquet",
+  "chl_attached": true,
+  "osi_attached": true,
+  "odyssea_attached": true,
+  "chl_feature_cols": [
+    "chl",
+    "chl_log1p",
+    "chl_lag0d",
+    "chl_lag7d",
+    "chl_lag14d",
+    "chl_lag21d",
+    "chl_roll7d",
+    "chl_roll14d",
+    "chl_roll30d",
+    "chl_log1p_lag0d",
+    "chl_log1p_lag7d",
+    "chl_log1p_lag14d",
+    "chl_log1p_lag21d",
+    "chl_log1p_roll7d",
+    "chl_log1p_roll14d",
+    "chl_log1p_roll30d"
+  ],
+  "chl_week_coverage": 0.9932671330775596,
+  "chl_coverage_by_split": {
+    "drop": {
+      "n": 30,
+      "n_nonnull": 0,
+      "coverage": 0.0
+    },
+    "test": {
+      "n": 14270,
+      "n_nonnull": 14191,
+      "coverage": 0.9944639103013314
+    },
+    "train": {
+      "n": 29683,
+      "n_nonnull": 29491,
+      "coverage": 0.9935316511134319
+    },
+    "val": {
+      "n": 9189,
+      "n_nonnull": 9132,
+      "coverage": 0.9937969311132876
+    },
+    "all": {
+      "n": 53172,
+      "n_nonnull": 52814,
+      "coverage": 0.9932671330775596
+    }
+  },
+  "chl_daily_n": 1789308,
+  "chl_daily_stations": 207,
+  "chl_note": "National ARCO Chl attached: stations=207 train_cov=0.994 test_cov=0.994 all_cov=0.993.",
+  "odyssea_week_n": 93771,
+  "odyssea_week_stations": 207,
+  "odyssea_sst_week_coverage_by_split": {
+    "drop": {
+      "n": 30,
+      "n_nonnull": 0,
+      "coverage": 0.0
+    },
+    "test": {
+      "n": 14270,
+      "n_nonnull": 14270,
+      "coverage": 1.0
+    },
+    "train": {
+      "n": 29683,
+      "n_nonnull": 3354,
+      "coverage": 0.11299396961223596
+    },
+    "val": {
+      "n": 9189,
+      "n_nonnull": 9189,
+      "coverage": 1.0
+    },
+    "all": {
+      "n": 53172,
+      "n_nonnull": 26813,
+      "coverage": 0.5042691642217708
+    }
+  },
+  "osi_sst_week_coverage_by_split": {
+    "drop": {
+      "n": 30,
+      "n_nonnull": 0,
+      "coverage": 0.0
+    },
+    "test": {
+      "n": 14270,
+      "n_nonnull": 14270,
+      "coverage": 1.0
+    },
+    "train": {
+      "n": 29683,
+      "n_nonnull": 3354,
+      "coverage": 0.11299396961223596
+    },
+    "val": {
+      "n": 9189,
+      "n_nonnull": 9189,
+      "coverage": 1.0
+    },
+    "all": {
+      "n": 53172,
+      "n_nonnull": 26813,
+      "coverage": 0.5042691642217708
+    }
+  },
+  "osi_feature_cols": [
+    "osi_sst_week",
+    "osi_sst_n_clear",
+    "osi_minus_oisst"
+  ],
+  "provider_swap_hard_block": false,
+  "provider_swap_note": "Train coverage sufficient for cautious provider-swap discussion.",
+  "osi_week_coverage": 0.5042691642217708,
+  "n_joined_out": 53172,
+  "out": "data/processed/joined_features_oc_osi.parquet",
+  "out_alias": "/workspace/pa-marine-model/data/processed/joined_features_odyssea.parquet"
+}
