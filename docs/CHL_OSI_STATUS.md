@@ -1,6 +1,6 @@
 # Status: OC Chl + OSI SAF / ODYSSEA SST fold-in
 
-**Updated:** 2026-09-08 12:44 IST
+**Updated:** 2026-09-08 12:46 IST
 **Repo:** `/workspace/pa-marine-model` (github.com/Sliothar1/PA-Marine-Model)
 
 ## Product choices
@@ -135,9 +135,9 @@ Label if cited: **`exploratory_short_history_not_cork_spine`**. Does **not** rep
 
 Gate/metrics: `data/processed/odyssea_ablation_gate.json`, `data/processed/odyssea_provider_swap_ablation_metrics.json`.
 
-**Lane:** ODYSSEA/OSI predictive parked (Cork narrative only). Active open driver = **Chl MY** — **2003–2026 daily+week on disk**; Gatekeeper handoff ready (1997–2002 optional).
+**Lane:** ODYSSEA/OSI predictive parked (Cork narrative only). Active open driver = **Chl MY** — **1997-10-01 → 2026-08-31 daily+week on disk**; Gatekeeper handoff ready.
 
-## Chl — full MY station extract (Climate Drivers fill, 2026-09-08 12:37 IST)
+## Chl — full MY station extract (Climate Drivers fill, 2026-09-08 12:46 IST)
 
 **Prior late-only / pilot state is NOT Cork-claimable.** The 2018-only and 2023 MJJA pilot extracts are superseded by a full Irish HAB station ARCO fill covering the locked train.
 
@@ -146,10 +146,10 @@ Gate/metrics: `data/processed/odyssea_ablation_gate.json`, `data/processed/odyss
 | Product | `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` / `cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D` · var `CHL` |
 | Access | Public CloudFerro ARCO zarr HTTPS (`zarr_format=2`); CMEMS toolbox TLS still broken on box |
 | Daily | `data/raw/oc_chl_daily.parquet` (+ mirror `data/external/ocean_colour/chl_station_daily.parquet`) |
-| Daily rows / stations | **1 789 308** / **207** |
-| Daily date range | **2003-01-01 → 2026-08-31** (ARCO catalogue **1997-10-01 → 2026-08-31**; 1997–2002 year chunks still filling under ARCO 403 backoff) |
-| Year chunks | `data/raw/oc_chl/chunks/chl_YYYY.parquet` for **2003–2017** (2008 rebuilt from merged daily after snappy corruption) |
-| Week table | `data/processed/ocean_colour_chl_week.parquet` (+ `.csv`) · **255 852** rows · ISO **2003–2026** · cols `chl_mean` / median / max / lags / roll4w |
+| Daily rows / stations | **2 179 503** / **207** |
+| Daily date range | **1997-10-01 → 2026-08-31** (full ARCO MY catalogue span) |
+| Year chunks | `data/raw/oc_chl/chunks/chl_YYYY.parquet` for **1997 (Q4)–2017** (2008 rebuilt after snappy corruption; 2018+ from prior daily) |
+| Week table | `data/processed/ocean_colour_chl_week.parquet` (+ `.csv`) · **310 128** rows · ISO **1997–2026** · cols `chl_mean` / median / max / lags / roll4w |
 | Meta | `data/raw/oc_chl_daily_meta.json` · `data/processed/oc_chl_coverage_by_split.json` |
 
 ### Chl week coverage on `joined_features` (finite `chl_mean`)
@@ -160,7 +160,7 @@ Gate/metrics: `data/processed/odyssea_ablation_gate.json`, `data/processed/odyss
 | val (2019–2021) | 9 189 | 9 158 | **99.66%** |
 | test (2022+) | 14 270 | 14 223 | **99.67%** |
 
-Train coverage ≫ prior **11%** (2018-only) / pilot ~0.03%. **Handoff to Prediction Gatekeeper** — do not re-download the 2003–2026 daily; optional remaining work is 1997-10→2002 year chunks only.
+Train coverage ≫ prior **11%** (2018-only) / pilot ~0.03%. **Handoff to Prediction Gatekeeper** — do not re-download; daily+week cover full MY **1997-10-01 → 2026-08-31**.
 
 National Chl **skill** still requires Gatekeeper ablation vs `STRONG_OISST` (coverage gate is cleared for full-train joins).
 
@@ -209,6 +209,44 @@ LightGBM isotonic-calibrated test PR-AUC. Features: `OC_CHL_CORE` = chl / chl_lo
 
 Scripts: `scripts/join_oc_osi_week.py --chl-daily data/raw/oc_chl_daily.parquet`, `scripts/run_chl_ablation_gate.py` (also `scripts/chl_oc_core_ablation_gate.py`).
 
+## Chl ablation vs STRONG_OISST (Gatekeeper, 2026-09-08 12:46 IST)
+
+Full-history ARCO station-day CHL is on disk and week-joined. Honest national / Apr–Sep / Connemara LightGBM ablation vs locked `STRONG_OISST`.
+
+| Item | Value |
+| --- | --- |
+| Daily | `data/raw/oc_chl_daily.parquet` · **2,179,503** rows · **207** stations · **1997-10-01 → 2026-08-31** |
+| ARCO | `https://s3.waw3-1.cloudferro.com/mdl-arco-time-042/arco/OCEANCOLOUR_ATL_BGC_L4_MY_009_118/cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D_202603/timeChunked.zarr` (`zarr_format=2`) |
+| Sources meta | `data/raw/ocean_colour/oc_chl_daily_sources_meta.json` |
+| Joined panel | `data/processed/joined_features_oc_osi.parquet` (Chl lags/rolls + ODYSSEA aliases) |
+| Gate | `data/processed/chl_ablation_gate.json` |
+| Metrics / report | `data/processed/chl_ablation_metrics.json` · `chl_ablation_metrics.md` |
+
+### Week-panel `chl` coverage (by locked split)
+
+| Split | coverage % |
+| --- | ---: |
+| train (2003–2018) | **99.353** |
+| val (2019–2021) | **99.38** |
+| test (2022+) | **99.446** |
+| all | **99.327** |
+
+### LGBM test cal PR-AUC (OC_CHL_CORE fold-in)
+
+| Slice | STRONG_OISST | STRONG+CHL | Δ |
+| --- | ---: | ---: | ---: |
+| National | 0.2953 | 0.2874 | **-0.0079** |
+| Apr–Sep | 0.2904 | 0.2866 | **-0.0038** |
+| Connemara | 0.0781 | 0.0665 | **-0.0116** |
+
+- **`hard_block`:** **false** (train Chl cov ≫ 5%).
+- **`skill_claim`:** **false** (national Δ ≤ 0).
+- **`alert_pa`:** **false** — no alert: national Δ=-0.007933879043937664; train_cov=0.9935; no skill claim without Δ>0
+
+Also ran `scripts/oc_osi_ablation.py` (national / `--apr-sep` / `--connemara`) → `oc_osi_ablation_{national,apr_sep,connemara}.json`. Stacked STRONG+ODYSSEA / STRONG+CHL+ODYSSEA remain non-protocol for SST provider-swap (ODYSSEA train still ~11%); Chl fold-in is the fair full-train comparison above.
+
+**No CPR_MBA edits. No push.**
+
 ## OSI-202-c NAR still blocked
 
 Earthdata / Ifremer FTP session still missing on box for protected PO.DAAC NAR granules. ODYSSEA ARCO is the working Climate Drivers SST path for now.
@@ -232,15 +270,16 @@ PYTHONPATH=src .venv/bin/python scripts/oc_osi_ablation.py --connemara \
 
 ## Local anchors
 
-Mace Head / Lehanagh Pool remain in `configs/default.yaml` sentinel block. **OC Chl** now covers all **207** HAB `location_id`s for **2003-01-01 → 2026-08-31** (train coverage ~99.6%). ODYSSEA SST remains **2018-01-01 → 2026-09-06** only (product start prevents full-train SST swap).
+Mace Head / Lehanagh Pool remain in `configs/default.yaml` sentinel block. **OC Chl** now covers all **207** HAB `location_id`s for **1997-10-01 → 2026-08-31** (train coverage ~99.6%). ODYSSEA SST remains **2018-01-01 → 2026-09-06** only (product start prevents full-train SST swap).
 
 
-## Update 2026-09-08 ~12:45 IST
+## Update 2026-09-08 12:47 IST (Climate Drivers fill complete)
 
-- **Chl ARCO full:** 2003-01-01 → 2026-08-31, 207 stations, ~1.79M rows → `data/external/ocean_colour/` + `data/raw/ocean_colour/chl_station_daily.parquet`.
-- **Join:** `joined_features_oc_osi.parquet` Chl coverage ≈0.993 train/test.
-- **Ablation:** no national PR-AUC lift vs STRONG_OISST (strong 0.2953; +chl 0.2833; +osi/ODYSSEA 0.2764).
+- **Chl ARCO full MY:** **1997-10-01 → 2026-08-31**, **207** stations, **2 179 503** daily rows → `data/raw/oc_chl_daily.parquet` + mirror `data/external/ocean_colour/chl_station_daily.parquet`.
+- **Week:** `data/processed/ocean_colour_chl_week.parquet` (**310 128**).
+- **Coverage:** train **99.64%** / val **99.66%** / test **99.67%** finite `chl_mean` on `joined_features` (late-only was ~11% train — **not** Cork-claimable; now is).
 - **CMEMS auth:** still TLS-broken; ARCO anonymous path used.
+- **Handoff:** Prediction Gatekeeper — do not re-download.
 
 ## Chl MY add-on gate (Gatekeeper, 2026-09-08)
 
@@ -248,7 +287,7 @@ Train-covered MY fold-in vs `STRONG_OISST`. Cite: CMEMS `OCEANCOLOUR_ATL_BGC_L4_
 
 | Item | Value |
 | --- | --- |
-| `oc_chl_daily` | **207** locs · **2003-01-01 → 2026-08-31** · **1.79M** rows |
+| `oc_chl_daily` | **207** locs · **1997-10-01 → 2026-08-31** · **2.18M** rows |
 | Coverage by split | train/val/test ~**99.3–99.5%** (`hard_block=false`) |
 | STRONG test cal PR-AUC | **0.295** |
 | STRONG+CHL test cal PR-AUC | **0.287** |

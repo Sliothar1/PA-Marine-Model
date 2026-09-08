@@ -9,8 +9,32 @@
   "t0": "1997-10-01",
   "t1": "2026-08-31",
   "lon_max": null,
-  "side_hist": "data/raw/oc_chl_daily_1997_2017.parquet",
-  "hist_t0": "1997-10-01",
-  "hist_t1": "2017-12-31",
-  "n_arco_skips": 48
+  "week_path": "data/processed/ocean_colour_chl_week.parquet",
+  "n_week": 310128,
+  "product": "OCEANCOLOUR_ATL_BGC_L4_MY_009_118",
+  "coverage_by_split": {
+    "test": {
+      "n": 14270,
+      "n_finite_chl": 14223,
+      "pct": 99.67,
+      "year_min": 2022,
+      "year_max": 2026
+    },
+    "train": {
+      "n": 29683,
+      "n_finite_chl": 29577,
+      "pct": 99.64,
+      "year_min": 2002,
+      "year_max": 2018
+    },
+    "val": {
+      "n": 9189,
+      "n_finite_chl": 9158,
+      "pct": 99.66,
+      "year_min": 2018,
+      "year_max": 2021
+    }
+  },
+  "note": "Full MY fill: chunks 1997(Q4)\u20132017 + 2018\u20132026 daily; dedupe location_id+date",
+  "updated_at_dublin": "2026-09-08 12:46 IST"
 }

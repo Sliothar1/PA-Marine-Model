@@ -1,11 +1,13 @@
 {
-  "preferred_product": "OCEANCOLOUR_ATL_BGC_L4_MY_009_118",
-  "preferred_dataset": "cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D",
-  "active_source": "cloudferro_arco_zarr_zarr_format_2",
+  "active_source": "cloudferro_arco_zarr",
+  "product_id": "OCEANCOLOUR_ATL_BGC_L4_MY_009_118",
+  "dataset_id": "cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D",
+  "variable": "CHL",
+  "units": "mg m-3",
   "arco_zarr": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-042/arco/OCEANCOLOUR_ATL_BGC_L4_MY_009_118/cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D_202603/timeChunked.zarr",
+  "zarr_format": 2,
   "daily_path": "data/raw/oc_chl_daily.parquet",
-  "daily_side_hist": "data/raw/oc_chl_daily_1997_2017.parquet",
-  "external_daily": "data/external/ocean_colour/chl_station_daily.parquet",
+  "external_daily_path": "data/external/ocean_colour/chl_station_daily.parquet",
   "week_path": "data/processed/ocean_colour_chl_week.parquet",
   "n_daily": 2179503,
   "n_week": 310128,
@@ -17,35 +19,35 @@
     "iso_year",
     "iso_week"
   ],
-  "units": "mg m^-3",
-  "coverage_by_split_week_join": {
-    "drop": {
-      "n": 30,
-      "n_with_chl_mean": 28,
-      "coverage": 0.933333
-    },
+  "catalogue_span": [
+    "1997-10-01",
+    "2026-08-31"
+  ],
+  "on_disk_span": [
+    "1997-10-01",
+    "2026-08-31"
+  ],
+  "coverage_by_split": {
     "test": {
       "n": 14270,
-      "n_with_chl_mean": 14223,
-      "coverage": 0.996706
+      "n_finite_chl": 14223,
+      "pct": 99.67,
+      "year_min": 2022,
+      "year_max": 2026
     },
     "train": {
       "n": 29683,
-      "n_with_chl_mean": 29577,
-      "coverage": 0.996429
+      "n_finite_chl": 29577,
+      "pct": 99.64,
+      "year_min": 2002,
+      "year_max": 2018
     },
     "val": {
       "n": 9189,
-      "n_with_chl_mean": 9158,
-      "coverage": 0.996626
-    },
-    "all": {
-      "n": 53172,
-      "n_with_chl_mean": 52986,
-      "coverage": 0.996502
+      "n_finite_chl": 9158,
+      "pct": 99.66,
+      "year_min": 2018,
+      "year_max": 2021
     }
-  },
-  "updated_at_dublin": "2026-09-08 12:46 IST",
-  "updated_at_utc": "2026-09-08T11:46:16.109685+00:00",
-  "note": "Extended MY ARCO extract covers locked HAB train 2003\u20132018. Claim Chl skill only if Gatekeeper \u0394 test cal PR-AUC > 0. No CPR_MBA."
+  }
 }
