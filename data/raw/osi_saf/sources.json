@@ -1,0 +1,63 @@
+{
+  "lane": "osi_saf_sst",
+  "preferred_product": {
+    "id": "OSI-202-c",
+    "ghrsst": "AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0",
+    "url": "https://osi-saf.eumetsat.int/products/osi-202-c",
+    "ftp": "ftp://ftp.ifremer.fr/ifremer/cersat/projects/osisaf/sst/l3c/north_atlantic/",
+    "https": "https://osi-saf.ifremer.fr/sst/l3c/north_atlantic/",
+    "licence": "CC BY 4.0",
+    "doi": "10.15770/EUM_SAF_OSI_NRT_2012",
+    "status_this_box": "blocked",
+    "blockers": [
+      "osi-saf.ifremer.fr HTTPS TLS unexpected EOF",
+      "ftp.ifremer.fr listing timeout",
+      "opensearch.ifremer.fr TLS EOF",
+      "PO.DAAC protected granules HTTP 401 (no Earthdata ~/.netrc)"
+    ],
+    "cmr_manifest": "data/raw/osi_saf_sst/nar_metop_b_manifest.csv",
+    "sample_granule_on_disk": {
+      "path": "data/raw/osi_saf/20230615100000-OSISAF-L3C_GHRSST-SSTsubskin-AVHRR_SST_METOP_B_NAR-sstnar_metop01_20230615_100000-v02.0-fv01.0.nc",
+      "note": "Single June-15 10UTC NAR L3C granule present under raw (gitignored). Full series not ingested: PO.DAAC still 401 without Earthdata; Ifremer unreachable."
+    }
+  },
+  "working_product": {
+    "product_id": "SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025",
+    "dataset_id": "IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE",
+    "variable": "analysed_sst",
+    "licence": "Copernicus Marine open data (see product licence / citation)",
+    "doi": "10.48670/moi-00152",
+    "access": "anonymous ARCO zarr (CloudFerro S3 HTTPS)",
+    "arco_uri": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-045/arco/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE_201904/timeChunked.zarr",
+    "note": "ODYSSEA L4 ingests OSI SAF among other IR/MW inputs; gap-free daily foundation SST ~0.02\u00b0",
+    "url": "https://data.marine.copernicus.eu/product/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/description",
+    "open_data_note": "Copernicus Marine Service open data under product licence; ARCO zarr objects (.zmetadata / chunks) readable anonymously over HTTPS from CloudFerro S3 when toolbox auth host is unreachable.",
+    "status_this_box": "ok_anonymous_arco"
+  },
+  "pilot": {
+    "t0": "2023-05-01",
+    "t1": "2023-08-31",
+    "bbox": [
+      51.0,
+      56.0,
+      -11.0,
+      -5.0
+    ],
+    "station_ids": [
+      184,
+      190,
+      171,
+      216,
+      177
+    ],
+    "n_rows": 615,
+    "n_days": 123,
+    "n_stations": 5,
+    "paths": {
+      "odyssea_daily": "data/raw/odyssea_daily.parquet",
+      "station_day": "data/processed/osi_saf_station_day.parquet",
+      "bbox_nc": "data/raw/osi_saf/odyssea_irish_202306_bbox.nc"
+    },
+    "june_bbox_nc_mb": 11.28
+  }
+}

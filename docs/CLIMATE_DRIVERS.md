@@ -246,18 +246,18 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 | **Script** | `scripts/download_oc_chl.py` → `data/raw/oc_chl_daily.parquet` |
 | **Module** | `src/pa_marine/oc_chl.py` |
 
-### (b) OSI SAF SST — independent MHW / shelf check
+### (b) OSI SAF SST lane — Climate Drivers (pilot 2026-09-08)
 
 | | |
 | --- | --- |
-| **Primary** | **OSI-202-c** NAR L3C Metop-B/AVHRR (~2 km, 4× daily, GHRSST) |
-| **GHRSST id** | `AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0` |
-| **DOI / licence** | [10.15770/EUM_SAF_OSI_NRT_2012](https://doi.org/10.15770/EUM_SAF_OSI_NRT_2012) · **CC BY 4.0** |
-| **Fallback** | **OSI-201-b** Global Metop L3C 0.05° (`AVHRR_SST_METOP_B_GLB-OSISAF-L3C-v1.0`) |
-| **Why L3C** | True OSI SAF sensor SST (independent of NOAA OISST / CMEMS OSTIA analyses). Cloud gaps → use **week-mean clear-sky** (quality_level ≥ 3), not Hobday daily MHW |
-| **Discover** | `scripts/download_osi_saf_sst.py` → CMR manifest under `data/raw/osi_saf_sst/` |
-| **Module** | `src/pa_marine/osi_saf_sst.py` |
-| **Download paths** | PO.DAAC protected granules (Earthdata `~/.netrc`) · Ifremer FTP `ftp://ftp.ifremer.fr/ifremer/cersat/projects/osisaf/sst/l3c/north_atlantic/` |
+| **Preferred** | **OSI-202-c** NAR L3C Metop-B/AVHRR (~2 km, GHRSST `AVHRR_SST_METOP_B_NAR-OSISAF-L3C-v1.0`) · DOI [10.15770/EUM_SAF_OSI_NRT_2012](https://doi.org/10.15770/EUM_SAF_OSI_NRT_2012) · **CC BY 4.0** |
+| **Working fallback** | CMEMS **ODYSSEA** L4 `SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025` / dataset `IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE` · DOI [10.48670/moi-00152](https://doi.org/10.48670/moi-00152) (uses OSI SAF among IR/MW inputs; gap-free ~0.02°) |
+| **Pilot scope** | Irish bbox 51–56°N, 11–5°W · **May–Aug 2023** · **5** HAB stations (184 Glenbeigh, 190 Tahilla, 171 Killary Inner, 216 Rosmoney, 177 Mannin) |
+| **What worked** | Anonymous **CloudFerro ARCO zarr** (`timeChunked.zarr`, zarr v2 consolidated) — **123** days × **5** stations, 0% NaN |
+| **Paths** | Raw: `data/raw/odyssea_daily.parquet`, `data/raw/osi_saf/odyssea_irish_202306_bbox.nc`, `data/raw/osi_saf/sources.json` · Station-day: `data/processed/osi_saf_station_day.parquet` (+ `.csv`) · Status: `data/processed/osi_saf_odyssea_pilot_status.json` |
+| **Ingest** | `PYTHONPATH=src .venv/bin/python scripts/ingest_odyssea_sst.py` · helpers in `src/pa_marine/osi_saf_sst.py` |
+| **OSI-202-c blockers (this box)** | Ifremer HTTPS/OpenSearch TLS EOF · FTP listing timeout · PO.DAAC granules HTTP 401 (no Earthdata `~/.netrc`) · CMR manifest only: `data/raw/osi_saf_sst/nar_metop_b_manifest.csv` (60 June 2023 granules) |
+| **Not owned here** | Ocean-colour Chl (`OCEANCOLOUR_ATL_BGC_L4_MY_009_118`) — Gatekeeper lane |
 
 ### Week-join schema
 

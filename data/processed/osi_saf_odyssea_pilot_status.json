@@ -1,0 +1,20 @@
+{
+  "product_worked": "ODYSSEA L4 IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE (anonymous ARCO)",
+  "osi_202c_worked": false,
+  "n_days": 123,
+  "n_stations": 5,
+  "date_min": "2023-05-01",
+  "date_max": "2023-08-31",
+  "paths": {
+    "odyssea_daily": "data/raw/odyssea_daily.parquet",
+    "station_day": "data/processed/osi_saf_station_day.parquet",
+    "bbox_nc": "data/raw/osi_saf/odyssea_irish_202306_bbox.nc"
+  },
+  "sources_json": "data/raw/osi_saf/sources.json",
+  "blockers": [
+    "osi-saf.ifremer.fr HTTPS TLS unexpected EOF",
+    "ftp.ifremer.fr listing timeout",
+    "opensearch.ifremer.fr TLS EOF",
+    "PO.DAAC protected granules HTTP 401 (no Earthdata ~/.netrc)"
+  ]
+}

@@ -164,3 +164,18 @@ data/processed/cpr_aoi_week_summary_climate_drivers.json
 !data/processed/oc_osi_ablation_metrics.json
 !data/processed/oc_osi_ablation_report.md
 !data/processed/oc_osi_join_summary.json
+
+# OSI SAF / ODYSSEA SST pilot (Climate Drivers) — small manifests only; rasters stay ignored
+# Un-ignore parents so sources.json under data/raw/ can be tracked
+!data/raw/
+data/raw/*
+!data/raw/osi_saf/
+data/raw/osi_saf/*
+!data/raw/osi_saf/sources.json
+!data/raw/osi_saf_sst/
+data/raw/osi_saf_sst/*
+!data/raw/osi_saf_sst/nar_metop_b_manifest.meta.json
+!data/processed/osi_saf_odyssea_pilot_status.json
+!data/processed/osi_saf_station_day.csv
+!data/processed/chl_osi_saf_ingest_plan.md
+
