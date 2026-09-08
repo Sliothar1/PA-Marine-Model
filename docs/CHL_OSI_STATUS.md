@@ -1,6 +1,6 @@
 # Status: OC Chl + OSI SAF / ODYSSEA SST fold-in
 
-**Updated:** 2026-09-08 12:46 IST
+**Updated:** 2026-09-08 12:49 IST
 **Repo:** `/workspace/pa-marine-model` (github.com/Sliothar1/PA-Marine-Model)
 
 ## Cork weekend lock (PA + Dev, 2026-09-08)
@@ -35,6 +35,7 @@ Catalogue describe for Chl succeeded (bbox covers Irish shelf). Prior OSTIA/IBI 
 | `src/pa_marine/oc_chl.py` | Station-pixel CMEMS Chl download |
 | `src/pa_marine/osi_saf_sst.py` | CMR manifest + week-mean / NC / ODYSSEA helpers |
 | `scripts/download_oc_chl.py` | CLI → `data/raw/oc_chl_daily.parquet` |
+| `scripts/extend_oc_chl_arco_history.py` | Append MY history via ARCO + merge/dedupe |
 | `scripts/download_osi_saf_sst.py` | CLI → CMR manifest under `data/raw/osi_saf_sst/` |
 | `scripts/extract_odyssea_station_day_arco.py` / `download_odyssea_arco_station_day.py` | Full 207-station ODYSSEA day extract |
 | `scripts/ingest_odyssea_sst.py` | Pilot ODYSSEA ingest |
@@ -180,7 +181,7 @@ National Chl **skill** still requires Gatekeeper ablation vs `STRONG_OISST` (cov
 
 ## GlobColour MY Chl — full train coverage (Climate Drivers pivot)
 
-**Updated:** 2026-09-08 12:44 IST
+**Updated:** 2026-09-08 12:49 IST
 
 **ODYSSEA predictive parked.** Pivot is GlobColour MY Chl add-on beside OISST (`STRONG+OC_CHL_CORE`), **not** an SST provider-swap.
 
@@ -188,23 +189,26 @@ National Chl **skill** still requires Gatekeeper ablation vs `STRONG_OISST` (cov
 
 | Table | Path | Coverage |
 | --- | --- | --- |
-| Station-day | `data/raw/oc_chl_daily.parquet` | **207** locs · **2003-01-01 → 2026-08-31** · **1 789 308** rows · ~98.9% finite `chl` |
-| Meta | `data/raw/ocean_colour/oc_chl_daily_sources_meta.json` (+ `oc_chl_daily_meta.json`) | ARCO URI, pixel reuse note, hist append 2003–2017 |
-| Year chunks | `data/raw/oc_chl/chunks/chl_YYYY.parquet` | 2003–2017 append intermediates |
+| Station-day | `data/raw/oc_chl_daily.parquet` | **207** locs · **1997-10-01 → 2026-08-31** · **2 179 503** rows · ~98.9% finite `chl` |
+| Hist side | `data/raw/oc_chl_daily_1997_2017.parquet` | **1 524 348** rows · 1997-10-01→2017-12-31 |
+| Meta | `data/raw/ocean_colour/oc_chl_daily_sources_meta.json` (+ `oc_chl_daily_meta.json`) | ARCO URI, pixel reuse, hist append 1997–2017 (~48 early ARCO 403 day-skips) |
+| Year chunks | `data/raw/oc_chl/chunks/chl_YYYY.parquet` | 1997 (Q4)–2017 append intermediates |
 | Joined panel | `data/processed/joined_features_oc_osi.parquet` | Chl lags/rolls + ODYSSEA aliases (ODYSSEA descriptive only) |
 | Gate | `data/processed/chl_ablation_gate.json` | coverage, PR-AUCs, Δ, `alert_pa` |
 | Metrics | `data/processed/chl_ablation_metrics.json` / `.md` | national + apr–sep + Connemara |
 
-**Pixel map:** reused nearest-ocean pixels from the prior 2018+ extract (170 unique pixels; median dist ≈ 0.009°). Appended **2003-01-01 → 2017-12-31** via ARCO, then merged with existing 2018+ rows.
+**Pixel map:** reused nearest-ocean pixels from the prior 2018+ extract (170 unique pixels; median dist ≈ 0.009°). Appended **1997-10-01 → 2017-12-31** via ARCO (`scripts/extend_oc_chl_arco_history.py`; monthly+day-retry on early 403s; half-year 2003–2017 clean), then merged with existing 2018+ rows. **Prior late-only (2018+) was NOT Cork-claimable** (~11% train). After extend, train week coverage is near-full. **Claim skill only if Gatekeeper Δ test cal PR-AUC > 0.** No CPR_MBA.
 
-### Week-panel Chl coverage (locked splits)
+### Week-panel Chl coverage (locked splits; `chl_mean` ISO-week join)
 
-| Split | n | n with `chl` | coverage |
+| Split | n | n with `chl_mean` | coverage |
 | --- | ---: | ---: | ---: |
-| train (2003–2018) | 29 683 | 29 491 | **99.35%** |
-| val (2019–2021) | 9 189 | 9 132 | **99.38%** |
-| test (2022+) | 14 270 | 14 191 | **99.45%** |
-| all | 53 172 | 52 814 | **99.33%** |
+| train (2003–2018) | 29 683 | 29 577 | **99.64%** |
+| val (2019–2021) | 9 189 | 9 158 | **99.66%** |
+| test (2022+) | 14 270 | 14 223 | **99.67%** |
+| all | 53 172 | 52 986 | **99.65%** |
+
+(Alternate feat_date lag join ≈ 99.3–99.4% — same conclusion: train near-full vs prior ~11% late-only.)
 
 `hard_block`: **false** (train cov ≫ 0).
 
@@ -223,16 +227,16 @@ LightGBM isotonic-calibrated test PR-AUC. Features: `OC_CHL_CORE` = chl / chl_lo
 
 Scripts: `scripts/join_oc_osi_week.py --chl-daily data/raw/oc_chl_daily.parquet`, `scripts/run_chl_ablation_gate.py` (also `scripts/chl_oc_core_ablation_gate.py`).
 
-## Chl ablation vs STRONG_OISST (Gatekeeper, 2026-09-08 12:46 IST)
+## Chl ablation vs STRONG_OISST (Gatekeeper, 2026-09-08 12:47 IST)
 
-Full-history ARCO station-day CHL is on disk and week-joined. Honest national / Apr–Sep / Connemara LightGBM ablation vs locked `STRONG_OISST`.
+Full-history ARCO station-day CHL on disk and week-joined. Honest national / Apr–Sep / Connemara LightGBM ablation vs locked `STRONG_OISST`.
 
 | Item | Value |
 | --- | --- |
 | Daily | `data/raw/oc_chl_daily.parquet` · **2,179,503** rows · **207** stations · **1997-10-01 → 2026-08-31** |
 | ARCO | `https://s3.waw3-1.cloudferro.com/mdl-arco-time-042/arco/OCEANCOLOUR_ATL_BGC_L4_MY_009_118/cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D_202603/timeChunked.zarr` (`zarr_format=2`) |
 | Sources meta | `data/raw/ocean_colour/oc_chl_daily_sources_meta.json` |
-| Joined panel | `data/processed/joined_features_oc_osi.parquet` (Chl lags/rolls + ODYSSEA aliases) |
+| Joined panel | `data/processed/joined_features_oc_osi.parquet` |
 | Gate | `data/processed/chl_ablation_gate.json` |
 | Metrics / report | `data/processed/chl_ablation_metrics.json` · `chl_ablation_metrics.md` |
 
@@ -243,23 +247,21 @@ Full-history ARCO station-day CHL is on disk and week-joined. Honest national / 
 | train (2003–2018) | **99.353** |
 | val (2019–2021) | **99.38** |
 | test (2022+) | **99.446** |
-| all | **99.327** |
+| all | **99.379** |
 
 ### LGBM test cal PR-AUC (OC_CHL_CORE fold-in)
 
 | Slice | STRONG_OISST | STRONG+CHL | Δ |
 | --- | ---: | ---: | ---: |
-| National | 0.2953 | 0.2874 | **-0.0079** |
+| National | 0.2953 | 0.2809 | **-0.0144** |
 | Apr–Sep | 0.2904 | 0.2866 | **-0.0038** |
-| Connemara | 0.0781 | 0.0665 | **-0.0116** |
+| Connemara | 0.0781 | 0.0670 | **-0.0111** |
 
 - **`hard_block`:** **false** (train Chl cov ≫ 5%).
 - **`skill_claim`:** **false** (national Δ ≤ 0).
-- **`alert_pa`:** **false** — no alert: national Δ=-0.007933879043937664; train_cov=0.9935; no skill claim without Δ>0
+- **`alert_pa`:** **false** — no alert: national Δ=-0.014421514962417281; train_cov=0.9935; no skill claim without Δ>0
 
-Also ran `scripts/oc_osi_ablation.py` (national / `--apr-sep` / `--connemara`) → `oc_osi_ablation_{national,apr_sep,connemara}.json`. Stacked STRONG+ODYSSEA / STRONG+CHL+ODYSSEA remain non-protocol for SST provider-swap (ODYSSEA train still ~11%); Chl fold-in is the fair full-train comparison above.
-
-**No CPR_MBA edits. No push.**
+Also ran `scripts/oc_osi_ablation.py` (national / `--apr-sep` / `--connemara`) → `oc_osi_ablation_{national,apr_sep,connemara}.json`. Cork STRONG_OISST ~0.295 unchanged. **No CPR_MBA edits. No push.**
 
 ## OSI-202-c NAR still blocked
 
@@ -295,22 +297,20 @@ Mace Head / Lehanagh Pool remain in `configs/default.yaml` sentinel block. **OC 
 - **CMEMS auth:** still TLS-broken; ARCO anonymous path used.
 - **Handoff:** Prediction Gatekeeper — do not re-download.
 
-## Chl MY add-on gate (Gatekeeper, 2026-09-08)
+## Chl MY add-on gate (Gatekeeper, 2026-09-08 12:47 IST)
 
 Train-covered MY fold-in vs `STRONG_OISST`. Cite: CMEMS `OCEANCOLOUR_ATL_BGC_L4_MY_009_118`.
 
 | Item | Value |
 | --- | --- |
 | `oc_chl_daily` | **207** locs · **1997-10-01 → 2026-08-31** · **2.18M** rows |
-| Coverage by split | train/val/test ~**99.3–99.5%** (`hard_block=false`) |
+| Coverage by split | train/val/test ~**99.353–99.446%** (`hard_block=false`) |
 | STRONG test cal PR-AUC | **0.295** |
-| STRONG+CHL test cal PR-AUC | **0.287** |
-| Δ national | **−0.008** (apr–sep −0.004; Connemara −0.012) |
+| STRONG+CHL test cal PR-AUC | **0.281** |
+| Δ national | **-0.014** (apr–sep -0.004; Connemara -0.011) |
 | `skill_claim` | **false** |
 | `alert_pa` | **false** |
 | Cork quote | **unchanged** (STRONG_OISST ~0.295) |
 
 Gate/metrics: `data/processed/chl_ablation_gate.json`, `data/processed/chl_ablation_metrics.json`.
-
-**Do not overwrite** `oc_chl_daily` without coordinating with Gatekeeper — ablation already used this merge.
 
