@@ -1,5 +1,8 @@
 # MBA Continuous Plankton Recorder (CPR) — IrishHeatwaves extract
 
+> **LOCK:** §§6–8 are locked (Legal cite + ablation metrics + Cork one-liner). Append only under §9 (or edit `CLIMATE_DRIVERS.md`). **Do not rewrite** this file.
+
+
 **Climate Drivers role:** AOI × ISO-week aggregates + honest docs for shelf / heatwave narrative.  
 **PA / executor role:** heavy ingest (`scripts/ingest_cpr_mba.py`), HAB week join + ablation (`scripts/join_cpr_hab_week.py`).  
 **Climate rebuild helper:** `scripts/build_cpr_aoi_week.py` (reuses PA AOI boxes; does not duplicate sample ingest).  
