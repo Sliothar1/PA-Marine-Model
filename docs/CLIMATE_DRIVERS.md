@@ -305,13 +305,14 @@ Status scratchpad: `docs/CHL_OSI_STATUS.md`.
 
 | config | n_feat | test cal PR-AUC | Δ vs strong |
 | --- | ---: | ---: | ---: |
-| `strong` | 9 | **0.2953** | — |
-| `strong_chl` | 19 | 0.2833 | −0.0120 |
-| `strong_osi` (ODYSSEA week) | 12 | 0.2764 | −0.0189 |
-| `strong_chl_osi` | 22 | 0.2850 | −0.0103 |
+| `STRONG_OISST` | 9 | **0.2953** | — |
+| `STRONG+CHL` | 19 | 0.2874 | −0.0079 |
+| `STRONG+OSI` (ODYSSEA week) | 12 | 0.2662 | −0.0291 |
+| `STRONG+CHL+OSI` | 22 | 0.2903 | −0.0050 |
 
-**Honest verdict: no national lift** — STRONG alone wins. Report: `data/processed/oc_osi_ablation_report.md` · metrics JSON beside it.
+**Apr–Sep slice:** strong 0.2904; +CHL 0.2866 (Δ−0.0038); +OSI 0.2497 (Δ−0.0408); +CHL+OSI 0.2823 (Δ−0.0082).
 
+**Honest verdict: no national lift** (full year or Apr–Sep). Reports: `data/processed/oc_osi_ablation_report.md`, `oc_osi_ablation_report_aprsep.md`.
 
 
 ### (d) Multi-decade SST L4 for OISST provider-swap — decision (2026-09-08)
