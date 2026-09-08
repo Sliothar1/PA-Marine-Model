@@ -1,15 +1,15 @@
 # MBA Continuous Plankton Recorder (CPR) — IrishHeatwaves extract
 
-**Role:** Climate Drivers **AOI-week covariates** (community aggregates + PCI) for Irish Sea / Celtic / Scotland-west / heatwave–shelf narrative.  
-**Not** a replacement for Met Éireann radiation/wind or NAO/EA/AMO ([`CLIMATE_DRIVERS.md`](CLIMATE_DRIVERS.md), [`MACRO_CLIMATE.md`](MACRO_CLIMATE.md)).  
-**Script:** `scripts/build_cpr_aoi_week.py` (complements PA `scripts/ingest_cpr_mba.py`; does not redo sample ingest / taxon QC / HAB ablation).  
+**Climate Drivers role:** AOI × ISO-week aggregates + honest docs for shelf / heatwave narrative.  
+**PA / executor role:** heavy ingest (`scripts/ingest_cpr_mba.py`), HAB week join + ablation (`scripts/join_cpr_hab_week.py`).  
+**Climate rebuild helper:** `scripts/build_cpr_aoi_week.py` (reuses PA AOI boxes; does not duplicate sample ingest).  
 **Python:** `/workspace/pa-marine-model/.venv/bin/python`
 
 ---
 
 ## 1. What it is
 
-MBA CPR extraction **“IrishHeatwaves”** by **Pierre Hélaouët** (07/09/2026).
+MBA CPR data extraction **“IrishHeatwaves”** prepared by **Pierre Hélaouët** (07/09/2026).
 
 | | |
 | --- | --- |
@@ -20,80 +20,169 @@ MBA CPR extraction **“IrishHeatwaves”** by **Pierre Hélaouët** (07/09/2026
 | **Bbox** | 49–61°N, −16–0°E |
 | **Sample volume** | One CPR sample ≈ **3 m³** filtered water |
 
-Group mean abundances only (not species counts):
+Each row already carries **group mean abundances** (not raw taxon counts):
 
-- `Mean_LargeCopepods` / `Mean_SmallCopepods` (+ week helper `Mean_Copepods` = Large+Small)
+- `Mean_LargeCopepods` / `Mean_SmallCopepods`
 - `Mean_Diatoms` / `Mean_Dinoflagellates`
 - `PCI` — Phytoplankton Colour Index (silk greenness: 0 / 1 / 2 / 6.5)
 
-Taxon lists: `raw/CPR_IrishHeatwaves_List_*.csv`. README: `README_from_docx.txt`.
+Taxon lists: `raw/CPR_IrishHeatwaves_List_*.csv` (tracked). README: `README_from_docx.txt`.
 
 ---
 
-## 2. Honest limitations
+## 2. Aggregates only — cannot validate Dinophysis
 
-| Limit | Implication |
-| --- | --- |
-| **Aggregates only — no Dinophysis spp.** | Dinoflagellate list is Ceratium-heavy with **0 Dinophysis**. Cannot train/validate HAB Dinophysis from CPR dino means. |
-| **Connemara nested = 0 tows** | No local CPR week features for Connemara farms; use MI HAB + buoy/Met. |
-| **Western Irish shelf sparse (~35)** | Prefer Irish Sea / Celtic Sea / Scotland west for narrative. |
-| **Ends Dec 2022** | Cannot attribute June 2023 shelf MHW with this CPR extract. |
-| **Not Met / NAO** | AOI-week covariates only — does **not** replace Met Éireann or NAO/EA/AMO. |
+**This product cannot validate *Dinophysis* spp. abundance.**
+
+- CSV / week product expose **group** means only (`Mean_Dinoflagellates` → `cpr_mean_dinoflagellates`).
+- Accompanying dinoflagellate taxon list has **0 Dinophysis** entries (Ceratium-heavy; also Gymnodinium, Prorocentrum spp., etc.).
+- Do **not** treat CPR dino means as Dinophysis labels, grower scores, or exceedance validation.
+- Species-level expansion (if any) is **out of scope** for Climate Drivers — leave to PA.
+
+Honest use: community / PCI context for Irish Sea, Celtic Sea, Scotland, and heatwave–shelf narrative.
 
 ---
 
-## 3. AOIs (Climate Drivers ids)
+## 3. Spatial honesty (PA AOIs)
 
-| AOI id | Bbox (lat × lon) | Expected coverage |
+Canonical AOI boxes live in `scripts/ingest_cpr_mba.py` (shared by `build_cpr_aoi_week.py`):
+
+| AOI id | Bbox (lat_min–max × lon_min–max) | Typical role |
 | --- | --- | --- |
-| `full_extract` | 49–61°N × −16–0°E | All CSV samples (~41 884) |
-| `connemara_nested` | 53.1–53.6°N × −10.2–−9.3°E | **0** tows |
-| `western_irish_shelf` | 52.5–55.0°N × −11.5–−9.0°E | **~35** tows (sparse) |
-| `irish_sea` | 52.5–54.5°N × −6.2–−3.2°E | Good |
-| `celtic_sea` | 49.5–52.0°N × −10.5–−5.5°E | Good |
-| `scotland_west` | 54.75–60.76°N × −7.5–−0.83°E | Better than west Ireland coast |
+| `total_box` | 49.5–60.76 × −15–−0.83 | Narrative outer box |
+| `celtic` | 49.5–52 × −10.5–−5.5 | Celtic Sea — **good** coverage |
+| `irish_sea` | 52.5–54.5 × −6.2–−3.2 | Irish Sea — **good** coverage |
+| `scotland` | 54.75–60.76 × −7.5–−0.83 | Scotland west / approaches — **well covered** |
+| `western_shelf` | 52.5–55 × −11.5–−9.0 | Western Irish shelf — **sparse (~35 tows)** |
+| `shelf_break` | 51–55 × −15–−11.5 | Offshore west |
+| `malin` | 54.5–55.8 × −8–−4.5 | Malin approaches |
+| `connemara` | 53.2–53.7 × −10.2–−9.4 | Nested Connemara — **0 tows** |
 
-Exact `n_samples` / `n_weeks`: `data/processed/cpr_aoi_summary.json`.
+Climate-facing aliases (summary JSON only; same boxes where mapped):
+
+| Climate name | Maps to PA AOI |
+| --- | --- |
+| `full_extract` | MBA extract 49–61°N × −16–0°E (all CSV samples) |
+| `celtic_sea` | `celtic` |
+| `irish_sea` | `irish_sea` |
+| `western_irish_shelf` | `western_shelf` |
+| `connemara_nested` | `connemara` |
+| `scotland_west` | `scotland` |
+
+**Takeaways**
+
+- **Connemara nested = empty** — no local CPR week features for Connemara farms.
+- **Western shelf ~35 samples** — not a primary west-coast HAB ML feature.
+- Prefer **Irish Sea / Celtic / Scotland** (and `total_box` / `full_extract`) for CPR narrative and heatwave/shelf context.
+
+Exact counts: `data/processed/cpr_aoi_week_summary.json` and `cpr_ingest_summary.json`.
 
 ---
 
-## 4. Build and use as AOI-week covariates
+## 4. AOI-week product and HAB panel join
+
+**PA ingest (source of truth for samples + first AOI-week build)**
 
 ```bash
-cd /workspace/pa-marine-model
+.venv/bin/python scripts/ingest_cpr_mba.py
+```
+
+**Climate refresh of AOI-week + summary** (join-compatible columns; shared AOIs)
+
+```bash
 .venv/bin/python scripts/build_cpr_aoi_week.py
 ```
 
+**Outputs**
+
 | Path | Contents |
 | --- | --- |
-| `data/processed/cpr_aoi_week.csv` | One row per `(aoi, iso_year, iso_week)` — week means of group abundances + PCI + `n_samples` |
-| `data/processed/cpr_aoi_summary.json` | Provenance + **per-AOI sample counts** (includes Connemara = 0) |
+| `data/processed/cpr_samples.parquet` | PA sample table (gitignored via `*.parquet`) |
+| `data/processed/cpr_aoi_week.csv` | `(aoi, iso_year, iso_week)` means + `n_samples` / `n` |
+| `data/processed/cpr_aoi_week_summary.json` | Climate summary: AOI counts (zeros for Connemara) + aliases |
+| `data/processed/cpr_ingest_summary.json` | PA ingest provenance |
 
-**Left-join onto a HAB week panel** (same ISO-week keys as `climate_indices_week` / `met_west_climate_week`):
+Week metrics (means): `cpr_mean_dinoflagellates`, `cpr_mean_diatoms`, `cpr_mean_large_copepods`, `cpr_mean_small_copepods`, `cpr_pci`, `cpr_dino_diatom_ratio`.
 
-1. Choose an AOI (`celtic_sea`, `irish_sea`, or `scotland_west` — **not** `connemara_nested`).
+**Left-join keys onto the HAB week panel** (same ISO week convention as `climate_indices_week` / `met_west_climate_week`):
+
+1. Choose an AOI (`celtic`, `irish_sea`, `scotland`, … — **not** `connemara`).
 2. Filter `cpr_aoi_week` to that `aoi`.
-3. Left-join on **`iso_year` + `iso_week`**.
+3. **Left-join** on **`iso_year` + `iso_week`**.
 
 ```python
 import pandas as pd
 cpr = pd.read_csv("data/processed/cpr_aoi_week.csv")
-cpr = cpr.loc[
-    cpr["aoi"] == "celtic_sea",
-    ["iso_year", "iso_week", "n_samples",
-     "Mean_Dinoflagellates", "Mean_Diatoms", "Mean_Copepods", "PCI"],
-]
+cpr = cpr.loc[cpr["aoi"] == "celtic", ["iso_year", "iso_week", "n_samples",
+    "cpr_mean_dinoflagellates", "cpr_mean_diatoms", "cpr_mean_large_copepods",
+    "cpr_mean_small_copepods", "cpr_pci"]]
 panel = panel.merge(cpr, on=["iso_year", "iso_week"], how="left")
 ```
 
-Coverage is sparse even in well-sampled seas — **explanatory context**, not a dense Met/NAO-style driver.
+Or use PA helper: `scripts/join_cpr_hab_week.py` (station→AOI mapping + optional nearest-100 km).
 
-PA also ships `scripts/ingest_cpr_mba.py` (sample parquet + alternate AOI naming) and `scripts/join_cpr_hab_week.py`. If ingest overwrites `cpr_aoi_week.csv`, re-run `build_cpr_aoi_week.py` for the Climate Drivers AOI ids.
+Coverage is sparse even in well-sampled seas — **explanatory context**, not a dense feature.
 
 ---
 
 ## 5. Boundary
 
-- **In scope:** AOI-week aggregates, summary JSON, this doc + pointers from climate docs.
-- **Out of scope:** Species-level Dinophysis, farm HTML / grower dashboard, replacing Met or NAO.
-- Large raw CSV / control-map PNG stay gitignored; taxa lists, README, small processed CSV/JSON are whitelisted.
+- Climate Drivers: AOI-week aggregates, summary JSON, this doc + `CLIMATE_DRIVERS.md` pointer.
+- PA: raw ingest, sample parquet, HAB join, Dinophysis ablation honesty.
+- **Not** a Dinophysis abundance series; **not** a Connemara local driver.
+- Farm HTML / grower dashboard — untouched.
+
+Large raw CSV + control-map PNG stay local (gitignored); taxa lists, README, small processed CSV/JSON/md are whitelisted.
+
+---
+
+## 6. Citation / legal (Cork slides)
+
+**Preferred citation (catalogue):** Pierre Helaouët (Marine Biological Association of the United Kingdom) (2026): CPR Data request - IrishHeatwaves - 07/09/2026. The Archive for Marine Species and Habitats Data (DASSH). (Dataset). https://doi.org/10.17031/6a9e6f4a00142 · https://doi.mba.ac.uk/data/3793
+
+**Licence (Legal lock):** No CC field on this DOI page; sibling CPR IPT products are often **CC-BY-NC 4.0**. Cork position: research/hackathon **cite OK**; treat as **NC-conservative / provisionally CC-BY-NC**; do **not** slide-claim “licensed CC-BY-NC” as a hard fact for this DOI until MBA/DASSH confirm. Say: “Used under DASSH/MBA terms; attribution required; non-commercial demo.”
+
+**Raw data:** Sample CSV stays **gitignored** — not an open training dump.
+
+**Derivatives:** Processed AOI×ISO-week aggregates prefer **local-only** for Cork (gitignored). Public repo ships **cite + metrics/narrative** (`cpr_ablation_*.md/json`, this doc). Written MBA/DASSH OK before commercial reuse or open-training dump (`dassh.enquiries@mba.ac.uk` / Pierre).
+
+**Slide one-liner (legal-safe):** Offshore CPR shelf-community indices (PCI/dino/diatom/copepods), not Dinophysis labels; coverage to Dec 2022 — no contemporaneous CPR for June 2023 MHW.
+
+*(Marine Legal Policy flag — not formal counsel.)*
+
+## 7. Ablation vs strong Dinophysis baseline (canonical)
+
+Source of truth: `data/processed/cpr_ablation_metrics.json` + `cpr_ablation_report.md` (2026-09-08 09:38 UTC).
+
+| Setting | n_feat | LightGBM test cal PR-AUC |
+| --- | ---: | ---: |
+| strong | 9 | **0.2845** |
+| strong+CPR_AOI | 16 | **0.2904** (~+0.006) |
+| strong+CPR_nearest100 | 15 | **0.2845** (= strong; nearest coverage **0.0%**) |
+| strong+CPR_AOI+nearest100 | 22 | **0.2904** |
+
+| Coverage | % of Irish station-weeks |
+| --- | ---: |
+| AOI-week CPR features | **~28.2%** |
+| Nearest ≤100 km (same ISO week) | **0.0%** in this artifact |
+
+**Verdict:** CPR does **not** beat strong for operational Cork claims. AOI add-on is a tiny exploratory bump at partial coverage; nearest join contributed nothing in this run. Use for **shelf / heatwave narrative only**.
+
+---
+
+## 8. Cork one-liner (locked)
+
+> Across 40 years of MBA CPR tows on the Irish–Scottish shelf (~42k samples, 1982–2022), offshore dinoflagellate abundance in summer is ~200× winter — community context for our Dinophysis nowcast, not species counts, and the series stops before the June 2023 heatwave.
+
+Further ask to Pierre deferred unless species-level *Dinophysis* or post-2022 data is needed.
+
+---
+
+## 9. Climate Drivers notes
+
+Climate Drivers does **not** own CPR ingest or Dinophysis ablation (§§6–8 above stay locked after Int’l HAB Dev reconcile).
+
+- Cross-links: [`CLIMATE_DRIVERS.md`](CLIMATE_DRIVERS.md) §6 and [`MACRO_CLIMATE.md`](MACRO_CLIMATE.md) point here.
+- Role: treat CPR AOI-week features as **shelf / heatwave narrative covariates** alongside Met Éireann and NAO/EA/AMO — **not** a Met or teleconnection replacement, and **not** species-level *Dinophysis*.
+- Connemara nested AOI remains **0** CPR tows; prefer Irish Sea / Celtic / Scotland-west AOIs for joins.
+- Further Climate Drivers edits to this file: **append under §9 only** (or edit the climate-doc pointers). Do not rewrite §§1–8.
