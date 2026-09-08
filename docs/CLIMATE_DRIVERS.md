@@ -2,7 +2,7 @@
 
 **Generated:** 2026-09-02 (Europe/Dublin).  
 **Purpose:** Open climate context for Dinophysis / HAB explanation (Connemara + Irish shelf).  
-**Scripts:** `scripts/ingest_met_climate_drivers.py`, `scripts/build_sst_warming_context.py`, `scripts/climate_drivers_ablation.py`, `scripts/extract_connemara_normals_9120.py`.
+**Scripts:** `scripts/ingest_met_climate_drivers.py`, `scripts/build_sst_warming_context.py`, `scripts/climate_drivers_ablation.py`, `scripts/extract_connemara_normals_9120.py`, `scripts/build_cpr_aoi_week.py`.
 
 Catalogue landing: [Available Data](https://www.met.ie/climate/available-data).
 
@@ -215,3 +215,14 @@ Open CPC / NCEI indices for explanatory / Cork narrative live in **[`MACRO_CLIMA
 - Ingest: `scripts/ingest_climate_indices.py` → `data/external/climate_indices/`
 - Week join: `data/processed/climate_indices_week.csv` (`iso_year`, `iso_week`)
 - Ablation: `scripts/macro_climate_ablation.py` — **no national PR-AUC lift** vs `STRONG_OISST`
+
+
+## 6. MBA CPR IrishHeatwaves (AOI-week support)
+
+MBA Continuous Plankton Recorder extract (Pierre Hélaouët; DOI [10.17031/6a9e6f4a00142](https://doi.org/10.17031/6a9e6f4a00142)) — **group aggregates only** for Irish Sea / Celtic / Scotland-west / heatwave–shelf context.
+
+- **Doc:** [`CPR_MBA.md`](CPR_MBA.md) (spatial honesty, Dinophysis limit, join keys).
+- **Build:** `scripts/build_cpr_aoi_week.py` → `data/processed/cpr_aoi_week.csv` + `cpr_aoi_week_summary.json`.
+- **Join:** left-join HAB week panel on `iso_year` + `iso_week` after filtering `aoi` (Connemara nested = **0** tows; west shelf sparse).
+- **Not** species-level Dinophysis; heavy CPR ingest stays with PA.
+

@@ -126,6 +126,14 @@ Map Irish MI week panel schema → (1) Galicia zone-week closure / Dinophysis pr
 
 ---
 
+---
+
+## Related: MBA CPR (AOI-week covariates, not Met/NAO)
+
+Shelf Continuous Plankton Recorder group aggregates (dinoflagellates / diatoms / copepods / PCI) are documented in **[`CPR_MBA.md`](CPR_MBA.md)**.
+
+Use as **AOI-week covariates** for Irish Sea / Celtic / Scotland-west / heatwave–shelf narrative — **not** a replacement for Met Éireann radiation/wind or NAO/EA/AMO teleconnections. No species-level Dinophysis; Connemara nested box has **0** CPR tows.
+
 ## 5. Re-run checklist
 
 ```bash
