@@ -152,21 +152,23 @@ Large raw CSV + control-map PNG stay local (gitignored); taxa lists, README, sma
 
 ## 7. Ablation vs strong Dinophysis baseline (canonical)
 
-Source of truth: `data/processed/cpr_ablation_metrics.json` + `cpr_ablation_report.md` (2026-09-08 09:38 UTC).
+Source of truth: `data/processed/cpr_ablation_metrics.json` + `cpr_ablation_report.md` (re-run 2026-09-08 Europe/Dublin).
 
-| Setting | n_feat | LightGBM test cal PR-AUC |
-| --- | ---: | ---: |
-| strong | 9 | **0.2845** |
-| strong+CPR_AOI | 16 | **0.2904** (~+0.006) |
-| strong+CPR_nearest100 | 15 | **0.2845** (= strong; nearest coverage **0.0%**) |
-| strong+CPR_AOI+nearest100 | 22 | **0.2904** |
+**Join/eval protocol (International HAB Dev):** (1) AOI×ISO-week aggregates left-joined to station-weeks; (2) optional nearest CPR same ISO week ≤100 km haversine; (3) ablate `strong` vs `strong+CPR_AOI` vs `strong+CPR_nearest100`; report coverage %; **never HAB labels** as CPR features.
+
+| Setting | n_feat | LightGBM test cal PR-AUC | PR skill |
+| --- | ---: | ---: | ---: |
+| strong | 9 | **0.2987** | 0.1414 |
+| strong+CPR_AOI | 16 | **0.2838** | 0.1232 |
+| strong+CPR_nearest100 | 15 | **0.2925** | 0.1338 |
+| strong+CPR_AOI+nearest100 | 22 | **0.2915** | 0.1326 |
 
 | Coverage | % of Irish station-weeks |
 | --- | ---: |
-| AOI-week CPR features | **~28.2%** |
-| Nearest ≤100 km (same ISO week) | **0.0%** in this artifact |
+| AOI-week CPR features | **28.2%** |
+| Nearest ≤100 km (same ISO week) | **4.0%** |
 
-**Verdict:** CPR does **not** beat strong for operational Cork claims. AOI add-on is a tiny exploratory bump at partial coverage; nearest join contributed nothing in this run. Use for **shelf / heatwave narrative only**.
+**Verdict:** CPR does **not** beat strong for operational Cork claims. AOI add-on is flat-to-slightly-worse at ~28% coverage; nearest-100 is sparse (~4%). Use for **shelf / heatwave narrative only**.
 
 ---
 
@@ -174,7 +176,15 @@ Source of truth: `data/processed/cpr_ablation_metrics.json` + `cpr_ablation_repo
 
 > Across 40 years of MBA CPR tows on the Irish–Scottish shelf (~42k samples, 1982–2022), offshore dinoflagellate abundance in summer is ~200× winter — community context for our Dinophysis nowcast, not species counts, and the series stops before the June 2023 heatwave.
 
-Further ask to Pierre deferred unless species-level *Dinophysis* or post-2022 data is needed.
+### Follow-ups for Pierre (MBA)
+
+1. Dinophysis / *Phalacroma* (HAB-relevant dino) series on the same routes/box — or confirmation unavailable on CPR silk.
+2. Pseudo-nitzschia (and *Karenia* if routine) group/taxon means for the same box.
+3. Finer coastal routes into Connemara / Galway Bay (nested box = **0** tows here).
+4. PCI vs HPLC / satellite chl guidance for Irish shelf weeks.
+5. QC / silk-condition fields not in the current CSV.
+6. Preferred citation string + DOI landing-page filename stability; confirm licence for this DOI.
+
 
 ---
 
