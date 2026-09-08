@@ -154,6 +154,7 @@ data/external/cpr_mba/*.png
 data/processed/cpr_aoi_week.parquet
 data/processed/cpr_samples.parquet
 data/processed/joined_features_with_cpr.parquet
-data/processed/cpr_aoi_week.csv
 !data/processed/cpr_aoi_week_climate_drivers.csv
 !data/processed/cpr_aoi_summary_climate_drivers.json
+!data/processed/cpr_aoi_week.csv
+!data/processed/cpr_aoi_summary.json

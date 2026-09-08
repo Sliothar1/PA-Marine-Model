@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-08T09:50:23Z",
+  "generated_utc": "2026-09-08T09:51:22Z",
   "role": "climate_drivers_aoi_week_support",
   "complements_pa_ingest": "scripts/ingest_cpr_mba.py",
   "source_csv": "data/external/cpr_mba/raw/CPR_IrishHeatwaves_Data_04092026.csv",
