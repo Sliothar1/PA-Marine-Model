@@ -1,81 +1,81 @@
 {
-  "generated_at_utc": "2026-09-08T09:38:34.550416+00:00",
+  "generated_at_utc": "2026-09-08T09:47:48.094259+00:00",
   "target": "y_dinophysis_nowcast",
   "protocol": [
     "AOI x ISO-week left-join to station-weeks",
     "nearest CPR same ISO week <=100 km haversine",
     "ablate strong vs +CPR_AOI vs +CPR_nearest100; coverage %; never HAB labels"
   ],
-  "elapsed_s": 4.0,
+  "elapsed_s": 4.2,
   "results": [
     {
       "label": "strong",
       "n_features": 9,
       "features": [
         "woy_sin",
+        "woy_cos",
+        "sst",
         "sst_roll7d",
         "longitude",
-        "woy_cos",
         "sst_lag21d",
+        "sst_lag0d",
         "latitude",
-        "sst_roll30d",
-        "sst",
-        "sst_lag0d"
+        "sst_roll30d"
       ],
       "n_train": 29683,
       "n_val": 9189,
       "n_test": 14270,
       "feature_coverage_train_pct": {
         "woy_sin": 100.0,
+        "woy_cos": 100.0,
+        "sst": 39.841,
         "sst_roll7d": 39.841,
         "longitude": 100.0,
-        "woy_cos": 100.0,
         "sst_lag21d": 39.841,
+        "sst_lag0d": 39.841,
         "latitude": 100.0,
-        "sst_roll30d": 39.841,
-        "sst": 39.841,
-        "sst_lag0d": 39.841
+        "sst_roll30d": 39.841
       },
       "lightgbm_val_raw": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.55260032311567,
+        "pr_auc": 0.5547547127178813,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.37396029357068233,
-        "brier": 0.09900292353823271,
+        "pr_auc_skill": 0.3769748988638629,
+        "brier": 0.09932474511731385,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.22022781711317263
+        "brier_skill": -0.22419432263551142
       },
       "lightgbm_val_cal": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.5409201654221281,
+        "pr_auc": 0.5454173571164611,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.35761642281861733,
-        "brier": 0.06444234909785836,
+        "pr_auc_skill": 0.36390927619679386,
+        "brier": 0.06426437608424468,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": 0.20573712210672346,
+        "brier_skill": 0.2079306696722456,
         "calibration_method": "isotonic"
       },
       "lightgbm_test_raw": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.30326145668591875,
+        "pr_auc": 0.30494302629478026,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.1470524647908645,
-        "brier": 0.1155293461090932,
+        "pr_auc_skill": 0.1491110428140333,
+        "brier": 0.11530867054409745,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -1.2087863561027055
+        "brier_skill": -1.2045672966731855
       },
       "lightgbm_test_cal": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.2845047370130566,
+        "pr_auc": 0.29633293545388617,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.12409048290095988,
-        "brier": 0.05227170518880386,
+        "pr_auc_skill": 0.13857056700551068,
+        "brier": 0.05217718128750079,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": 0.0006259611109712404,
+        "brier_skill": 0.002433147860965268,
         "calibration_method": "isotonic"
       },
       "logreg_val_raw": {
@@ -84,9 +84,9 @@
         "pr_auc": 0.4123947859250243,
         "pr_auc_clim": 0.28534935996932137,
         "pr_auc_skill": 0.17777277293174903,
-        "brier": 0.144482247402013,
+        "brier": 0.14448224740201232,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.7807681940915618
+        "brier_skill": -0.7807681940915536
       },
       "logreg_val_cal": {
         "n": 9189,
@@ -105,9 +105,9 @@
         "pr_auc": 0.2390684439787907,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.06846735924215155,
-        "brier": 0.1721302601630511,
+        "brier": 0.17213026016305008,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -2.2909298193511654
+        "brier_skill": -2.290929819351146
       },
       "logreg_test_cal": {
         "n": 14270,
@@ -115,7 +115,7 @@
         "pr_auc": 0.22922569324862024,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.05641786082479144,
-        "brier": 0.052553263911410436,
+        "brier": 0.05255326391141044,
         "brier_clim": 0.05230444573776661,
         "brier_skill": -0.0047571132842378905,
         "calibration_method": "isotonic"
@@ -126,14 +126,14 @@
       "n_features": 16,
       "features": [
         "woy_sin",
+        "woy_cos",
+        "sst",
         "sst_roll7d",
         "longitude",
-        "woy_cos",
         "sst_lag21d",
+        "sst_lag0d",
         "latitude",
         "sst_roll30d",
-        "sst",
-        "sst_lag0d",
         "cpr_aoi_n_samples",
         "cpr_aoi_mean_large_copepods",
         "cpr_aoi_mean_small_copepods",
@@ -147,14 +147,14 @@
       "n_test": 14270,
       "feature_coverage_train_pct": {
         "woy_sin": 100.0,
+        "woy_cos": 100.0,
+        "sst": 39.841,
         "sst_roll7d": 39.841,
         "longitude": 100.0,
-        "woy_cos": 100.0,
         "sst_lag21d": 39.841,
+        "sst_lag0d": 39.841,
         "latitude": 100.0,
         "sst_roll30d": 39.841,
-        "sst": 39.841,
-        "sst_lag0d": 39.841,
         "cpr_aoi_n_samples": 36.93,
         "cpr_aoi_mean_large_copepods": 36.93,
         "cpr_aoi_mean_small_copepods": 36.93,
@@ -166,43 +166,43 @@
       "lightgbm_val_raw": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.5599478933456198,
+        "pr_auc": 0.5562648768064645,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.384241639193817,
-        "brier": 0.09551089393676906,
+        "pr_auc_skill": 0.3790880489878428,
+        "brier": 0.09569963071427376,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.17718796025234917
+        "brier_skill": -0.1795141730326677
       },
       "lightgbm_val_cal": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.5512580964421896,
+        "pr_auc": 0.5457169005416989,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.3720821357711976,
-        "brier": 0.06394361943507827,
+        "pr_auc_skill": 0.36432842285175926,
+        "brier": 0.0641374537257742,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": 0.21188404975284203,
+        "brier_skill": 0.2094950092582325,
         "calibration_method": "isotonic"
       },
       "lightgbm_test_raw": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.3021834289951198,
+        "pr_auc": 0.3008430450792926,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.1457327429661173,
-        "brier": 0.11254870205857613,
+        "pr_auc_skill": 0.14409184457143298,
+        "brier": 0.11277664685004025,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -1.1517999181723466
+        "brier_skill": -1.1561579567338667
       },
       "lightgbm_test_cal": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.2903807030988653,
+        "pr_auc": 0.28557528086443545,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.13128384235833054,
-        "brier": 0.05240003211403871,
+        "pr_auc_skill": 0.1254010430072281,
+        "brier": 0.052365944615544426,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -0.0018275000322407475,
+        "brier_skill": -0.0011757868171693442,
         "calibration_method": "isotonic"
       },
       "logreg_val_raw": {
@@ -211,9 +211,9 @@
         "pr_auc": 0.3964140139875762,
         "pr_auc_clim": 0.28534935996932137,
         "pr_auc_skill": 0.15541111670100374,
-        "brier": 0.14257311185350985,
+        "brier": 0.14257311185350927,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.7572377747901207
+        "brier_skill": -0.7572377747901136
       },
       "logreg_val_cal": {
         "n": 9189,
@@ -232,9 +232,9 @@
         "pr_auc": 0.22651986803786484,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.05310538878435749,
-        "brier": 0.1647055112891634,
+        "brier": 0.1647055112891647,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -2.148977280343059
+        "brier_skill": -2.1489772803430838
       },
       "logreg_test_cal": {
         "n": 14270,
@@ -242,9 +242,9 @@
         "pr_auc": 0.22335242420240067,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.04922780308410056,
-        "brier": 0.05194146246295081,
+        "brier": 0.05194146246295106,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": 0.006939816868257287,
+        "brier_skill": 0.006939816868252513,
         "calibration_method": "isotonic"
       }
     },
@@ -253,14 +253,14 @@
       "n_features": 15,
       "features": [
         "woy_sin",
+        "woy_cos",
+        "sst",
         "sst_roll7d",
         "longitude",
-        "woy_cos",
         "sst_lag21d",
+        "sst_lag0d",
         "latitude",
         "sst_roll30d",
-        "sst",
-        "sst_lag0d",
         "cpr_near_dist_km",
         "cpr_near_mean_large_copepods",
         "cpr_near_mean_small_copepods",
@@ -273,14 +273,14 @@
       "n_test": 14270,
       "feature_coverage_train_pct": {
         "woy_sin": 100.0,
+        "woy_cos": 100.0,
+        "sst": 39.841,
         "sst_roll7d": 39.841,
         "longitude": 100.0,
-        "woy_cos": 100.0,
         "sst_lag21d": 39.841,
+        "sst_lag0d": 39.841,
         "latitude": 100.0,
         "sst_roll30d": 39.841,
-        "sst": 39.841,
-        "sst_lag0d": 39.841,
         "cpr_near_dist_km": 0.0,
         "cpr_near_mean_large_copepods": 0.0,
         "cpr_near_mean_small_copepods": 0.0,
@@ -291,43 +291,43 @@
       "lightgbm_val_raw": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.55260032311567,
+        "pr_auc": 0.5547547127178813,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.37396029357068233,
-        "brier": 0.09900292353823271,
+        "pr_auc_skill": 0.3769748988638629,
+        "brier": 0.09932474511731385,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.22022781711317263
+        "brier_skill": -0.22419432263551142
       },
       "lightgbm_val_cal": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.5409201654221281,
+        "pr_auc": 0.5454173571164611,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.35761642281861733,
-        "brier": 0.06444234909785836,
+        "pr_auc_skill": 0.36390927619679386,
+        "brier": 0.06426437608424468,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": 0.20573712210672346,
+        "brier_skill": 0.2079306696722456,
         "calibration_method": "isotonic"
       },
       "lightgbm_test_raw": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.30326145668591875,
+        "pr_auc": 0.30494302629478026,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.1470524647908645,
-        "brier": 0.1155293461090932,
+        "pr_auc_skill": 0.1491110428140333,
+        "brier": 0.11530867054409745,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -1.2087863561027055
+        "brier_skill": -1.2045672966731855
       },
       "lightgbm_test_cal": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.2845047370130566,
+        "pr_auc": 0.29633293545388617,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.12409048290095988,
-        "brier": 0.05227170518880386,
+        "pr_auc_skill": 0.13857056700551068,
+        "brier": 0.05217718128750079,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": 0.0006259611109712404,
+        "brier_skill": 0.002433147860965268,
         "calibration_method": "isotonic"
       },
       "logreg_val_raw": {
@@ -336,9 +336,9 @@
         "pr_auc": 0.4123947859250243,
         "pr_auc_clim": 0.28534935996932137,
         "pr_auc_skill": 0.17777277293174903,
-        "brier": 0.14448224740201296,
+        "brier": 0.1444822474020129,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.7807681940915616
+        "brier_skill": -0.780768194091561
       },
       "logreg_val_cal": {
         "n": 9189,
@@ -357,9 +357,9 @@
         "pr_auc": 0.2390684439787907,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.06846735924215155,
-        "brier": 0.17213026016305105,
+        "brier": 0.17213026016305094,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -2.2909298193511645
+        "brier_skill": -2.2909298193511622
       },
       "logreg_test_cal": {
         "n": 14270,
@@ -367,9 +367,9 @@
         "pr_auc": 0.22922569324862024,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.05641786082479144,
-        "brier": 0.05255326391141043,
+        "brier": 0.052553263911410436,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -0.0047571132842376684,
+        "brier_skill": -0.0047571132842378905,
         "calibration_method": "isotonic"
       }
     },
@@ -378,14 +378,14 @@
       "n_features": 22,
       "features": [
         "woy_sin",
+        "woy_cos",
+        "sst",
         "sst_roll7d",
         "longitude",
-        "woy_cos",
         "sst_lag21d",
+        "sst_lag0d",
         "latitude",
         "sst_roll30d",
-        "sst",
-        "sst_lag0d",
         "cpr_aoi_n_samples",
         "cpr_aoi_mean_large_copepods",
         "cpr_aoi_mean_small_copepods",
@@ -405,14 +405,14 @@
       "n_test": 14270,
       "feature_coverage_train_pct": {
         "woy_sin": 100.0,
+        "woy_cos": 100.0,
+        "sst": 39.841,
         "sst_roll7d": 39.841,
         "longitude": 100.0,
-        "woy_cos": 100.0,
         "sst_lag21d": 39.841,
+        "sst_lag0d": 39.841,
         "latitude": 100.0,
         "sst_roll30d": 39.841,
-        "sst": 39.841,
-        "sst_lag0d": 39.841,
         "cpr_aoi_n_samples": 36.93,
         "cpr_aoi_mean_large_copepods": 36.93,
         "cpr_aoi_mean_small_copepods": 36.93,
@@ -430,43 +430,43 @@
       "lightgbm_val_raw": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.5599478933456198,
+        "pr_auc": 0.5562648768064645,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.384241639193817,
-        "brier": 0.09551089393676906,
+        "pr_auc_skill": 0.3790880489878428,
+        "brier": 0.09569963071427376,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.17718796025234917
+        "brier_skill": -0.1795141730326677
       },
       "lightgbm_val_cal": {
         "n": 9189,
         "prevalence": 0.10730220916312982,
-        "pr_auc": 0.5512580964421896,
+        "pr_auc": 0.5457169005416989,
         "pr_auc_clim": 0.28534935996932137,
-        "pr_auc_skill": 0.3720821357711976,
-        "brier": 0.06394361943507827,
+        "pr_auc_skill": 0.36432842285175926,
+        "brier": 0.0641374537257742,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": 0.21188404975284203,
+        "brier_skill": 0.2094950092582325,
         "calibration_method": "isotonic"
       },
       "lightgbm_test_raw": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.3021834289951198,
+        "pr_auc": 0.3008430450792926,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.1457327429661173,
-        "brier": 0.11254870205857613,
+        "pr_auc_skill": 0.14409184457143298,
+        "brier": 0.11277664685004025,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -1.1517999181723466
+        "brier_skill": -1.1561579567338667
       },
       "lightgbm_test_cal": {
         "n": 14270,
         "prevalence": 0.05178696566222845,
-        "pr_auc": 0.2903807030988653,
+        "pr_auc": 0.28557528086443545,
         "pr_auc_clim": 0.18314021138094166,
-        "pr_auc_skill": 0.13128384235833054,
-        "brier": 0.05240003211403871,
+        "pr_auc_skill": 0.1254010430072281,
+        "brier": 0.052365944615544426,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -0.0018275000322407475,
+        "brier_skill": -0.0011757868171693442,
         "calibration_method": "isotonic"
       },
       "logreg_val_raw": {
@@ -475,9 +475,9 @@
         "pr_auc": 0.3964140139875762,
         "pr_auc_clim": 0.28534935996932137,
         "pr_auc_skill": 0.15541111670100374,
-        "brier": 0.14257311185350985,
+        "brier": 0.14257311185350927,
         "brier_clim": 0.08113478659456792,
-        "brier_skill": -0.7572377747901207
+        "brier_skill": -0.7572377747901136
       },
       "logreg_val_cal": {
         "n": 9189,
@@ -496,9 +496,9 @@
         "pr_auc": 0.22651986803786484,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.05310538878435749,
-        "brier": 0.1647055112891634,
+        "brier": 0.1647055112891647,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": -2.148977280343059
+        "brier_skill": -2.1489772803430838
       },
       "logreg_test_cal": {
         "n": 14270,
@@ -506,9 +506,9 @@
         "pr_auc": 0.22335242420240067,
         "pr_auc_clim": 0.18314021138094166,
         "pr_auc_skill": 0.04922780308410056,
-        "brier": 0.05194146246295081,
+        "brier": 0.05194146246295106,
         "brier_clim": 0.05230444573776661,
-        "brier_skill": 0.006939816868257287,
+        "brier_skill": 0.006939816868252513,
         "calibration_method": "isotonic"
       }
     }
