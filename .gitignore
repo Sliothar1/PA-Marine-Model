@@ -205,3 +205,8 @@ data/external/ocean_colour/*.parquet
 data/external/ocean_colour/raw_*/
 data/external/osi_saf_sst/*.parquet
 data/external/osi_saf_sst/raw_nc/
+
+# Large regenerable Chl week table (ARCO extract)
+data/processed/ocean_colour_chl_week.csv
+data/processed/oc_chl_daily.parquet
+data/raw/ocean_colour/
