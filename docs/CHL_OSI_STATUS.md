@@ -64,3 +64,18 @@ Baseline reminder (prior, not re-run here): strong 9-feat test PR-AUC ~0.29 vs c
 ## Local anchors
 
 Mace Head / Lehanagh Pool remain in `configs/default.yaml` sentinel block; Chl pixels will snap to nearest ocean cell for all 207 HAB `location_id`s in `station_week_panel` (lat 51.47–55.28, lon −10.57…−6.03).
+
+## ODYSSEA station-day / week (Climate Drivers — ARCO)
+
+**Status 2026-09-08:** Full Irish HAB station extract via CloudFerro ARCO (no CMEMS auth).
+
+| Table | Path | Coverage |
+| --- | --- | --- |
+| Station-day | `data/processed/odyssea_station_day.parquet` (gitignored `*.parquet`) | **207** locations · **2022-01-01 → 2024-12-31** · 226 872 rows · 100% finite `sst_c` |
+| Station-week | `data/processed/odyssea_station_week.parquet` | **207** locs · ISO weeks spanning 2021–2025 · 32 706 rows · cols `odyssea_sst_week`, `iso_year`, `iso_week` |
+| Pilot (5 Connemara) | `data/processed/osi_saf_station_day.parquet` / Gatekeeper `data/raw/osi_saf/odyssea_pilot_2023_jun.parquet` | May–Aug / Jun 2023 |
+
+**Access:** ARCO zarr `…/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/…/timeChunked.zarr` (`zarr_format=2`). Scripts: `scripts/extract_odyssea_station_day_arco.py`, `scripts/download_odyssea_arco_station_day.py`, `scripts/ingest_odyssea_sst.py`. Sources: `data/raw/osi_saf/odyssea_station_day_sources.json`.
+
+**Next:** Gatekeeper week-join onto HAB panel + provider-swap ablation vs `STRONG_OISST`. OSI-202-c NAR still blocked (Earthdata/FTP).
+
