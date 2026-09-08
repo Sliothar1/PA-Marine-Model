@@ -26,10 +26,12 @@
     "iso_week"
   ],
   "osi203a_spring_summer_ingest": {
-    "product": "OSI-203-a",
+    "product_id": "OSI-203-a",
+    "ghrsst": "AVHRR_METOP_B NHL L3C (MET Norway)",
+    "catalog": "https://thredds.met.no/thredds/catalog/osisaf/met.no/sst/203a/catalog.html",
     "script": "scripts/ingest_osi_saf_sst.py",
-    "status": "in_progress_on_box",
-    "note": "MET Norway THREDDS fileServer midday May\u2013Aug 2018\u20132024; extracts then deletes granules; week parquet written on completion",
-    "log": "/tmp/ingest_osi.log"
+    "status": "interrupted_after_~560_midday_days_no_week_parquet_yet",
+    "progress_log": "/tmp/ingest_osi.log (through ~2023-07)",
+    "fallback_used_for_ablation": "ODYSSEA L4 ARCO as OSI-SAF-informed independent SST check"
   }
 }
