@@ -1,6 +1,6 @@
 # CPR MBA ablation vs strong Dinophysis baseline
 
-**Generated:** 2026-09-08 09:48 UTC  
+**Generated:** 2026-09-08 09:50 UTC  
 **Target:** `y_dinophysis_nowcast`  
 **Protocol:** AOI × ISO-week left-join; optional nearest ≤100 km same ISO week; never HAB labels as CPR features.
 
