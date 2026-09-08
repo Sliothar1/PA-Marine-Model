@@ -54,6 +54,14 @@ AOIS: dict[str, dict[str, float | str]] = {
     },
 }
 
+PA_AOI_ALIASES = {
+    "western_irish_shelf": "western_shelf",
+    "celtic_sea": "celtic",
+    "scotland_west": "scotland",
+    "connemara_nested": "connemara",
+    # irish_sea same name
+}
+
 GROUP_COLS = [
     "Mean_LargeCopepods", "Mean_SmallCopepods", "Mean_Diatoms",
     "Mean_Dinoflagellates", "PCI",
@@ -173,6 +181,26 @@ def main() -> int:
     week = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
     if not week.empty:
         week["week_start"] = pd.to_datetime(week["week_start"]).dt.strftime("%Y-%m-%d")
+        # PA-named alias rows (same boxes) so join_cpr_hab_week.py keeps matching.
+        alias_parts = []
+        for clim, pa in PA_AOI_ALIASES.items():
+            sub = week.loc[week["aoi"] == clim].copy()
+            if not sub.empty:
+                sub["aoi"] = pa
+                alias_parts.append(sub)
+        if alias_parts:
+            week = pd.concat([week, *alias_parts], ignore_index=True)
+        # Dual metric column names for PA join helpers
+        week = week.assign(
+            cpr_mean_dinoflagellates=week["Mean_Dinoflagellates"],
+            cpr_mean_diatoms=week["Mean_Diatoms"],
+            cpr_mean_large_copepods=week["Mean_LargeCopepods"],
+            cpr_mean_small_copepods=week["Mean_SmallCopepods"],
+            cpr_pci=week["PCI"],
+            n=week["n_samples"],
+            year=week["iso_year"],
+            week=week["iso_week"],
+        )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     week.to_csv(args.out, index=False)
     summary = build_summary(df, week)

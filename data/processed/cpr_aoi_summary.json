@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-08T09:51:22Z",
+  "generated_utc": "2026-09-08T09:52:38Z",
   "role": "climate_drivers_aoi_week_support",
   "complements_pa_ingest": "scripts/ingest_cpr_mba.py",
   "source_csv": "data/external/cpr_mba/raw/CPR_IrishHeatwaves_Data_04092026.csv",
@@ -99,7 +99,7 @@
       "note": "West / NW Scotland approaches \u2014 better coverage than west Ireland coast"
     }
   },
-  "n_week_rows": 4413,
+  "n_week_rows": 6373,
   "outputs": {
     "cpr_aoi_week_csv": "data/processed/cpr_aoi_week.csv",
     "cpr_aoi_summary_json": "data/processed/cpr_aoi_summary.json"

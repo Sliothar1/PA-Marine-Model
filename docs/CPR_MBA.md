@@ -75,7 +75,7 @@ Climate-facing aliases (summary JSON only; same boxes where mapped):
 - **Western shelf ~35 samples** — not a primary west-coast HAB ML feature.
 - Prefer **Irish Sea / Celtic / Scotland** (and `total_box` / `full_extract`) for CPR narrative and heatwave/shelf context.
 
-Exact counts: `data/processed/cpr_aoi_week_summary.json` and `cpr_ingest_summary.json`.
+Exact counts: `data/processed/cpr_aoi_summary_climate_drivers.json` (and PA `cpr_ingest_summary.json`).
 
 ---
 
@@ -107,7 +107,7 @@ Week metrics (means): `cpr_mean_dinoflagellates`, `cpr_mean_diatoms`, `cpr_mean_
 **Left-join keys onto the HAB week panel** (same ISO week convention as `climate_indices_week` / `met_west_climate_week`):
 
 1. Choose an AOI (`celtic`, `irish_sea`, `scotland`, … — **not** `connemara`).
-2. Filter `cpr_aoi_week` to that `aoi`.
+2. Filter `cpr_aoi_week_climate_drivers.csv` to that `aoi` (climate ids: `celtic_sea` / `irish_sea` / `scotland_west`).
 3. **Left-join** on **`iso_year` + `iso_week`**.
 
 ```python
