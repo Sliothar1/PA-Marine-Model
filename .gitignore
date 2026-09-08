@@ -156,3 +156,6 @@ data/external/cpr_mba/*.png
 !data/processed/cpr_ablation_report.md
 !data/processed/cpr_join_blocker.md
 !data/processed/cpr_ablation_blocker.md
+data/processed/cpr_aoi_week.parquet
+data/processed/cpr_samples.parquet
+data/processed/joined_features_with_cpr.parquet
