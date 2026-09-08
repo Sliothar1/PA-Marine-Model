@@ -1,0 +1,13 @@
+{
+  "n_joined_in": 53172,
+  "n_joined_out": 53172,
+  "odyssea_week_path": "data/processed/odyssea_station_week.parquet",
+  "odyssea_coverage": 0.5042691642217708,
+  "odyssea_feature_cols": [
+    "odyssea_sst_week",
+    "odyssea_sst_n",
+    "odyssea_sst_kelvin_week",
+    "odyssea_minus_oisst"
+  ],
+  "out": "data/processed/joined_features_osi_sst.parquet"
+}

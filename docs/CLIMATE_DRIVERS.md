@@ -252,7 +252,7 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 | **ARCO URI** | `https://s3.waw3-1.cloudferro.com/mdl-arco-time-045/arco/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE_201904/timeChunked.zarr` |
 | **Full extract** | **207** Irish HAB stations (nearest-ocean grid from `station_week_panel`) · **2018-01-01 → 2026-09-06** (catalogue) · **656 190** station-days · **3170**/3171 days (skipped ARCO-403 day **2018-10-22**) · 0% NaN on kept days |
 | **Pilot reuse** | `data/raw/osi_saf/odyssea_pilot_2023_jun.parquet` (150 rows, 5 Connemara stations, Jun 2023) kept; bit-identical overlap vs full extract |
-| **Paths** | `data/processed/odyssea_station_day.parquet` (~2.2 MB) · `data/processed/odyssea_station_pixel_map.csv` · `data/raw/osi_saf/sources.json` · status: `data/processed/chl_osi_saf_pilot_status.json` |
+| **Paths** | `data/processed/odyssea_station_day.parquet` (~2.2 MB) · `data/processed/odyssea_station_week.parquet` · `data/processed/joined_features_osi_sst.parquet` · `data/processed/odyssea_arco_summary.json` · `data/processed/odyssea_station_pixel_map.csv` · `data/raw/osi_saf/sources.json` · status: `docs/CHL_OSI_STATUS.md` |
 | **Scripts** | `PYTHONPATH=src .venv/bin/python scripts/extract_odyssea_station_day_arco.py` · helpers `open_odyssea_arco` / `download_odyssea_for_stations` in `src/pa_marine/osi_saf_sst.py` |
 | **OSI-202-c blockers (this box)** | Ifremer HTTPS/OpenSearch TLS EOF · FTP listing timeout · PO.DAAC 401 · CMR manifest only via `scripts/download_osi_saf_sst.py` |
 | **Not owned here** | Ocean-colour Chl ingest — do **not** pull Chl in this lane (Gatekeeper) |
@@ -289,3 +289,18 @@ Optional: `--apr-sep` (spring–summer filter on `week_start` month).
 
 Status scratchpad: `docs/CHL_OSI_STATUS.md`.
 
+
+
+### (d) Multi-decade SST L4 for OISST provider-swap — decision (2026-09-08)
+
+**PA ask:** longer **open SST L4** (≤2003, train 2003–2018) on CloudFerro ARCO / anonymous HTTPS, not OISST rebranded?
+
+**Answer: No for ARCO swap.** Multi-decade L4 that *does* cover train is **OSTIA REP** — already on disk and **already lost to OISST** as predictive provider.
+
+| Product | Train coverage | Access | Outcome |
+| --- | --- | --- | --- |
+| ODYSSEA Atl L4 NRT `010_025` | starts **2018** | CloudFerro ARCO zarr (working) | **Park predictive swap** |
+| OSTIA GLO L4 REP `010_011` | disk **2002-01-01 → 2026-03-31** | `copernicusmarine` (local parquet; auth TLS broken from box) | Tested — cal PR-AUC **~0.24 vs OISST ~0.29** (`ostia_vs_oisst_report.md`); keep OISST default |
+| Other CCI/MY L4 anonymous ARCO | — | not located like ODYSSEA | Stop hunting; no invented URLs/creds |
+
+**Pivot:** GlobColour Chl MY `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` (~1997 → ongoing) covers the locked train. See §7(a) and `docs/CHL_OSI_STATUS.md`.

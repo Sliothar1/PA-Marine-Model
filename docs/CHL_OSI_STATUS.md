@@ -60,6 +60,7 @@ Full Irish HAB station extract via public CloudFerro ARCO zarr (`zarr_format=2`)
 | --- | --- | --- |
 | Station-day | `data/processed/odyssea_station_day.parquet` | **207** locs · **2018-01-01 → 2026-09-06** · **656 190** rows · 100% finite `sst_c` (2018–2024 slice: 529 092 rows / 2556 days) |
 | Station-week | `data/processed/odyssea_station_week.parquet` | **207** locs · ISO **2018–2026** · **93 771** rows · cols `odyssea_sst_week`, `iso_year`, `iso_week` |
+| Joined panel | `data/processed/joined_features_osi_sst.parquet` | left-join on `location_id`+ISO week · `odyssea_sst_week` / `odyssea_minus_oisst` · ~50% coverage (HAB weeks outside 2018+) |
 | Summary | `data/processed/odyssea_arco_summary.json` + `data/raw/osi_saf/sources.json` | extract meta / skipped day |
 | Joined panel (prior) | `data/processed/joined_features_oc_osi.parquet` | still reflects **pre-extend** join — re-run `join_oc_osi_week.py` |
 | Gate JSON (prior) | `data/processed/odyssea_ablation_gate.json` | **stale** hard_block from 2022–2024-only extract |

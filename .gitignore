@@ -180,3 +180,10 @@ data/raw/osi_saf_sst/*
 !data/processed/chl_osi_saf_ingest_plan.md
 !data/processed/odyssea_station_day.parquet
 !data/processed/odyssea_station_pixel_map.csv
+
+# ODYSSEA ARCO Climate Drivers deliverable (small enough to keep)
+!data/processed/odyssea_station_day.parquet
+!data/processed/odyssea_station_week.parquet
+!data/processed/joined_features_osi_sst.parquet
+!data/processed/odyssea_arco_summary.json
+!data/processed/odyssea_osi_join_summary.json

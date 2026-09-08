@@ -1,0 +1,16 @@
+{
+  "product_id": "SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025",
+  "arco_zarr": "https://s3.waw3-1.cloudferro.com/mdl-arco-time-045/arco/SST_ATL_SST_L4_NRT_OBSERVATIONS_010_025/IFREMER-ATL-SST-L4-NRT-OBS_FULL_TIME_SERIE_201904/timeChunked.zarr",
+  "access": "public ARCO zarr HTTPS (CloudFerro), zarr_format=2",
+  "n_stations": 207,
+  "date_min": "2018-01-01",
+  "date_max": "2026-09-06",
+  "n_rows": 656190,
+  "n_week_rows": 93771,
+  "gap_days": [
+    "2018-10-22"
+  ],
+  "out_daily": "data/processed/odyssea_station_day.parquet",
+  "out_week": "data/processed/odyssea_station_week.parquet",
+  "out_joined": "data/processed/joined_features_osi_sst.parquet"
+}
