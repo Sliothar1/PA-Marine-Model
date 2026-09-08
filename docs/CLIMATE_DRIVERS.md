@@ -223,7 +223,7 @@ MBA Continuous Plankton Recorder extract (Pierre Hélaouët; DOI [10.17031/6a9e6
 
 CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for Irish Sea / Celtic / Scotland-west / heatwave–shelf narrative. It is **not** a replacement for Met Éireann radiation/wind (`met_west_climate_week`) or NAO/EA/AMO teleconnections ([`MACRO_CLIMATE.md`](MACRO_CLIMATE.md)).
 
-- **Build:** `scripts/build_cpr_aoi_week.py` → `data/processed/cpr_aoi_week.csv` + `cpr_aoi_summary.json`.
+- **Build:** `scripts/build_cpr_aoi_week.py` → `data/processed/cpr_aoi_week_climate_drivers.csv` + `cpr_aoi_summary_climate_drivers.json` (PA canonical remains `cpr_aoi_week.csv` from `ingest_cpr_mba.py`).
 - **Join:** left-join HAB week panel on `iso_year` + `iso_week` after filtering `aoi` (Connemara nested = **0** tows; west shelf sparse ~35).
 - **Not** species-level Dinophysis; heavy CPR ingest stays with PA (`scripts/ingest_cpr_mba.py`).
 

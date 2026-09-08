@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-08T09:45:23Z",
+  "generated_utc": "2026-09-08T09:46:36Z",
   "role": "climate_drivers_aoi_week_support",
   "pa_ingest": "scripts/ingest_cpr_mba.py",
   "pa_canonical_week_table": "data/processed/cpr_aoi_week.csv (do not overwrite)",

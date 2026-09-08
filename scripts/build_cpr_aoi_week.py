@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Build Climate-Drivers CPR AOI × ISO-week aggregates (complements PA ingest).
+"""Build MBA CPR AOI × ISO-week aggregates for Climate Drivers support.
 
-Does **not** replace `scripts/ingest_cpr_mba.py` (sample parquet + canonical
-`cpr_aoi_week.csv`) or `scripts/join_cpr_hab_week.py`. Writes climate-owned
-outputs with climate-facing AOI names required for shelf / heatwave docs.
+Complements PA ingest (`scripts/ingest_cpr_mba.py`) — does **not** replace sample
+parquet ingest, taxon QC, HAB joins, or ablation.
+
+Writes:
+  data/processed/cpr_aoi_week.csv
+  data/processed/cpr_aoi_summary.json
 
 Usage:
   .venv/bin/python scripts/build_cpr_aoi_week.py
@@ -12,204 +15,180 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
-from ingest_cpr_mba import DATA_CSV, load_samples  # noqa: E402
+DEFAULT_CSV = (
+    ROOT / "data" / "external" / "cpr_mba" / "raw" / "CPR_IrishHeatwaves_Data_04092026.csv"
+)
+OUT_CSV = ROOT / "data" / "processed" / "cpr_aoi_week_climate_drivers.csv"
+OUT_SUMMARY = ROOT / "data" / "processed" / "cpr_aoi_summary_climate_drivers.json"
 
-PROC = ROOT / "data" / "processed"
-SAMPLES_PQ = PROC / "cpr_samples.parquet"
-OUT_CSV = PROC / "cpr_aoi_week_climate_drivers.csv"
-OUT_SUMMARY = PROC / "cpr_aoi_summary_climate_drivers.json"
-# Also emit task-named summary alias path used in early docs
-OUT_SUMMARY_ALT = PROC / "cpr_aoi_week_summary_climate_drivers.json"
-
-# Climate-facing AOIs (lat_min, lat_max, lon_min, lon_max).
-# western_irish_shelf / connemara_nested / scotland_west / irish_sea / celtic_sea
-# match PA ingest boxes so counts stay honest (western_shelf≈35, connemara=0).
-# full_extract is the MBA extract bbox (all CSV samples).
-CLIMATE_AOIS: dict[str, tuple[float, float, float, float]] = {
-    "full_extract": (49.0, 61.0, -16.0, 0.0),
-    "irish_sea": (52.5, 54.5, -6.2, -3.2),
-    "celtic_sea": (49.5, 52.0, -10.5, -5.5),
-    "western_irish_shelf": (52.5, 55.0, -11.5, -9.0),
-    "connemara_nested": (53.1, 53.6, -10.2, -9.3),
-    "scotland_west": (54.75, 60.76, -7.5, -0.83),
+AOIS: dict[str, dict[str, float | str]] = {
+    "full_extract": {
+        "lat_min": 49.0, "lat_max": 61.0, "lon_min": -16.0, "lon_max": 0.0,
+        "note": "MBA extract bbox (49–61N, −16–0E); all samples in the CSV",
+    },
+    "connemara_nested": {
+        "lat_min": 53.1, "lat_max": 53.6, "lon_min": -10.2, "lon_max": -9.3,
+        "note": "Connemara nested farm/HAB box — expected 0 CPR tows",
+    },
+    "western_irish_shelf": {
+        "lat_min": 52.5, "lat_max": 55.0, "lon_min": -11.5, "lon_max": -9.0,
+        "note": "Western Irish shelf coastal strip; sparse (~35 tows)",
+    },
+    "irish_sea": {
+        "lat_min": 52.5, "lat_max": 54.5, "lon_min": -6.2, "lon_max": -3.2,
+        "note": "Irish Sea — good CPR coverage",
+    },
+    "celtic_sea": {
+        "lat_min": 49.5, "lat_max": 52.0, "lon_min": -10.5, "lon_max": -5.5,
+        "note": "Celtic Sea — good CPR coverage",
+    },
+    "scotland_west": {
+        "lat_min": 54.75, "lat_max": 60.76, "lon_min": -7.5, "lon_max": -0.83,
+        "note": "West / NW Scotland approaches — better coverage than west Ireland coast",
+    },
 }
 
-PA_AOI_MAP = {
-    "irish_sea": "irish_sea",
-    "celtic_sea": "celtic",
-    "western_irish_shelf": "western_shelf",
-    "connemara_nested": "connemara",  # PA box slightly wider; both are 0 tows
-    "scotland_west": "scotland",
-    "full_extract": None,
-}
-
-METRIC_SRC = {
-    "Mean_Dinoflagellates": "cpr_mean_dinoflagellates",
-    "Mean_Diatoms": "cpr_mean_diatoms",
-    "Mean_LargeCopepods": "cpr_mean_large_copepods",
-    "Mean_SmallCopepods": "cpr_mean_small_copepods",
-    "PCI": "cpr_pci",
-}
+GROUP_COLS = [
+    "Mean_LargeCopepods", "Mean_SmallCopepods", "Mean_Diatoms",
+    "Mean_Dinoflagellates", "PCI",
+]
 
 
-def _load_samples(csv_path: Path) -> pd.DataFrame:
-    if SAMPLES_PQ.exists() and csv_path == DATA_CSV:
-        s = pd.read_parquet(SAMPLES_PQ)
-        if {"sample_id", "latitude", "longitude", "iso_year", "iso_week"}.issubset(s.columns):
-            return s
-    return load_samples(csv_path)
-
-
-def _in_box(df: pd.DataFrame, box: tuple[float, float, float, float]) -> pd.Series:
-    lat0, lat1, lon0, lon1 = box
+def _in_aoi(df: pd.DataFrame, box: dict) -> pd.Series:
     return (
-        (df["latitude"] >= lat0)
-        & (df["latitude"] <= lat1)
-        & (df["longitude"] >= lon0)
-        & (df["longitude"] <= lon1)
+        (df["Latitude"] >= box["lat_min"]) & (df["Latitude"] <= box["lat_max"])
+        & (df["Longitude"] >= box["lon_min"]) & (df["Longitude"] <= box["lon_max"])
     )
 
 
-def aggregate(samples: pd.DataFrame) -> pd.DataFrame:
-    rows: list[pd.DataFrame] = []
-    for aoi, box in CLIMATE_AOIS.items():
-        sub = samples.loc[_in_box(samples, box)].copy()
-        if sub.empty:
-            # still record zero-count AOIs only in summary; no week rows
-            continue
-        sub = sub.copy()
-        sub["Mean_Copepods"] = (
-            sub["cpr_mean_large_copepods"] + sub["cpr_mean_small_copepods"]
-        )
-        g = (
-            sub.groupby(["iso_year", "iso_week"], dropna=False)
-            .agg(
-                week_start=("week_start", "min"),
-                n_samples=("sample_id", "count"),
-                Mean_Dinoflagellates=("cpr_mean_dinoflagellates", "mean"),
-                Mean_Diatoms=("cpr_mean_diatoms", "mean"),
-                Mean_Copepods=("Mean_Copepods", "mean"),
-                Mean_LargeCopepods=("cpr_mean_large_copepods", "mean"),
-                Mean_SmallCopepods=("cpr_mean_small_copepods", "mean"),
-                PCI=("cpr_pci", "mean"),
-            )
-            .reset_index()
-        )
-        g.insert(0, "aoi", aoi)
-        g["lat_min"], g["lat_max"], g["lon_min"], g["lon_max"] = box
-        rows.append(g)
-    if not rows:
-        return pd.DataFrame(
-            columns=[
-                "aoi",
-                "iso_year",
-                "iso_week",
-                "week_start",
-                "n_samples",
-                "Mean_Dinoflagellates",
-                "Mean_Diatoms",
-                "Mean_Copepods",
-                "Mean_LargeCopepods",
-                "Mean_SmallCopepods",
-                "PCI",
-                "lat_min",
-                "lat_max",
-                "lon_min",
-                "lon_max",
-            ]
-        )
-    out = pd.concat(rows, ignore_index=True)
-    return out.sort_values(["aoi", "iso_year", "iso_week"]).reset_index(drop=True)
+def load_cpr(path: Path) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    missing = {"SampleId", "Latitude", "Longitude", "Year", "Month", "Day", *GROUP_COLS} - set(df.columns)
+    if missing:
+        raise ValueError(f"CPR CSV missing columns: {sorted(missing)}")
+    df = df.copy()
+    for c in GROUP_COLS + ["Latitude", "Longitude", "Year", "Month", "Day"]:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    df["sample_date"] = pd.to_datetime(
+        dict(year=df["Year"], month=df["Month"], day=df["Day"]), errors="coerce"
+    )
+    iso = df["sample_date"].dt.isocalendar()
+    df["iso_year"] = iso.year.astype(int)
+    df["iso_week"] = iso.week.astype(int)
+    df["week_start"] = df["sample_date"] - pd.to_timedelta(df["sample_date"].dt.weekday, unit="D")
+    df["Mean_Copepods"] = df["Mean_LargeCopepods"] + df["Mean_SmallCopepods"]
+    return df
 
 
-def build_summary(samples: pd.DataFrame, week: pd.DataFrame) -> dict:
-    counts = {}
-    for aoi, box in CLIMATE_AOIS.items():
-        n = int(_in_box(samples, box).sum())
-        counts[aoi] = {
+def aggregate_aoi(df: pd.DataFrame, aoi: str, box: dict) -> pd.DataFrame:
+    cols = [
+        "aoi", "iso_year", "iso_week", "week_start", "n_samples",
+        "Mean_Dinoflagellates", "Mean_Diatoms", "Mean_Copepods",
+        "Mean_LargeCopepods", "Mean_SmallCopepods", "PCI",
+        "lat_min", "lat_max", "lon_min", "lon_max",
+    ]
+    sub = df.loc[_in_aoi(df, box)].copy()
+    if sub.empty:
+        return pd.DataFrame(columns=cols)
+    agg = (
+        sub.groupby(["iso_year", "iso_week"], as_index=False)
+        .agg(
+            week_start=("week_start", "min"),
+            n_samples=("SampleId", "count"),
+            Mean_Dinoflagellates=("Mean_Dinoflagellates", "mean"),
+            Mean_Diatoms=("Mean_Diatoms", "mean"),
+            Mean_Copepods=("Mean_Copepods", "mean"),
+            Mean_LargeCopepods=("Mean_LargeCopepods", "mean"),
+            Mean_SmallCopepods=("Mean_SmallCopepods", "mean"),
+            PCI=("PCI", "mean"),
+        )
+        .sort_values(["iso_year", "iso_week"])
+    )
+    agg.insert(0, "aoi", aoi)
+    for k in ("lat_min", "lat_max", "lon_min", "lon_max"):
+        agg[k] = box[k]
+    return agg[cols]
+
+
+def build_summary(df: pd.DataFrame, week: pd.DataFrame) -> dict:
+    aoi_counts = {}
+    for aoi, box in AOIS.items():
+        n = int(_in_aoi(df, box).sum())
+        aoi_counts[aoi] = {
             "n_samples": n,
             "n_weeks": int((week["aoi"] == aoi).sum()) if not week.empty else 0,
-            "bbox": {
-                "lat_min": box[0],
-                "lat_max": box[1],
-                "lon_min": box[2],
-                "lon_max": box[3],
-            },
-            "maps_to_pa_aoi": PA_AOI_MAP.get(aoi),
+            "bbox": {k: box[k] for k in ("lat_min", "lat_max", "lon_min", "lon_max")},
+            "note": box.get("note", ""),
         }
     return {
         "generated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "role": "climate_drivers_aoi_week_support",
-        "pa_ingest": "scripts/ingest_cpr_mba.py",
-        "pa_canonical_week_table": "data/processed/cpr_aoi_week.csv (do not overwrite)",
+        "complements_pa_ingest": "scripts/ingest_cpr_mba.py",
+        "source_csv": str(DEFAULT_CSV.relative_to(ROOT)),
         "doi": "10.17031/6a9e6f4a00142",
         "web": "https://doi.mba.ac.uk/data/3793",
         "extractor": "Pierre Hélaouët",
-        "n_samples_csv": int(len(samples)),
-        "year_min": int(samples["year"].min()),
-        "year_max": int(samples["year"].max()),
+        "n_samples_csv": int(len(df)),
+        "year_min": int(df["Year"].min()),
+        "year_max": int(df["Year"].max()),
+        "group_columns": GROUP_COLS + ["Mean_Copepods (= Large + Small per sample)"],
         "join_keys": ["aoi", "iso_year", "iso_week"],
         "hab_panel_join": (
-            "Filter climate AOI-week CSV to one aoi, left-join HAB panel on "
-            "iso_year + iso_week. For station→AOI mapping / ablation use PA "
-            "scripts/join_cpr_hab_week.py against cpr_aoi_week.csv."
+            "Filter cpr_aoi_week to one aoi (celtic_sea / irish_sea / scotland_west — "
+            "not connemara_nested), then left-join HAB week panel on iso_year + iso_week."
         ),
         "limitations": [
-            "Aggregates only — cannot validate Dinophysis spp. abundance",
-            "Dinoflagellate taxon list has 0 Dinophysis entries (Ceratium-heavy)",
-            "connemara_nested: 0 CPR tows",
-            "western_irish_shelf: sparse (~35 tows; same box as PA western_shelf)",
-            "Writes climate-owned CSV only — does not overwrite PA cpr_aoi_week.csv",
+            "Aggregates only — no species-level Dinophysis",
+            "Dinophysis spp. absent from accompanying dinoflagellate taxon list",
+            "connemara_nested has 0 CPR tows",
+            "western_irish_shelf sparse (~35 tows)",
+            "AOI-week covariates only — not a Met Éireann or NAO/EA/AMO replacement",
+            "Heavy CPR ingest left to PA (scripts/ingest_cpr_mba.py)",
         ],
-        "aoi_sample_counts": counts,
+        "aoi_sample_counts": aoi_counts,
         "n_week_rows": int(len(week)),
         "outputs": {
-            "climate_week_csv": str(OUT_CSV.relative_to(ROOT)),
-            "climate_summary_json": str(OUT_SUMMARY.relative_to(ROOT)),
+            "cpr_aoi_week_csv": str(OUT_CSV.relative_to(ROOT)),
+            "cpr_aoi_summary_json": str(OUT_SUMMARY.relative_to(ROOT)),
         },
     }
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--csv", type=Path, default=DATA_CSV)
+    ap.add_argument("--csv", type=Path, default=DEFAULT_CSV)
     ap.add_argument("--out", type=Path, default=OUT_CSV)
     ap.add_argument("--summary", type=Path, default=OUT_SUMMARY)
     args = ap.parse_args()
-
-    if not args.csv.exists() and not SAMPLES_PQ.exists():
-        raise SystemExit(f"Missing CPR inputs: {args.csv} and {SAMPLES_PQ}")
-
-    samples = _load_samples(args.csv)
-    week = aggregate(samples)
-    if not week.empty and "week_start" in week.columns:
-        week = week.copy()
+    if not args.csv.exists():
+        raise SystemExit(f"Missing CPR CSV: {args.csv}")
+    df = load_cpr(args.csv)
+    parts = [aggregate_aoi(df, aoi, box) for aoi, box in AOIS.items()]
+    week = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
+    if not week.empty:
         week["week_start"] = pd.to_datetime(week["week_start"]).dt.strftime("%Y-%m-%d")
-
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    week.to_csv(args.out, index=False)
-    summary = build_summary(samples, week if not week.empty else pd.DataFrame(columns=["aoi"]))
-    payload = json.dumps(summary, indent=2) + "\n"
-    args.summary.write_text(payload, encoding="utf-8")
-    OUT_SUMMARY_ALT.write_text(payload, encoding="utf-8")
 
+    if args.out.resolve() == (PROC / "cpr_aoi_week.csv").resolve():
+        raise SystemExit(
+            "Refusing to overwrite PA canonical data/processed/cpr_aoi_week.csv; "
+            "use cpr_aoi_week_climate_drivers.csv (default)."
+        )
+
+    week.to_csv(args.out, index=False)
+    summary = build_summary(df, week)
+    args.summary.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {args.out} rows={len(week)}")
     print(f"Wrote {args.summary}")
-    print(f"Wrote {OUT_SUMMARY_ALT}")
-    print("AOI sample counts (climate names):")
+    print("AOI sample counts:")
     for aoi, info in summary["aoi_sample_counts"].items():
-        print(
-            f"  {aoi:22s} n_samples={info['n_samples']:6d}  "
-            f"n_weeks={info['n_weeks']:5d}  pa={info['maps_to_pa_aoi']}"
-        )
+        print(f"  {aoi:22s} n_samples={info['n_samples']:6d}  n_weeks={info['n_weeks']:5d}")
     return 0
 
 
