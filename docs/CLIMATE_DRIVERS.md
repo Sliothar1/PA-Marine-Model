@@ -330,6 +330,20 @@ Status scratchpad: `docs/CHL_OSI_STATUS.md`.
 
 **Cork:** narrative SST (June 2023) only. ODYSSEA 2018+ extract = **exploratory-only** — **no judge-card quote**, no national Δ.
 
+## Cork weekend lock (PA + Dev, 2026-09-08)
+
+**Predictive Chl / ODYSSEA / OSI SAF closed for Cork.** No further Cork national ablation cycles.
+
+| Lane | Cork use |
+| --- | --- |
+| **Spine** | `STRONG_OISST` ~**0.295** test cal PR-AUC only |
+| **Narrative** | June 2023 onion (Met / ODYSSEA DOI 10.48670/moi-00152 descriptive SST / heatwave context) |
+| ODYSSEA provider-swap | parked — exploratory Δ=−0.074; `hard_block`; label `exploratory_short_history_not_cork_spine` |
+| Chl MY add-on | parked predictive — train covered but Δ=−0.008 (national); no skill claim |
+| OSTIA | already lost (~0.24 vs ~0.295); keep OISST default |
+
+Climate Drivers remaining work (if any): descriptive context only — not Cork national skill hunts.
+
 **Chl MY gate (2026-09-08):** train covered (~99%); STRONG+CHL Δ test cal PR-AUC **−0.008** vs STRONG **0.295** — no skill claim; Cork quote unchanged. See `CHL_OSI_STATUS.md`.
 **Pivot:** GlobColour Chl MY `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` (~1997 → ongoing) covers the locked train. See §7(a) and `docs/CHL_OSI_STATUS.md`.
 **Chl fill update (Climate Drivers, 2026-09-08 12:47 IST):** late-only / 2018+ / 2023 pilot was **not** Cork-claimable. Full MY station daily now on disk: `data/raw/oc_chl_daily.parquet` **2 179 503** rows · **207** stn · **1997-10-01 → 2026-08-31**. Week: `data/processed/ocean_colour_chl_week.parquet` (**310 128** rows, ISO 1997–2026). Coverage on `joined_features`: train **99.64%** / val **99.66%** / test **99.67%** finite `chl_mean` (was ~11% train when late-only). See `docs/CHL_OSI_STATUS.md`. Do not duplicate download — Prediction Gatekeeper should join/ablate only.
