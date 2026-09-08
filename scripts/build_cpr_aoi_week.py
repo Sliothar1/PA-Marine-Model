@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-"""Build MBA CPR AOI × ISO-week aggregates for Climate Drivers support.
+"""Build MBA CPR AOI × ISO-week aggregates (Climate Drivers support).
 
 Complements PA ingest (`scripts/ingest_cpr_mba.py`) — does **not** replace sample
-parquet ingest, taxon QC, HAB joins, or ablation.
-
-Writes:
-  data/processed/cpr_aoi_week.csv
-  data/processed/cpr_aoi_summary.json
+parquet ingest, HAB joins, or ablation. Writes climate-owned outputs only and
+refuses to overwrite PA's local `cpr_aoi_week.csv`.
 
 Usage:
   .venv/bin/python scripts/build_cpr_aoi_week.py
@@ -24,13 +21,14 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CSV = (
     ROOT / "data" / "external" / "cpr_mba" / "raw" / "CPR_IrishHeatwaves_Data_04092026.csv"
 )
+PA_CANONICAL_WEEK = ROOT / "data" / "processed" / "cpr_aoi_week.csv"
 OUT_CSV = ROOT / "data" / "processed" / "cpr_aoi_week_climate_drivers.csv"
 OUT_SUMMARY = ROOT / "data" / "processed" / "cpr_aoi_summary_climate_drivers.json"
 
 AOIS: dict[str, dict[str, float | str]] = {
     "full_extract": {
         "lat_min": 49.0, "lat_max": 61.0, "lon_min": -16.0, "lon_max": 0.0,
-        "note": "MBA extract bbox (49–61N, −16–0E); all samples in the CSV",
+        "note": "MBA extract bbox (49–61N, −16–0E); all CSV samples",
     },
     "connemara_nested": {
         "lat_min": 53.1, "lat_max": 53.6, "lon_min": -10.2, "lon_max": -9.3,
@@ -38,7 +36,7 @@ AOIS: dict[str, dict[str, float | str]] = {
     },
     "western_irish_shelf": {
         "lat_min": 52.5, "lat_max": 55.0, "lon_min": -11.5, "lon_max": -9.0,
-        "note": "Western Irish shelf coastal strip; sparse (~35 tows)",
+        "note": "Western Irish shelf; sparse (~35 tows; same as PA western_shelf)",
     },
     "irish_sea": {
         "lat_min": 52.5, "lat_max": 54.5, "lon_min": -6.2, "lon_max": -3.2,
@@ -50,16 +48,8 @@ AOIS: dict[str, dict[str, float | str]] = {
     },
     "scotland_west": {
         "lat_min": 54.75, "lat_max": 60.76, "lon_min": -7.5, "lon_max": -0.83,
-        "note": "West / NW Scotland approaches — better coverage than west Ireland coast",
+        "note": "West / NW Scotland approaches — well covered vs west Ireland coast",
     },
-}
-
-PA_AOI_ALIASES = {
-    "western_irish_shelf": "western_shelf",
-    "celtic_sea": "celtic",
-    "scotland_west": "scotland",
-    "connemara_nested": "connemara",
-    # irish_sea same name
 }
 
 GROUP_COLS = [
@@ -77,7 +67,9 @@ def _in_aoi(df: pd.DataFrame, box: dict) -> pd.Series:
 
 def load_cpr(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path)
-    missing = {"SampleId", "Latitude", "Longitude", "Year", "Month", "Day", *GROUP_COLS} - set(df.columns)
+    missing = {"SampleId", "Latitude", "Longitude", "Year", "Month", "Day", *GROUP_COLS} - set(
+        df.columns
+    )
     if missing:
         raise ValueError(f"CPR CSV missing columns: {sorted(missing)}")
     df = df.copy()
@@ -148,15 +140,15 @@ def build_summary(df: pd.DataFrame, week: pd.DataFrame) -> dict:
         "group_columns": GROUP_COLS + ["Mean_Copepods (= Large + Small per sample)"],
         "join_keys": ["aoi", "iso_year", "iso_week"],
         "hab_panel_join": (
-            "Filter cpr_aoi_week to one aoi (celtic_sea / irish_sea / scotland_west — "
-            "not connemara_nested), then left-join HAB week panel on iso_year + iso_week."
+            "Filter climate AOI-week CSV to celtic_sea / irish_sea / scotland_west "
+            "(not connemara_nested), then left-join HAB panel on iso_year + iso_week."
         ),
         "limitations": [
             "Aggregates only — no species-level Dinophysis",
             "Dinophysis spp. absent from accompanying dinoflagellate taxon list",
             "connemara_nested has 0 CPR tows",
             "western_irish_shelf sparse (~35 tows)",
-            "AOI-week covariates only — not a Met Éireann or NAO/EA/AMO replacement",
+            "Does not overwrite PA local cpr_aoi_week.csv",
             "Heavy CPR ingest left to PA (scripts/ingest_cpr_mba.py)",
         ],
         "aoi_sample_counts": aoi_counts,
@@ -176,34 +168,17 @@ def main() -> int:
     args = ap.parse_args()
     if not args.csv.exists():
         raise SystemExit(f"Missing CPR CSV: {args.csv}")
+    if args.out.resolve() == PA_CANONICAL_WEEK.resolve():
+        raise SystemExit(
+            f"Refusing to write PA canonical {PA_CANONICAL_WEEK.name}. "
+            f"Use default {OUT_CSV.name} (or a different --out)."
+        )
     df = load_cpr(args.csv)
     parts = [aggregate_aoi(df, aoi, box) for aoi, box in AOIS.items()]
     week = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
     if not week.empty:
         week["week_start"] = pd.to_datetime(week["week_start"]).dt.strftime("%Y-%m-%d")
-        # PA-named alias rows (same boxes) so join_cpr_hab_week.py keeps matching.
-        alias_parts = []
-        for clim, pa in PA_AOI_ALIASES.items():
-            sub = week.loc[week["aoi"] == clim].copy()
-            if not sub.empty:
-                sub["aoi"] = pa
-                alias_parts.append(sub)
-        if alias_parts:
-            week = pd.concat([week, *alias_parts], ignore_index=True)
-        # Dual metric column names for PA join helpers
-        week = week.assign(
-            cpr_mean_dinoflagellates=week["Mean_Dinoflagellates"],
-            cpr_mean_diatoms=week["Mean_Diatoms"],
-            cpr_mean_large_copepods=week["Mean_LargeCopepods"],
-            cpr_mean_small_copepods=week["Mean_SmallCopepods"],
-            cpr_pci=week["PCI"],
-            n=week["n_samples"],
-            year=week["iso_year"],
-            week=week["iso_week"],
-        )
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    if Path(args.out).name=="cpr_aoi_week.csv":
-        raise SystemExit("Refusing to overwrite PA canonical cpr_aoi_week.csv")
     week.to_csv(args.out, index=False)
     summary = build_summary(df, week)
     args.summary.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
