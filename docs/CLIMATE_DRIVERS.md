@@ -239,7 +239,7 @@ CPR is **AOI-week covariates** (dinoflagellates / diatoms / copepods / PCI) for 
 | **Why this one** | Long MY series for station-weeks 2002–2026; gap-free so week joins don’t die on cloud; WEkEO mirrors the same CMEMS IDs |
 | **Not chosen (yet)** | NWS/IBI HR Sentinel-2 Chl (`OCEANCOLOUR_NWS_BGC_HR_*`) — coastal 100 m but short/gappy; better for case-study maps than national week ML |
 | **Access** | Prefer public CloudFerro **ARCO** zarr (`zarr_format=2`); `copernicusmarine` TLS broken on box |
-| **Script** | `scripts/download_oc_chl.py` → `data/raw/oc_chl_daily.parquet` |
+| **Script** | `scripts/download_oc_chl.py` / `scripts/extend_oc_chl_arco_history.py` → `data/raw/oc_chl_daily.parquet` |
 | **Module** | `src/pa_marine/oc_chl.py` |
 
 ### (b) OSI SAF / ODYSSEA SST lane — Climate Drivers (full extract 2026-09-08)
@@ -347,4 +347,6 @@ Climate Drivers remaining work (if any): descriptive context only — not Cork n
 **Chl MY gate (2026-09-08):** train covered (~99%); STRONG+CHL Δ test cal PR-AUC **−0.008** vs STRONG **0.295** — no skill claim; Cork quote unchanged. See `CHL_OSI_STATUS.md`.
 **Pivot:** GlobColour Chl MY `OCEANCOLOUR_ATL_BGC_L4_MY_009_118` (~1997 → ongoing) covers the locked train. See §7(a) and `docs/CHL_OSI_STATUS.md`.
 **Chl fill update (Climate Drivers, 2026-09-08 12:47 IST):** late-only / 2018+ / 2023 pilot was **not** Cork-claimable. Full MY station daily now on disk: `data/raw/oc_chl_daily.parquet` **2 179 503** rows · **207** stn · **1997-10-01 → 2026-08-31**. Week: `data/processed/ocean_colour_chl_week.parquet` (**310 128** rows, ISO 1997–2026). Coverage on `joined_features`: train **99.64%** / val **99.66%** / test **99.67%** finite `chl_mean` (was ~11% train when late-only). See `docs/CHL_OSI_STATUS.md`. Do not duplicate download — Prediction Gatekeeper should join/ablate only.
+
+**Chl MY extend script:** `scripts/extend_oc_chl_arco_history.py` (ARCO append/merge; day-retry on 403). Late-only 2018+ was **not** Cork-claimable; after extend train cov **99.64%**. Skill only if Gatekeeper Δ test cal PR-AUC > 0. No CPR_MBA.
 
