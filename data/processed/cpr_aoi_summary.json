@@ -1,0 +1,96 @@
+{
+  "generated_utc": "2026-09-08T09:55:09Z",
+  "role": "climate_drivers_aoi_week_support",
+  "complements_pa_ingest": "scripts/ingest_cpr_mba.py",
+  "doi": "10.17031/6a9e6f4a00142",
+  "web": "https://doi.mba.ac.uk/data/3793",
+  "extractor": "Pierre H\u00e9laou\u00ebt",
+  "n_samples_csv": 41884,
+  "year_min": 1982,
+  "year_max": 2022,
+  "join_keys": [
+    "aoi",
+    "iso_year",
+    "iso_week"
+  ],
+  "limitations": [
+    "Aggregates only \u2014 no species-level Dinophysis",
+    "connemara_nested has 0 CPR tows",
+    "western_irish_shelf sparse (~35 tows)",
+    "AOI-week covariates \u2014 not a Met \u00c9ireann or NAO/EA/AMO replacement"
+  ],
+  "aoi_sample_counts": {
+    "full_extract": {
+      "n_samples": 41884,
+      "n_weeks": 1770,
+      "bbox": {
+        "lat_min": 49.0,
+        "lat_max": 61.0,
+        "lon_min": -16.0,
+        "lon_max": 0.0
+      },
+      "note": "MBA extract bbox; all CSV samples"
+    },
+    "connemara_nested": {
+      "n_samples": 0,
+      "n_weeks": 0,
+      "bbox": {
+        "lat_min": 53.1,
+        "lat_max": 53.6,
+        "lon_min": -10.2,
+        "lon_max": -9.3
+      },
+      "note": "Connemara nested \u2014 expected 0 tows"
+    },
+    "western_irish_shelf": {
+      "n_samples": 35,
+      "n_weeks": 14,
+      "bbox": {
+        "lat_min": 52.5,
+        "lat_max": 55.0,
+        "lon_min": -11.5,
+        "lon_max": -9.0
+      },
+      "note": "Western Irish shelf; sparse (~35 tows)"
+    },
+    "irish_sea": {
+      "n_samples": 3944,
+      "n_weeks": 683,
+      "bbox": {
+        "lat_min": 52.5,
+        "lat_max": 54.5,
+        "lon_min": -6.2,
+        "lon_max": -3.2
+      },
+      "note": "Irish Sea \u2014 good coverage"
+    },
+    "celtic_sea": {
+      "n_samples": 5783,
+      "n_weeks": 801,
+      "bbox": {
+        "lat_min": 49.5,
+        "lat_max": 52.0,
+        "lon_min": -10.5,
+        "lon_max": -5.5
+      },
+      "note": "Celtic Sea \u2014 good coverage"
+    },
+    "scotland_west": {
+      "n_samples": 11673,
+      "n_weeks": 1145,
+      "bbox": {
+        "lat_min": 54.75,
+        "lat_max": 60.76,
+        "lon_min": -7.5,
+        "lon_max": -0.83
+      },
+      "note": "West Scotland \u2014 better than west Ireland coast"
+    }
+  },
+  "n_week_rows": 6373,
+  "outputs": {
+    "cpr_aoi_week_csv": "data/processed/cpr_aoi_week.csv",
+    "cpr_aoi_summary_json": "data/processed/cpr_aoi_summary.json"
+  },
+  "n_week_rows_climate_aois": 4413
+}

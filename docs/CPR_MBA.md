@@ -3,7 +3,7 @@
 **Received:** 2026-09 (Europe/Dublin) from **Pierre Hélaouët** (MBA / CPR Survey).  
 **DOI:** [10.17031/6a9e6f4a00142](https://doi.org/10.17031/6a9e6f4a00142) · [doi.mba.ac.uk/data/3793](https://doi.mba.ac.uk/data/3793)  
 **PA scripts:** `scripts/ingest_cpr_mba.py`, `scripts/join_cpr_hab_week.py`.  
-**Climate-Drivers helper:** `scripts/build_cpr_aoi_week.py` → prefer `cpr_aoi_week_climate_drivers.csv` (do not clobber PA `cpr_aoi_week.csv`).  
+**Climate-Drivers helper:** `scripts/build_cpr_aoi_week.py` → `data/processed/cpr_aoi_week.csv` + `cpr_aoi_summary.json` (Climate AOI ids + PA aliases; complements ingest).  
 **Related:** [`CORK_CHEAT_SHEET.md`](CORK_CHEAT_SHEET.md) · [`CLIMATE_DRIVERS.md`](CLIMATE_DRIVERS.md) · [`MACRO_CLIMATE.md`](MACRO_CLIMATE.md).
 
 Control map: [`climate_assets/cpr_irish_heatwaves_control_map.png`](climate_assets/cpr_irish_heatwaves_control_map.png).

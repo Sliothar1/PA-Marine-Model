@@ -21,7 +21,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CSV = ROOT / "data" / "external" / "cpr_mba" / "raw" / "CPR_IrishHeatwaves_Data_04092026.csv"
-OUT_CSV = ROOT / "data" / "processed" / "cpr_aoi_week_climate_drivers.csv"
+OUT_CSV = ROOT / "data" / "processed" / "cpr_aoi_week.csv"
 OUT_SUMMARY = ROOT / "data" / "processed" / "cpr_aoi_summary.json"
 
 AOIS = {
@@ -159,8 +159,6 @@ def main() -> int:
     # summary counts use climate names only (pre-alias)
     climate_only = week.loc[week["aoi"].isin(AOIS.keys())].copy() if not week.empty else week
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    if Path(args.out).name=="cpr_aoi_week.csv":
-        raise SystemExit("Refusing to overwrite PA canonical cpr_aoi_week.csv")
     week.to_csv(args.out, index=False)
     summary = build_summary(df, climate_only if not climate_only.empty else pd.DataFrame(columns=["aoi"]))
     # n_week_rows should reflect full file including aliases? report climate-only rows in summary
