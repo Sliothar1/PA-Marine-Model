@@ -103,8 +103,8 @@ Build Cork pitches on **pre-cleared open feeds** already in-repo (MI HAB, NOAA O
 | **OISST JJA `in_mhw` rate** | **0.142** (Jun **0.364**) | **0.111** (Jun **0.194**) | **0.082** (Aug **0.243**) | **0.036** (weak) | **0.035** (Aug **0.105**) |
 | **Nat. Dinophysis ≥100 (ISO w22–35)** | **5.5%** (46/842) | **17.4%** (160/920) | **17.4%** (76/437) | **23.7%** (227/957) | **9.0%** (76/846) |
 | **Connemara focus exceed (w22–35)** | **2** weeks (Rosmuc+Mannin) | **10** weeks (Gubbaros peak **880**) | **0 rows** for focus IDs | **3** weeks | **6** weeks (Jun cluster + Rosmuc Jul) |
-| **Pitch angle** | Flagship severe MHW, HAB **below** clim | Warm June + active Connemara blooms | Late-summer marine imprint of continental HW | Near-MHW / **HAB without** strong MHW | Recent contrast: Aug CRW ↑, Jun Connemara busy |
-| **Needs team fill** | Figures live | CRW N/A; cite literature NE Atl 2018 carefully | CRW N/A; UK shelf literature; older station map | Define “near-MHW” slide | Optional: merge Jun+Aug briefs into one deck |
+| **Pitch angle** | Flagship severe MHW, HAB **below** clim | Warm June + active Connemara blooms | **August-weighted** imprint; Cork/south hotter than Galway/west; HAB ≈ clim | Near-MHW + **elevated** Dinophysis (Cork/south peaks **off-MHW**) | Recent contrast: Aug CRW ↑, Jun Connemara busy |
+| **Needs team fill** | Figures live | CRW N/A; cite literature NE Atl 2018 carefully | CRW N/A; UK shelf literature; older station map | Team pack in; cork_south Dinophysis **52%** with `in_mhw` ~1% | Optional: merge Jun+Aug briefs into one deck |
 
 **Headline compare:** Strongest shelf MHW in-repo (**2023**) had **lowest** national summer Dinophysis rate among the five; **2019** (weak MHW) had the **highest** — use this to kill “MHW ⇒ bloom” slides.
 
@@ -140,6 +140,20 @@ From `pa/demo-workstream` `data/processed/demo_instances/` (`manifest.json` + `s
 
 ---
 
+
+## Five-angle heatwave ≠ bloom (Teams 1–5 closed)
+
+| Cell | Episode | Beat |
+| --- | --- | --- |
+| Severe MHW, quiet HAB | **T1** 2023 Jun | CRW wall-to-wall; national HAB **below** clim |
+| Warm June, elevated HAB | **T2** 2018 | #2 warm June; national Dinophysis **above** clim (CRW N/A) |
+| Continental HW, ≈clim HAB | **T3** 2003 | August-weighted OISST; Cork/south hotter than Galway/west |
+| Near-MHW, elevated HAB | **T4** 2019 | JJA `in_mhw` **3.57%**; nat. Dinophysis **23.7%**; cork_south **52%** with peaks off-MHW |
+| CRW Aug peak, June busy | **T5** 2022 | June Connemara busy / Aug CRW high + quieter HAB nationally |
+
+Same Cork spine: `STRONG_OISST` ~**0.295** only. Team briefs: `/workspace/demo-team3/summer2003-review.md`, `/workspace/demo_team4_summer2019_brief.md`.
+
+---
 
 ## Slide-ready bullet bank
 
