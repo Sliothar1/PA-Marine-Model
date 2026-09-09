@@ -251,6 +251,20 @@ OSI_SAF_WEEK = {
     "osi_minus_oisst",
 }
 
+# PA demo-lane only (see docs/PA_FEATURE_NOTES.md). NOT Cork spine.
+# Do not quote these as national skill. STRONG_OISST remains the judge-card set.
+DEMO_STATION_WEEK = {
+    "demo_sw_station_rate",
+    "demo_sw_week_rate",
+    "demo_sw_station_week_rate",
+}
+DEMO_COVERAGE = {
+    "cov_sst_missing",
+    "cov_sst_always_missing",
+    "cov_snap_dist_deg",
+    "cov_snap_dist_km",
+}
+
 
 IBI_SSS_CUR = {
     "so",
@@ -315,4 +329,20 @@ def select_feature_mode(df: pd.DataFrame, mode: str) -> list[str]:
     if mode in {"strong_chl_osi", "strong_oc_osi"}:
         keep = STRONG_OISST | OC_CHL_CORE | OSI_SAF_WEEK
         return [f for f in all_feats if f in keep]
+    if mode in {"strong_demo_sw", "demo_station_week"}:
+        # Opt-in demo package. Not an ablation-gated Cork claim.
+        keep = STRONG_OISST | DEMO_STATION_WEEK | DEMO_COVERAGE
+        strong = [f for f in all_feats if f in STRONG_OISST]
+        extra = [
+            c
+            for c in df.columns
+            if c in keep - STRONG_OISST and pd.api.types.is_numeric_dtype(df[c])
+        ]
+        seen = set()
+        out = []
+        for c in strong + extra:
+            if c not in seen:
+                seen.add(c)
+                out.append(c)
+        return out
     raise ValueError(f"Unknown feature mode: {mode}")

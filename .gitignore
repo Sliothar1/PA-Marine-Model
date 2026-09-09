@@ -210,3 +210,12 @@ data/external/osi_saf_sst/raw_nc/
 data/processed/ocean_colour_chl_week.csv
 data/processed/oc_chl_daily.parquet
 data/raw/ocean_colour/
+
+# PA demo instance JSON (full weekly dumps gitignored; samples + readme tracked)
+!data/processed/demo_instances/
+data/processed/demo_instances/*
+!data/processed/demo_instances/.gitkeep
+!data/processed/demo_instances/README.md
+!data/processed/demo_instances/manifest.json
+!data/processed/demo_instances/samples/
+!data/processed/demo_instances/samples/*.json

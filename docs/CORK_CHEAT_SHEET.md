@@ -2,6 +2,7 @@
 
 **Open first:** [`docs/demo.html`](demo.html) (layman walkthrough).  
 **Teammate pack:** [`docs/HACKATHON_DEMO.md`](HACKATHON_DEMO.md).  
+**PA vs Meta lanes:** [`docs/PA_META_HANDOFF.md`](PA_META_HANDOFF.md).  
 **Research demo — not an official warning.**
 
 ---

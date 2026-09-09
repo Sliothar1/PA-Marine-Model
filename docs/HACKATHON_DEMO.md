@@ -6,6 +6,8 @@ This is a research nowcast demo, **not** an operational warning product.
 
 **Start here for Cork:** [`docs/CORK_CHEAT_SHEET.md`](CORK_CHEAT_SHEET.md) (1-page talk track) → open [`docs/demo.html`](demo.html) (layman walkthrough; figures under `docs/demo_assets/`).
 
+**PA demo workstream** (separate from Meta `review/claude-patch*`): [`docs/PA_META_HANDOFF.md`](PA_META_HANDOFF.md) · Felix instance exporter `python scripts/export_demo_instances.py` → [`data/processed/demo_instances/`](../data/processed/demo_instances/README.md) (GrokD4M `data/marine/instances/`). Feature notes: [`docs/PA_FEATURE_NOTES.md`](PA_FEATURE_NOTES.md).
+
 **Three products to show:**
 
 | Product | Artifact | One metric |
@@ -270,11 +272,14 @@ EPA HydroNet remains interactive-only (data.gov.ie → SPA). **OPW Hydro-Data JS
 ```
 docs/CORK_CHEAT_SHEET.md               ← 1-page Cork talk track (start here)
 docs/HACKATHON_DEMO.md                 ← this file
+docs/PA_META_HANDOFF.md                ← PA vs Meta lanes (do not mix claude-patch*)
+docs/PA_FEATURE_NOTES.md               ← demo station×week / coverage flags (not Cork spine)
 docs/demo.html                         ← layman one-pager walkthrough
 docs/demo_assets/june2023_*.png        ← figures bundled for local HTML
 docs/MHW_EVENT_PRODUCT.md              ← MHW brief product + morning --latest path
 
 scripts/demo_snapshot.py               ← print key metrics + figure paths
+scripts/export_demo_instances.py       ← 2018 / 2022 / 2023 JSON for GrokD4M /marine
 scripts/run_pipeline.py --fixture
 scripts/evaluate.py --feature-mode strong
 scripts/train_scotland_dino.py
@@ -303,6 +308,7 @@ data/processed/local_sites_report.md
 data/processed/june2023_case_study.md
 data/processed/figures/june2023_*.png
 data/processed/crw_mhw_ireland_daily_summary.csv    ← CRW coverage for --latest
+data/processed/demo_instances/                      ← 2018/2022/2023 JSON (GrokD4M copy)
 ```
 
 MIT code; HAB © Marine Institute; OISST © NOAA; cite Berthou et al. (2024) for the June 2023 MHW narrative.
